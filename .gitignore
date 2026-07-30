@@ -1,0 +1,17 @@
+# .NET build artifacts
+bin/
+obj/
+*.user
+
+# Node / frontend build artifacts
+node_modules/
+dist/
+*.tsbuildinfo
+
+# IDE
+.vs/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
