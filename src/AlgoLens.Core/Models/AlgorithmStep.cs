@@ -8,7 +8,9 @@ public sealed record AlgorithmStep(
     int StepNumber,
     string Action,
     object State,
-    IReadOnlyList<string> Highlights
+    IReadOnlyList<string> Highlights,
+    int SourceLineStart,
+    int SourceLineEnd
 );
 
 /// <summary>

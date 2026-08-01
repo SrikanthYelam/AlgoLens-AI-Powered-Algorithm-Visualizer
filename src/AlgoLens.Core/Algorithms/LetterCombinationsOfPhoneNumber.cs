@@ -29,22 +29,22 @@ public sealed class LetterCombinationsOfPhoneNumber : IAlgorithmVisualizer<strin
     public IReadOnlyList<AlgorithmStep> Run(string digits)
     {
         var steps = new List<AlgorithmStep>();
+        var stepNumber = 0;
 
         if (digits.Length == 0)
         {
-            steps.Add(new AlgorithmStep(
-                0, "No digits provided; there are no combinations.", new LetterCombinationsState("", []), []));
+            StepRecorder.Add(steps, ref stepNumber, "No digits provided; there are no combinations.",
+                new LetterCombinationsState("", []), [], spanLines: 2);
             return steps;
         }
 
         if (digits.Any(d => !DigitToLetters.ContainsKey(d)))
         {
-            steps.Add(new AlgorithmStep(
-                0, "Invalid input: digits must be between 2 and 9.", new LetterCombinationsState("", []), []));
+            StepRecorder.Add(steps, ref stepNumber, "Invalid input: digits must be between 2 and 9.",
+                new LetterCombinationsState("", []), [], spanLines: 2);
             return steps;
         }
 
-        var stepNumber = 0;
         var path = new StringBuilder();
         var solutions = new List<string>();
 
@@ -54,11 +54,11 @@ public sealed class LetterCombinationsOfPhoneNumber : IAlgorithmVisualizer<strin
             {
                 var combination = path.ToString();
                 solutions.Add(combination);
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Complete combination found: \"{combination}\".",
                     new LetterCombinationsState(path.ToString(), solutions.ToList()),
-                    [combination]));
+                    [combination],
+                    spanLines: 2);
                 return;
             }
 
@@ -66,20 +66,20 @@ public sealed class LetterCombinationsOfPhoneNumber : IAlgorithmVisualizer<strin
             foreach (var letter in letters)
             {
                 path.Append(letter);
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Choose '{letter}' for digit '{digits[index]}'; path is now \"{path}\".",
                     new LetterCombinationsState(path.ToString(), solutions.ToList()),
-                    [letter.ToString()]));
+                    [letter.ToString()],
+                    spanLines: 1);
 
                 Backtrack(index + 1);
 
                 path.Remove(path.Length - 1, 1);
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Backtrack: remove '{letter}' from path.",
                     new LetterCombinationsState(path.ToString(), solutions.ToList()),
-                    [letter.ToString()]));
+                    [letter.ToString()],
+                    spanLines: 1);
             }
         }
 

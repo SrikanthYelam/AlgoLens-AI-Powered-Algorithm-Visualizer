@@ -4,6 +4,8 @@ export interface Step {
   action: string;
   state: unknown;
   highlights: string[];
+  sourceLineStart: number;
+  sourceLineEnd: number;
   explanation: string | null;
 }
 
@@ -11,6 +13,12 @@ export interface Step {
 export interface AlgorithmRunResponse {
   algorithmId: string;
   steps: Step[];
+}
+
+/** Mirrors AlgoLens.Api.Contracts.AlgorithmSourceResponse (camelCase JSON). */
+export interface AlgorithmSourceResponse {
+  language: string;
+  source: string;
 }
 
 /** Props every algorithm's input form component must accept. */

@@ -17,7 +17,8 @@ public sealed class NQueens : IAlgorithmVisualizer<int>
 
         if (boardSize <= 0)
         {
-            steps.Add(new AlgorithmStep(0, "Board size must be positive.", new NQueensState(boardSize, [], []), []));
+            StepRecorder.Add(steps, ref stepNumber, "Board size must be positive.",
+                new NQueensState(boardSize, [], []), [], spanLines: 2);
             return steps;
         }
 
@@ -42,11 +43,11 @@ public sealed class NQueens : IAlgorithmVisualizer<int>
             if (row == boardSize)
             {
                 solutions.Add(queenColumns.ToList());
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Complete solution found: queens at columns [{string.Join(", ", queenColumns)}].",
                     new NQueensState(boardSize, queenColumns.ToList(), solutions.ToList()),
-                    []));
+                    [],
+                    spanLines: 1);
                 return;
             }
 
@@ -58,21 +59,21 @@ public sealed class NQueens : IAlgorithmVisualizer<int>
                 }
 
                 queenColumns.Add(col);
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Place queen at row {row}, column {col}.",
                     new NQueensState(boardSize, queenColumns.ToList(), solutions.ToList()),
-                    [$"{row},{col}"]));
+                    [$"{row},{col}"],
+                    spanLines: 1);
 
                 Backtrack(row + 1);
 
                 var removedCol = queenColumns[^1];
                 queenColumns.RemoveAt(queenColumns.Count - 1);
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Backtrack: remove queen from row {row}, column {removedCol}.",
                     new NQueensState(boardSize, queenColumns.ToList(), solutions.ToList()),
-                    [$"{row},{removedCol}"]));
+                    [$"{row},{removedCol}"],
+                    spanLines: 2);
             }
         }
 

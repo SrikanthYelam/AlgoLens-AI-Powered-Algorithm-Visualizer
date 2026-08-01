@@ -59,11 +59,11 @@ public sealed class LargestRectangleInHistogram : IAlgorithmVisualizer<IReadOnly
                 actionParts.Add($"Max area so far: {maxArea}.");
             }
 
-            steps.Add(new AlgorithmStep(
-                stepNumber++,
+            StepRecorder.Add(steps, ref stepNumber,
                 string.Join(' ', actionParts),
                 new HistogramState(heights.ToList(), i, stack.ToList(), maxArea),
-                highlights));
+                highlights,
+                spanLines: 38);
         }
 
         return steps;

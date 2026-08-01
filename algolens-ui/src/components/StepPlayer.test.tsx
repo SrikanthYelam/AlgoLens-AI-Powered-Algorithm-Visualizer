@@ -5,9 +5,33 @@ import { StepPlayer } from './StepPlayer';
 import type { Step } from '../types/algorithm';
 
 const steps: Step[] = [
-  { stepNumber: 0, action: 'Step zero', state: {}, highlights: [], explanation: 'First explanation' },
-  { stepNumber: 1, action: 'Step one', state: {}, highlights: [], explanation: null },
-  { stepNumber: 2, action: 'Step two', state: {}, highlights: [], explanation: 'Third explanation' },
+  {
+    stepNumber: 0,
+    action: 'Step zero',
+    state: {},
+    highlights: [],
+    sourceLineStart: 1,
+    sourceLineEnd: 1,
+    explanation: 'First explanation',
+  },
+  {
+    stepNumber: 1,
+    action: 'Step one',
+    state: {},
+    highlights: [],
+    sourceLineStart: 2,
+    sourceLineEnd: 2,
+    explanation: null,
+  },
+  {
+    stepNumber: 2,
+    action: 'Step two',
+    state: {},
+    highlights: [],
+    sourceLineStart: 3,
+    sourceLineEnd: 3,
+    explanation: 'Third explanation',
+  },
 ];
 
 function renderPlayer() {
@@ -54,5 +78,18 @@ describe('StepPlayer', () => {
     renderPlayer();
 
     expect(screen.getByText('state-0')).toBeInTheDocument();
+  });
+
+  it('renders the code panel alongside the state view when renderCode is provided', () => {
+    render(
+      <StepPlayer
+        steps={steps}
+        renderState={(step) => <div>state-{step.stepNumber}</div>}
+        renderCode={(step) => <div>code-{step.sourceLineStart}</div>}
+      />,
+    );
+
+    expect(screen.getByText('state-0')).toBeInTheDocument();
+    expect(screen.getByText('code-1')).toBeInTheDocument();
   });
 });

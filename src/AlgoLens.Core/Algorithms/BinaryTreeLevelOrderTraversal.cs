@@ -14,31 +14,25 @@ public sealed class BinaryTreeLevelOrderTraversal : IAlgorithmVisualizer<TreeNod
     public IReadOnlyList<AlgorithmStep> Run(TreeNode? root)
     {
         var steps = new List<AlgorithmStep>();
+        var stepNumber = 0;
 
         if (root is null)
         {
-            steps.Add(new AlgorithmStep(
-                StepNumber: 0,
-                Action: "Tree is empty; there are no levels to traverse.",
-                State: new TreeTraversalState([], [], []),
-                Highlights: []));
+            StepRecorder.Add(steps, ref stepNumber, "Tree is empty; there are no levels to traverse.",
+                new TreeTraversalState([], [], []), [], spanLines: 2);
             return steps;
         }
 
+        var completedLevels = new List<IReadOnlyList<int>>();
         var queue = new Queue<TreeNode>();
         queue.Enqueue(root);
-
-        var completedLevels = new List<IReadOnlyList<int>>();
-        var stepNumber = 0;
-
-        steps.Add(new AlgorithmStep(
-            StepNumber: stepNumber++,
-            Action: $"Start: enqueue root node {root.Val}.",
-            State: new TreeTraversalState(
+        StepRecorder.Add(steps, ref stepNumber, $"Start: enqueue root node {root.Val}.",
+            new TreeTraversalState(
                 Queue: queue.Select(n => (int?)n.Val).ToList(),
                 CompletedLevels: completedLevels.ToList(),
                 CurrentLevelInProgress: []),
-            Highlights: [root.Val.ToString()]));
+            [root.Val.ToString()],
+            spanLines: 2);
 
         while (queue.Count > 0)
         {
@@ -71,14 +65,14 @@ public sealed class BinaryTreeLevelOrderTraversal : IAlgorithmVisualizer<TreeNod
                     ? completedLevels.Append((IReadOnlyList<int>)currentLevel.ToList()).ToList()
                     : completedLevels.ToList();
 
-                steps.Add(new AlgorithmStep(
-                    StepNumber: stepNumber++,
-                    Action: isLastInLevel ? $"{action} Level complete: [{string.Join(", ", currentLevel)}]." : action,
-                    State: new TreeTraversalState(
+                StepRecorder.Add(steps, ref stepNumber,
+                    isLastInLevel ? $"{action} Level complete: [{string.Join(", ", currentLevel)}]." : action,
+                    new TreeTraversalState(
                         Queue: queue.Select(n => (int?)n.Val).ToList(),
                         CompletedLevels: levelsSoFar,
                         CurrentLevelInProgress: isLastInLevel ? [] : currentLevel.ToList()),
-                    Highlights: [node.Val.ToString()]));
+                    [node.Val.ToString()],
+                    spanLines: 24);
             }
 
             completedLevels.Add(currentLevel);

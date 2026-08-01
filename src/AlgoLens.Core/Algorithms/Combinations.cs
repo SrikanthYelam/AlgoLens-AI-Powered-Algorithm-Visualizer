@@ -17,8 +17,8 @@ public sealed class Combinations : IAlgorithmVisualizer<CombinationsInput>
 
         if (input.K <= 0 || input.K > input.N)
         {
-            steps.Add(new AlgorithmStep(
-                0, "No valid combinations for the given n and k.", new BacktrackingState([], []), []));
+            StepRecorder.Add(steps, ref stepNumber, "No valid combinations for the given n and k.",
+                new BacktrackingState([], []), [], spanLines: 2);
             return steps;
         }
 
@@ -30,32 +30,32 @@ public sealed class Combinations : IAlgorithmVisualizer<CombinationsInput>
             if (path.Count == input.K)
             {
                 solutions.Add(path.ToList());
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Complete combination found: [{string.Join(", ", path)}].",
                     new BacktrackingState(path.ToList(), solutions.ToList()),
-                    path.Select(v => v.ToString()).ToList()));
+                    path.Select(v => v.ToString()).ToList(),
+                    spanLines: 1);
                 return;
             }
 
             for (var i = start; i <= input.N; i++)
             {
                 path.Add(i);
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Choose {i}; path is now [{string.Join(", ", path)}].",
                     new BacktrackingState(path.ToList(), solutions.ToList()),
-                    [i.ToString()]));
+                    [i.ToString()],
+                    spanLines: 1);
 
                 Backtrack(i + 1);
 
                 var removed = path[^1];
                 path.RemoveAt(path.Count - 1);
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Backtrack: remove {removed} from path.",
                     new BacktrackingState(path.ToList(), solutions.ToList()),
-                    [removed.ToString()]));
+                    [removed.ToString()],
+                    spanLines: 2);
             }
         }
 

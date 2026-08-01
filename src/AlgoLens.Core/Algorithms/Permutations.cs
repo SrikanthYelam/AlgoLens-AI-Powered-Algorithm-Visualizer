@@ -18,7 +18,8 @@ public sealed class Permutations : IAlgorithmVisualizer<IReadOnlyList<int>>
 
         if (nums.Count == 0)
         {
-            steps.Add(new AlgorithmStep(0, "No elements to permute.", new BacktrackingState([], []), []));
+            StepRecorder.Add(steps, ref stepNumber, "No elements to permute.",
+                new BacktrackingState([], []), [], spanLines: 2);
             return steps;
         }
 
@@ -31,11 +32,11 @@ public sealed class Permutations : IAlgorithmVisualizer<IReadOnlyList<int>>
             if (path.Count == nums.Count)
             {
                 solutions.Add(path.ToList());
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Complete permutation found: [{string.Join(", ", path)}].",
                     new BacktrackingState(path.ToList(), solutions.ToList()),
-                    path.Select(v => v.ToString()).ToList()));
+                    path.Select(v => v.ToString()).ToList(),
+                    spanLines: 1);
                 return;
             }
 
@@ -48,22 +49,22 @@ public sealed class Permutations : IAlgorithmVisualizer<IReadOnlyList<int>>
 
                 used[i] = true;
                 path.Add(nums[i]);
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Choose {nums[i]}; path is now [{string.Join(", ", path)}].",
                     new BacktrackingState(path.ToList(), solutions.ToList()),
-                    [nums[i].ToString()]));
+                    [nums[i].ToString()],
+                    spanLines: 2);
 
                 Backtrack();
 
                 var removed = path[^1];
                 path.RemoveAt(path.Count - 1);
                 used[i] = false;
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Backtrack: remove {removed} from path.",
                     new BacktrackingState(path.ToList(), solutions.ToList()),
-                    [removed.ToString()]));
+                    [removed.ToString()],
+                    spanLines: 3);
             }
         }
 

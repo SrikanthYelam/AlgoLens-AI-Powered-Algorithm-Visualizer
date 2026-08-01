@@ -5,4 +5,6 @@ public sealed record StepDto(
     string Action,
     object State,
     IReadOnlyList<string> Highlights,
+    int SourceLineStart,
+    int SourceLineEnd,
     string? Explanation);

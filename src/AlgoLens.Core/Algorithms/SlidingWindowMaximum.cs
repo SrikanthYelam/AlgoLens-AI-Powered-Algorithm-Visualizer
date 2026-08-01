@@ -16,20 +16,17 @@ public sealed class SlidingWindowMaximum : IAlgorithmVisualizer<SlidingWindowInp
         var nums = input.Nums;
         var windowSize = input.WindowSize;
         var steps = new List<AlgorithmStep>();
+        var stepNumber = 0;
 
         if (nums.Count == 0)
         {
-            steps.Add(new AlgorithmStep(
-                0,
-                "Array is empty; there are no windows to evaluate.",
-                new SlidingWindowState([], windowSize, -1, [], []),
-                []));
+            StepRecorder.Add(steps, ref stepNumber, "Array is empty; there are no windows to evaluate.",
+                new SlidingWindowState([], windowSize, -1, [], []), [], spanLines: 2);
             return steps;
         }
 
         var deque = new LinkedList<int>();
         var result = new List<int>();
-        var stepNumber = 0;
 
         for (var i = 0; i < nums.Count; i++)
         {
@@ -72,8 +69,7 @@ public sealed class SlidingWindowMaximum : IAlgorithmVisualizer<SlidingWindowInp
                 actionParts.Add($"Window [{i - windowSize + 1}..{i}] complete: max is {max}.");
             }
 
-            steps.Add(new AlgorithmStep(
-                stepNumber++,
+            StepRecorder.Add(steps, ref stepNumber,
                 string.Join(' ', actionParts),
                 new SlidingWindowState(
                     nums.ToList(),
@@ -81,7 +77,8 @@ public sealed class SlidingWindowMaximum : IAlgorithmVisualizer<SlidingWindowInp
                     i,
                     deque.Select(idx => nums[idx]).ToList(),
                     result.ToList()),
-                highlights));
+                highlights,
+                spanLines: 39);
         }
 
         return steps;

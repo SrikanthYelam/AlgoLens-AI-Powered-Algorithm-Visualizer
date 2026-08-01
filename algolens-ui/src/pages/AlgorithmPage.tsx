@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAlgorithm } from '../algorithms/registry';
-import { runAlgorithm } from '../api/client';
+import { getAlgorithmSource, runAlgorithm } from '../api/client';
+import { CodePanel } from '../components/CodePanel';
 import { StepPlayer } from '../components/StepPlayer';
 import type { Step } from '../types/algorithm';
 
@@ -12,6 +13,17 @@ export function AlgorithmPage() {
   const [steps, setSteps] = useState<Step[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sourceCode, setSourceCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!algorithm) {
+      return;
+    }
+    setSourceCode(null);
+    getAlgorithmSource(algorithm.id)
+      .then((response) => setSourceCode(response.source))
+      .catch(() => setSourceCode(null));
+  }, [algorithm]);
 
   if (!algorithm) {
     return (
@@ -39,7 +51,7 @@ export function AlgorithmPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6 p-8">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-8">
       <div>
         <Link to="/" className="text-sm text-indigo-600 hover:underline">
           ← Back
@@ -52,7 +64,23 @@ export function AlgorithmPage() {
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      {steps && <StepPlayer steps={steps} renderState={(step) => <algorithm.StateView step={step} />} />}
+      {steps && (
+        <StepPlayer
+          steps={steps}
+          renderState={(step) => <algorithm.StateView step={step} />}
+          renderCode={
+            sourceCode
+              ? (step) => (
+                  <CodePanel
+                    source={sourceCode}
+                    highlightStart={step.sourceLineStart}
+                    highlightEnd={step.sourceLineEnd}
+                  />
+                )
+              : undefined
+          }
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 using AlgoLens.Api.Contracts;
 using AlgoLens.Api.Services;
+using AlgoLens.Core;
 using AlgoLens.Core.Algorithms;
 using AlgoLens.Core.Models;
 
@@ -76,12 +77,19 @@ public static class AlgorithmEndpoints
                     step.Action,
                     step.State,
                     step.Highlights,
+                    step.SourceLineStart,
+                    step.SourceLineEnd,
                     explanationTexts.ElementAtOrDefault(i)))
                 .ToList();
 
             return Results.Ok(new TraversalResponse(algorithm.Id, stepDtos));
         })
         .WithName(typeof(TAlgorithm).Name)
+        .WithOpenApi();
+
+        app.MapGet($"{route}/source", () =>
+            Results.Ok(new AlgorithmSourceResponse("csharp", AlgorithmSource.Get(typeof(TAlgorithm)))))
+        .WithName($"{typeof(TAlgorithm).Name}Source")
         .WithOpenApi();
     }
 }

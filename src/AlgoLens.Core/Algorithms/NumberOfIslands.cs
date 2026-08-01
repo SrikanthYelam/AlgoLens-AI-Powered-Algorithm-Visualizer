@@ -16,10 +16,12 @@ public sealed class NumberOfIslands : IAlgorithmVisualizer<int[][]>
     public IReadOnlyList<AlgorithmStep> Run(int[][] grid)
     {
         var steps = new List<AlgorithmStep>();
+        var stepNumber = 0;
 
         if (grid.Length == 0 || grid[0].Length == 0)
         {
-            steps.Add(new AlgorithmStep(0, "Grid is empty.", new IslandsState([], [], 0, -1, -1), []));
+            StepRecorder.Add(steps, ref stepNumber, "Grid is empty.",
+                new IslandsState([], [], 0, -1, -1), [], spanLines: 2);
             return steps;
         }
 
@@ -32,7 +34,6 @@ public sealed class NumberOfIslands : IAlgorithmVisualizer<int[][]>
         }
 
         var islandCount = 0;
-        var stepNumber = 0;
 
         IReadOnlyList<IReadOnlyList<int>> SnapshotGrid() =>
             grid.Select(row => (IReadOnlyList<int>)row.ToList()).ToList();
@@ -52,11 +53,11 @@ public sealed class NumberOfIslands : IAlgorithmVisualizer<int[][]>
                 islandCount++;
                 visited[row][col] = 1;
 
-                steps.Add(new AlgorithmStep(
-                    stepNumber++,
+                StepRecorder.Add(steps, ref stepNumber,
                     $"Found unvisited land at ({row},{col}); starting island #{islandCount}.",
                     new IslandsState(SnapshotGrid(), SnapshotVisited(), islandCount, row, col),
-                    [$"{row},{col}"]));
+                    [$"{row},{col}"],
+                    spanLines: 3);
 
                 var queue = new Queue<(int Row, int Col)>();
                 queue.Enqueue((row, col));
@@ -81,21 +82,21 @@ public sealed class NumberOfIslands : IAlgorithmVisualizer<int[][]>
                         visited[nr][nc] = 1;
                         queue.Enqueue((nr, nc));
 
-                        steps.Add(new AlgorithmStep(
-                            stepNumber++,
+                        StepRecorder.Add(steps, ref stepNumber,
                             $"Visit ({nr},{nc}); part of island #{islandCount}.",
                             new IslandsState(SnapshotGrid(), SnapshotVisited(), islandCount, nr, nc),
-                            [$"{nr},{nc}"]));
+                            [$"{nr},{nc}"],
+                            spanLines: 3);
                     }
                 }
             }
         }
 
-        steps.Add(new AlgorithmStep(
-            stepNumber,
+        StepRecorder.Add(steps, ref stepNumber,
             $"Scan complete: {islandCount} island(s) found.",
             new IslandsState(SnapshotGrid(), SnapshotVisited(), islandCount, -1, -1),
-            []));
+            [],
+            spanLines: 1);
 
         return steps;
     }
