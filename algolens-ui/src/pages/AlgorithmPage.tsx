@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAlgorithm } from '../algorithms/registry';
 import { getAlgorithmSource, runAlgorithm } from '../api/client';
+import { AlgorithmInfoPanel } from '../components/AlgorithmInfoPanel';
 import { CodePanel } from '../components/CodePanel';
 import { StepPlayer } from '../components/StepPlayer';
 import type { Step } from '../types/algorithm';
@@ -81,6 +82,12 @@ export function AlgorithmPage() {
           }
         />
       )}
+
+      <AlgorithmInfoPanel
+        pattern={algorithm.pattern}
+        hints={algorithm.hints}
+        relatedProblems={algorithm.relatedProblems}
+      />
     </div>
   );
 }
