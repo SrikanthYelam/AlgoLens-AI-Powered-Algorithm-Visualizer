@@ -27,6 +27,7 @@ builder.Services.AddScoped<Combinations>();
 builder.Services.AddScoped<Subsets>();
 builder.Services.AddScoped<NQueens>();
 builder.Services.AddScoped<LetterCombinationsOfPhoneNumber>();
+builder.Services.AddScoped<TaskSchedulerAlgorithm>();
 
 var app = builder.Build();
 

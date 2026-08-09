@@ -16,6 +16,8 @@ import { NQueensInputForm } from './nQueens/NQueensInputForm';
 import { NQueensStateView } from './nQueens/NQueensStateView';
 import { LetterCombinationsInputForm } from './letterCombinations/LetterCombinationsInputForm';
 import { LetterCombinationsStateView } from './letterCombinations/LetterCombinationsStateView';
+import { TaskSchedulerInputForm } from './taskScheduler/TaskSchedulerInputForm';
+import { TaskSchedulerStateView } from './taskScheduler/TaskSchedulerStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -230,6 +232,27 @@ export const algorithms: AlgorithmDefinition[] = [
     ],
     InputForm: LetterCombinationsInputForm,
     StateView: LetterCombinationsStateView,
+  },
+  {
+    id: 'task-scheduler',
+    name: 'Task Scheduler',
+    description: 'Find the minimum CPU time to run every task, given a per-task cooldown, using a greedy tick-by-tick simulation.',
+    category: 'Heaps & Greedy',
+    pattern: 'Greedy Simulation (Max-Heap by Remaining Count)',
+    hints: [
+      "At each CPU tick, run the ready task (not on cooldown) with the highest remaining count — that's the greedy choice that spreads out the most frequent task as early as possible.",
+      'A max-heap keyed by remaining count is the efficient way to always find that task, though a linear scan works fine for small inputs.',
+      "After running a task, it can't run again until n ticks have passed — track a per-task \"available at\" tick.",
+      "If nothing is ready, the CPU sits idle for that tick — idle slots still count toward the total time.",
+    ],
+    relatedProblems: [
+      { name: 'Reorganize String', note: 'Same greedy "place the most frequent item, respecting a gap" idea, over string characters.' },
+      { name: 'Rearrange String k Distance Apart', note: 'Generalizes the same cooldown-gap greedy to arbitrary strings.' },
+      { name: 'Top K Frequent Elements', note: 'Same frequency-counting + max-heap building block, without the cooldown.' },
+      { name: 'Meeting Rooms II', note: 'Different problem, same family: greedy scheduling driven by a heap.' },
+    ],
+    InputForm: TaskSchedulerInputForm,
+    StateView: TaskSchedulerStateView,
   },
 ];
 

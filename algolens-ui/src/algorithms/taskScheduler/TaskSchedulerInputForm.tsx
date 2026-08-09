@@ -1,0 +1,69 @@
+import { useState, type FormEvent } from 'react';
+import type { AlgorithmInputFormProps } from '../../types/algorithm';
+
+const DEFAULT_TASKS = 'AAABBB';
+const DEFAULT_COOLDOWN = 2;
+
+export function TaskSchedulerInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
+  const [tasksText, setTasksText] = useState(DEFAULT_TASKS);
+  const [cooldown, setCooldown] = useState(DEFAULT_COOLDOWN);
+  const [error, setError] = useState<string | null>(null);
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    const tasks = tasksText.trim().toUpperCase();
+
+    if (tasks.length === 0) {
+      setError('Enter at least one task letter.');
+      return;
+    }
+    if (!/^[A-Z]+$/.test(tasks)) {
+      setError('Tasks must be letters only, e.g. AAABBB.');
+      return;
+    }
+    if (!Number.isInteger(cooldown) || cooldown < 0) {
+      setError('Cooldown must be a non-negative integer.');
+      return;
+    }
+
+    setError(null);
+    onSubmit({ tasks, n: cooldown });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <label htmlFor="ts-tasks" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        Tasks (letters, one per unit of work)
+      </label>
+      <input
+        id="ts-tasks"
+        value={tasksText}
+        onChange={(e) => setTasksText(e.target.value)}
+        className="rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+        placeholder={DEFAULT_TASKS}
+      />
+
+      <label htmlFor="ts-cooldown" className="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+        Cooldown (n)
+      </label>
+      <div className="flex gap-2">
+        <input
+          id="ts-cooldown"
+          type="number"
+          min={0}
+          value={cooldown}
+          onChange={(e) => setCooldown(Number(e.target.value))}
+          className="w-24 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+        />
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+        >
+          {isLoading ? 'Running…' : 'Run'}
+        </button>
+      </div>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+    </form>
+  );
+}

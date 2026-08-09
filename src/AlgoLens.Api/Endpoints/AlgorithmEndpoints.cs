@@ -54,6 +54,11 @@ public static class AlgorithmEndpoints
             app,
             "/api/algorithms/letter-combinations-of-a-phone-number",
             request => request.Digits);
+
+        MapAlgorithm<TaskSchedulerAlgorithm, TaskSchedulerRequest, TaskSchedulerInput>(
+            app,
+            "/api/algorithms/task-scheduler",
+            request => new TaskSchedulerInput(request.Tasks.ToCharArray(), request.N));
     }
 
     private static void MapAlgorithm<TAlgorithm, TRequest, TInput>(
