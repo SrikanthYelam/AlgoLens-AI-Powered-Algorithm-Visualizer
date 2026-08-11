@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import type { AlgorithmInputFormProps, AlgorithmStateViewProps } from '../types/algorithm';
 import { BacktrackingStateView } from '../components/BacktrackingStateView';
+import { StringBacktrackingStateView } from '../components/StringBacktrackingStateView';
 import { TreeInputForm } from './binaryTreeLevelOrder/TreeInputForm';
 import { TreeStateView } from './binaryTreeLevelOrder/TreeStateView';
 import { SlidingWindowInputForm } from './slidingWindowMaximum/SlidingWindowInputForm';
@@ -15,9 +16,9 @@ import { SubsetsInputForm } from './subsets/SubsetsInputForm';
 import { NQueensInputForm } from './nQueens/NQueensInputForm';
 import { NQueensStateView } from './nQueens/NQueensStateView';
 import { LetterCombinationsInputForm } from './letterCombinations/LetterCombinationsInputForm';
-import { LetterCombinationsStateView } from './letterCombinations/LetterCombinationsStateView';
 import { TaskSchedulerInputForm } from './taskScheduler/TaskSchedulerInputForm';
 import { TaskSchedulerStateView } from './taskScheduler/TaskSchedulerStateView';
+import { GenerateParenthesesInputForm } from './generateParentheses/GenerateParenthesesInputForm';
 
 export interface RelatedProblem {
   name: string;
@@ -231,7 +232,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Restore IP Addresses', note: 'Same per-position choice recursion, constrained by valid octet rules.' },
     ],
     InputForm: LetterCombinationsInputForm,
-    StateView: LetterCombinationsStateView,
+    StateView: StringBacktrackingStateView,
   },
   {
     id: 'task-scheduler',
@@ -253,6 +254,27 @@ export const algorithms: AlgorithmDefinition[] = [
     ],
     InputForm: TaskSchedulerInputForm,
     StateView: TaskSchedulerStateView,
+  },
+  {
+    id: 'generate-parentheses',
+    name: 'Generate Parentheses',
+    description: 'Generate every well-formed combination of n pairs of parentheses using backtracking.',
+    category: 'Backtracking',
+    pattern: 'Backtracking with a Balance Constraint',
+    hints: [
+      "At each position you have up to two choices: add '(' or add ')' — the trick is knowing when each is legal.",
+      "You can always add '(' as long as you haven't used all n of them yet.",
+      "You can only add ')' if it wouldn't outnumber the '(' placed so far — otherwise the string can never become well-formed.",
+      "Base case: once the path reaches length 2n, both counts are automatically balanced — record it as a complete combination.",
+    ],
+    relatedProblems: [
+      { name: 'Valid Parentheses', note: 'The balance-checking rule this problem builds on, without any generation.' },
+      { name: 'Letter Combinations of a Phone Number', note: 'Same choose/explore/unchoose recursion shape, over a different alphabet.' },
+      { name: 'Combinations', note: 'Same backtracking family, without the open/close balance constraint.' },
+      { name: 'Remove Invalid Parentheses', note: 'Same balance idea, run in reverse: repair a string instead of building one.' },
+    ],
+    InputForm: GenerateParenthesesInputForm,
+    StateView: StringBacktrackingStateView,
   },
 ];
 

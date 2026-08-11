@@ -14,7 +14,7 @@ public class LetterCombinationsOfPhoneNumberTests
     {
         var steps = _algorithm.Run("23");
 
-        var finalState = (LetterCombinationsState)steps[^1].State;
+        var finalState = (StringBacktrackingState)steps[^1].State;
         finalState.Solutions.Should().BeEquivalentTo(
             new[] { "ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf" },
             options => options.WithStrictOrdering());
@@ -26,7 +26,7 @@ public class LetterCombinationsOfPhoneNumberTests
         var steps = _algorithm.Run("");
 
         steps.Should().HaveCount(1);
-        var finalState = (LetterCombinationsState)steps[^1].State;
+        var finalState = (StringBacktrackingState)steps[^1].State;
         finalState.Solutions.Should().BeEmpty();
     }
 
@@ -39,7 +39,7 @@ public class LetterCombinationsOfPhoneNumberTests
         var steps = _algorithm.Run(digits);
 
         steps.Should().HaveCount(1);
-        var finalState = (LetterCombinationsState)steps[^1].State;
+        var finalState = (StringBacktrackingState)steps[^1].State;
         finalState.Solutions.Should().BeEmpty();
     }
 }

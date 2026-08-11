@@ -1,12 +1,16 @@
-import type { AlgorithmStateViewProps } from '../../types/algorithm';
+import type { AlgorithmStateViewProps } from '../types/algorithm';
 
-/** Mirrors AlgoLens.Core.Models.LetterCombinationsState (camelCase JSON). */
-interface LetterCombinationsState {
+/**
+ * Mirrors AlgoLens.Core.Models.StringBacktrackingState (camelCase JSON). Shared by
+ * every backtracking algorithm whose solutions are strings (Letter Combinations of a
+ * Phone Number, Generate Parentheses) — used directly as their StateView.
+ */
+interface StringBacktrackingState {
   path: string;
   solutions: string[];
 }
 
-function LetterBox({ letter, highlighted }: { letter: string; highlighted: boolean }) {
+function CharBox({ char, highlighted }: { char: string; highlighted: boolean }) {
   return (
     <span
       className={`inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-2 font-mono text-sm uppercase ${
@@ -15,13 +19,13 @@ function LetterBox({ letter, highlighted }: { letter: string; highlighted: boole
           : 'border-gray-300 bg-gray-50 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'
       }`}
     >
-      {letter}
+      {char}
     </span>
   );
 }
 
-export function LetterCombinationsStateView({ step }: AlgorithmStateViewProps) {
-  const state = step.state as LetterCombinationsState;
+export function StringBacktrackingStateView({ step }: AlgorithmStateViewProps) {
+  const state = step.state as StringBacktrackingState;
   const highlighted = new Set(step.highlights);
 
   return (
@@ -32,8 +36,8 @@ export function LetterCombinationsStateView({ step }: AlgorithmStateViewProps) {
           {state.path.length === 0 ? (
             <span className="text-gray-400">empty</span>
           ) : (
-            [...state.path].map((letter, i) => (
-              <LetterBox key={i} letter={letter} highlighted={i === state.path.length - 1 && highlighted.has(letter)} />
+            [...state.path].map((char, i) => (
+              <CharBox key={i} char={char} highlighted={i === state.path.length - 1 && highlighted.has(char)} />
             ))
           )}
         </div>
@@ -49,8 +53,8 @@ export function LetterCombinationsStateView({ step }: AlgorithmStateViewProps) {
           ) : (
             state.solutions.map((solution, i) => (
               <div key={i} className="flex flex-wrap gap-1">
-                {[...solution].map((letter, j) => (
-                  <LetterBox key={j} letter={letter} highlighted={false} />
+                {[...solution].map((char, j) => (
+                  <CharBox key={j} char={char} highlighted={false} />
                 ))}
               </div>
             ))

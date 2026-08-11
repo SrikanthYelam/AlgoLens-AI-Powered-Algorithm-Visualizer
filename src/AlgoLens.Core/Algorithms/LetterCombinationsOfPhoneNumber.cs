@@ -34,14 +34,14 @@ public sealed class LetterCombinationsOfPhoneNumber : IAlgorithmVisualizer<strin
         if (digits.Length == 0)
         {
             StepRecorder.Add(steps, ref stepNumber, "No digits provided; there are no combinations.",
-                new LetterCombinationsState("", []), [], spanLines: 2);
+                new StringBacktrackingState("", []), [], spanLines: 2);
             return steps;
         }
 
         if (digits.Any(d => !DigitToLetters.ContainsKey(d)))
         {
             StepRecorder.Add(steps, ref stepNumber, "Invalid input: digits must be between 2 and 9.",
-                new LetterCombinationsState("", []), [], spanLines: 2);
+                new StringBacktrackingState("", []), [], spanLines: 2);
             return steps;
         }
 
@@ -56,7 +56,7 @@ public sealed class LetterCombinationsOfPhoneNumber : IAlgorithmVisualizer<strin
                 solutions.Add(combination);
                 StepRecorder.Add(steps, ref stepNumber,
                     $"Complete combination found: \"{combination}\".",
-                    new LetterCombinationsState(path.ToString(), solutions.ToList()),
+                    new StringBacktrackingState(path.ToString(), solutions.ToList()),
                     [combination],
                     spanLines: 2);
                 return;
@@ -68,7 +68,7 @@ public sealed class LetterCombinationsOfPhoneNumber : IAlgorithmVisualizer<strin
                 path.Append(letter);
                 StepRecorder.Add(steps, ref stepNumber,
                     $"Choose '{letter}' for digit '{digits[index]}'; path is now \"{path}\".",
-                    new LetterCombinationsState(path.ToString(), solutions.ToList()),
+                    new StringBacktrackingState(path.ToString(), solutions.ToList()),
                     [letter.ToString()],
                     spanLines: 1);
 
@@ -77,7 +77,7 @@ public sealed class LetterCombinationsOfPhoneNumber : IAlgorithmVisualizer<strin
                 path.Remove(path.Length - 1, 1);
                 StepRecorder.Add(steps, ref stepNumber,
                     $"Backtrack: remove '{letter}' from path.",
-                    new LetterCombinationsState(path.ToString(), solutions.ToList()),
+                    new StringBacktrackingState(path.ToString(), solutions.ToList()),
                     [letter.ToString()],
                     spanLines: 1);
             }

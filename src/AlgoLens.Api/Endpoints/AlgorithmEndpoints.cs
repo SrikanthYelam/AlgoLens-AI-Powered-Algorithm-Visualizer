@@ -59,6 +59,11 @@ public static class AlgorithmEndpoints
             app,
             "/api/algorithms/task-scheduler",
             request => new TaskSchedulerInput(request.Tasks.ToCharArray(), request.N));
+
+        MapAlgorithm<GenerateParentheses, GenerateParenthesesRequest, int>(
+            app,
+            "/api/algorithms/generate-parentheses",
+            request => request.N);
     }
 
     private static void MapAlgorithm<TAlgorithm, TRequest, TInput>(

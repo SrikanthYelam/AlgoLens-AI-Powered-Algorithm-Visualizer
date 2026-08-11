@@ -1,22 +1,22 @@
 using System.Text.Json;
 using AlgoLens.Core.Models;
-using Anthropic;
-using Anthropic.Models.Messages;
+using OpenAI.Chat;
 
 namespace AlgoLens.Api.Services;
 
 /// <summary>
-/// Generates per-step explanations via the Claude Messages API, using structured
-/// JSON output so the response reliably parses into one explanation per step.
+/// Generates per-step explanations via the OpenAI Chat Completions API, using structured
+/// JSON output (a strict JSON schema response format) so the response reliably parses
+/// into one explanation per step.
 /// </summary>
-public sealed class ClaudeStepExplanationService : IStepExplanationService
+public sealed class OpenAiStepExplanationService : IStepExplanationService
 {
-    private const string Model = "claude-sonnet-5";
+    private static readonly JsonSerializerOptions DeserializeOptions = new() { PropertyNameCaseInsensitive = true };
 
-    private readonly AnthropicClient _client;
-    private readonly ILogger<ClaudeStepExplanationService> _logger;
+    private readonly ChatClient _client;
+    private readonly ILogger<OpenAiStepExplanationService> _logger;
 
-    public ClaudeStepExplanationService(AnthropicClient client, ILogger<ClaudeStepExplanationService> logger)
+    public OpenAiStepExplanationService(ChatClient client, ILogger<OpenAiStepExplanationService> logger)
     {
         _client = client;
         _logger = logger;
@@ -47,30 +47,28 @@ public sealed class ClaudeStepExplanationService : IStepExplanationService
                 happened and why. Return exactly {steps.Count} explanations, in the same order as the steps.
                 """;
 
-            var response = await _client.Messages.Create(new MessageCreateParams
+            var options = new ChatCompletionOptions
             {
-                Model = Model,
-                MaxTokens = 4096,
-                OutputConfig = new OutputConfig
-                {
-                    Format = new JsonOutputFormat { Schema = BuildExplanationsSchema() },
-                },
-                Messages = [new() { Role = Role.User, Content = prompt }],
-            });
+                MaxOutputTokenCount = 4096,
+                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                    "step_explanations",
+                    BinaryData.FromBytes(BuildExplanationsSchema()),
+                    jsonSchemaIsStrict: true),
+            };
 
-            var text = response.Content
-                .Select(block => block.Value)
-                .OfType<TextBlock>()
-                .Select(block => block.Text)
-                .FirstOrDefault();
+            var response = await _client.CompleteChatAsync([new UserChatMessage(prompt)], options, cancellationToken);
+
+            var text = response.Value.Content
+                .Select(part => part.Text)
+                .FirstOrDefault(t => !string.IsNullOrEmpty(t));
 
             if (text is null)
             {
-                _logger.LogWarning("Claude returned no text content when explaining steps for {AlgorithmId}", algorithmId);
+                _logger.LogWarning("OpenAI returned no text content when explaining steps for {AlgorithmId}", algorithmId);
                 return NullExplanations(steps.Count);
             }
 
-            var explanations = JsonSerializer.Deserialize<ExplanationsPayload>(text)?.Explanations;
+            var explanations = JsonSerializer.Deserialize<ExplanationsPayload>(text, DeserializeOptions)?.Explanations;
             if (explanations is null)
             {
                 _logger.LogWarning("Could not parse explanations JSON for {AlgorithmId}", algorithmId);
@@ -94,20 +92,21 @@ public sealed class ClaudeStepExplanationService : IStepExplanationService
     private static IReadOnlyList<string?> NullExplanations(int count) =>
         Enumerable.Repeat<string?>(null, count).ToList();
 
-    private static Dictionary<string, JsonElement> BuildExplanationsSchema() => new()
-    {
-        ["type"] = JsonSerializer.SerializeToElement("object"),
-        ["properties"] = JsonSerializer.SerializeToElement(new
+    private static byte[] BuildExplanationsSchema() =>
+        JsonSerializer.SerializeToUtf8Bytes(new
         {
-            explanations = new
+            type = "object",
+            properties = new
             {
-                type = "array",
-                items = new { type = "string" },
+                explanations = new
+                {
+                    type = "array",
+                    items = new { type = "string" },
+                },
             },
-        }),
-        ["required"] = JsonSerializer.SerializeToElement(new[] { "explanations" }),
-        ["additionalProperties"] = JsonSerializer.SerializeToElement(false),
-    };
+            required = new[] { "explanations" },
+            additionalProperties = false,
+        });
 
     private sealed record ExplanationsPayload(List<string>? Explanations);
 }
