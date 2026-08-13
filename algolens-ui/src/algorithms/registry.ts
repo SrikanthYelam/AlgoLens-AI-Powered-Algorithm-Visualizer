@@ -19,6 +19,9 @@ import { LetterCombinationsInputForm } from './letterCombinations/LetterCombinat
 import { TaskSchedulerInputForm } from './taskScheduler/TaskSchedulerInputForm';
 import { TaskSchedulerStateView } from './taskScheduler/TaskSchedulerStateView';
 import { GenerateParenthesesInputForm } from './generateParentheses/GenerateParenthesesInputForm';
+import { RemoveInvalidParenthesesInputForm } from './removeInvalidParentheses/RemoveInvalidParenthesesInputForm';
+import { RemoveInvalidParenthesesBfsStateView } from './removeInvalidParentheses/RemoveInvalidParenthesesBfsStateView';
+import { RemoveInvalidParenthesesDfsStateView } from './removeInvalidParentheses/RemoveInvalidParenthesesDfsStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -275,6 +278,48 @@ export const algorithms: AlgorithmDefinition[] = [
     ],
     InputForm: GenerateParenthesesInputForm,
     StateView: StringBacktrackingStateView,
+  },
+  {
+    id: 'remove-invalid-parentheses-bfs',
+    name: 'Remove Invalid Parentheses (BFS)',
+    description: 'Remove the minimum number of parentheses to make a string valid, exploring one fewer character at a time, level by level, using BFS.',
+    category: 'Trees & Graphs',
+    pattern: 'Breadth-First Search over Strings',
+    hints: [
+      "A brute-force check of every possible removal combination is expensive — BFS removes one character at a time, level by level, so the very first level with any valid string is guaranteed to use the minimum number of removals.",
+      "At each level, check every candidate for validity before removing anything else — if any are valid, that's your answer; stop right there without going deeper.",
+      "Only ever remove '(' or ')' characters — letters are never touched — and skip any string you've already generated (a visited set) to avoid redundant work.",
+      "A string is valid the same way you'd check \"Valid Parentheses\": track a running balance, never let it go negative, and end at exactly zero.",
+    ],
+    relatedProblems: [
+      { name: 'Valid Parentheses', note: 'The validity check this search leans on at every level.' },
+      { name: 'Binary Tree Level Order Traversal', note: 'Same level-by-level BFS mechanics, over strings instead of a tree.' },
+      { name: 'Remove Invalid Parentheses (DFS/Backtracking)', note: 'Same problem, solved by computing the removal budget up front instead of searching level by level.' },
+      { name: 'Word Ladder', note: 'Another shortest-transformation search that BFS solves level by level.' },
+    ],
+    InputForm: RemoveInvalidParenthesesInputForm,
+    StateView: RemoveInvalidParenthesesBfsStateView,
+  },
+  {
+    id: 'remove-invalid-parentheses-dfs',
+    name: 'Remove Invalid Parentheses (DFS/Backtracking)',
+    description: 'Remove the minimum number of parentheses to make a string valid, backtracking against a removal budget computed up front.',
+    category: 'Backtracking',
+    pattern: 'Backtracking with a Precomputed Budget',
+    hints: [
+      "First figure out exactly how many '(' and ')' must be removed — one linear scan gives you that number directly, with no search needed.",
+      'Once you know the exact budget, backtrack index by index: for a parenthesis, try both removing it (spending budget) and keeping it.',
+      "Only keep a ')' if there are more '(' than ')' already kept so far — otherwise that branch can never become valid, so it's not worth exploring.",
+      'A leaf only counts as a result if both budgets hit exactly zero — that guarantees every recorded result uses the minimum number of removals.',
+    ],
+    relatedProblems: [
+      { name: 'Valid Parentheses', note: 'The same prefix-balance rule used to prune "keep" branches early.' },
+      { name: 'Generate Parentheses', note: 'Same backtracking shape, generating combinations instead of repairing one.' },
+      { name: 'Remove Invalid Parentheses (BFS)', note: 'Same problem, solved by exploring level by level instead of budgeting up front.' },
+      { name: 'Combination Sum', note: 'Same "search against a shrinking budget" backtracking idea.' },
+    ],
+    InputForm: RemoveInvalidParenthesesInputForm,
+    StateView: RemoveInvalidParenthesesDfsStateView,
   },
 ];
 

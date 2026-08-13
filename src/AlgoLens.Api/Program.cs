@@ -33,6 +33,8 @@ builder.Services.AddScoped<NQueens>();
 builder.Services.AddScoped<LetterCombinationsOfPhoneNumber>();
 builder.Services.AddScoped<TaskSchedulerAlgorithm>();
 builder.Services.AddScoped<GenerateParentheses>();
+builder.Services.AddScoped<RemoveInvalidParenthesesBfs>();
+builder.Services.AddScoped<RemoveInvalidParenthesesDfs>();
 
 var app = builder.Build();
 

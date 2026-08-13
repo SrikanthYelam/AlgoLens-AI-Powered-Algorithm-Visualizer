@@ -64,6 +64,16 @@ public static class AlgorithmEndpoints
             app,
             "/api/algorithms/generate-parentheses",
             request => request.N);
+
+        MapAlgorithm<RemoveInvalidParenthesesBfs, RemoveInvalidParenthesesRequest, string>(
+            app,
+            "/api/algorithms/remove-invalid-parentheses-bfs",
+            request => request.S);
+
+        MapAlgorithm<RemoveInvalidParenthesesDfs, RemoveInvalidParenthesesRequest, string>(
+            app,
+            "/api/algorithms/remove-invalid-parentheses-dfs",
+            request => request.S);
     }
 
     private static void MapAlgorithm<TAlgorithm, TRequest, TInput>(
