@@ -9,10 +9,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 const string FrontendCorsPolicy = "Frontend";
+// Allow frontend origins to be configured via DEV_FRONTEND_ORIGINS (comma-separated) in development.
+// Default to http://localhost:5173 to preserve existing behavior. This prevents CORS failures when Vite
+// auto-selects a different dev port (e.g., 5174).
+var devOriginsEnv = Environment.GetEnvironmentVariable("DEV_FRONTEND_ORIGINS") ?? "http://localhost:5173";
+var devOrigins = devOriginsEnv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(FrontendCorsPolicy, policy =>
-        policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod());
+        policy.WithOrigins(devOrigins).AllowAnyHeader().AllowAnyMethod());
 });
 
 // Reads OPENAI_API_KEY from the environment. Falls back to a placeholder (rather than

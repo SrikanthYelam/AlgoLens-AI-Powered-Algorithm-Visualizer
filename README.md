@@ -59,6 +59,14 @@ Each step gets a plain-English explanation from OpenAI, such as:
 
 ## Long-Term Vision
 
+> Developer note: To ease local development when Vite picks a non-default dev port (e.g., 5174), the API accepts a comma-separated list of allowed dev frontend origins via the DEV_FRONTEND_ORIGINS environment variable. By default this is set to http://localhost:5173. Example:
+>
+> DEV_FRONTEND_ORIGINS=http://localhost:5173,http://localhost:5174
+>
+> This avoids CORS failures when the frontend auto-selects another free port.
+
+## Long-Term Vision
+
 Evolve AlgoLens into an AI-powered interview preparation platform that can:
 
 * Visualize algorithms
