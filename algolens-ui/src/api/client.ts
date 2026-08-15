@@ -35,3 +35,23 @@ export async function getAlgorithmSource(algorithmId: string): Promise<Algorithm
 
   return (await response.json()) as AlgorithmSourceResponse;
 }
+
+/** Regenerates explanations for the provided steps via the API. Returns an array of explanation strings (may contain nulls). */
+export async function regenerateExplanations(
+  algorithmId: string,
+  steps: unknown[],
+): Promise<Array<string | null>> {
+  const response = await fetch(`${API_BASE_URL}/api/algorithms/${algorithmId}/explain`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ steps }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => '');
+    throw new Error(`Explain request for ${algorithmId} failed (${response.status}): ${text}`);
+  }
+
+  const payload = (await response.json()) as { explanations: Array<string | null> };
+  return payload.explanations ?? [];
+}

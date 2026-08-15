@@ -9,9 +9,13 @@ interface StepPlayerProps {
   renderState: (step: Step) => ReactNode;
   /** Renders the algorithm's source code, highlighted for the given step. Optional. */
   renderCode?: (step: Step) => ReactNode;
+  /** Optional callback to regenerate an explanation for a single step. Should return the new explanation or null. */
+  regenerateExplanation?: (index: number) => Promise<string | null>;
+  /** Optional callback invoked when an explanation is regenerated to update parent state. */
+  onUpdateExplanation?: (index: number, explanation: string | null) => void;
 }
 
-export function StepPlayer({ steps, renderState, renderCode }: StepPlayerProps) {
+export function StepPlayer({ steps, renderState, renderCode, regenerateExplanation, onUpdateExplanation }: StepPlayerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState<number>(() => {
@@ -23,6 +27,7 @@ export function StepPlayer({ steps, renderState, renderCode }: StepPlayerProps) 
     }
   });
   const [loop, setLoop] = useState<boolean>(false);
+  const [isRegenerating, setIsRegenerating] = useState<Record<number, boolean>>({});
 
   const lastIndex = steps.length - 1;
   const currentStep = steps[currentIndex];
@@ -179,7 +184,35 @@ export function StepPlayer({ steps, renderState, renderCode }: StepPlayerProps) 
         />
 
         <div className="rounded-md border border-gray-200 p-4 dark:border-gray-700">
-          <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{currentStep.action}</p>
+          <div className="flex items-start justify-between gap-3">
+            <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{currentStep.action}</p>
+
+            <div className="flex flex-col items-end gap-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!regenerateExplanation || !onUpdateExplanation) return;
+                  setIsRegenerating((s) => ({ ...s, [currentIndex]: true }));
+                  try {
+                    const text = await regenerateExplanation(currentIndex);
+                    onUpdateExplanation(currentIndex, text ?? null);
+                  } catch (e) {
+                    // ignore — parent will surface errors if needed
+                    onUpdateExplanation(currentIndex, null);
+                  } finally {
+                    setIsRegenerating((s) => ({ ...s, [currentIndex]: false }));
+                  }
+                }}
+                disabled={!regenerateExplanation}
+                className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium disabled:opacity-40"
+                aria-label="Regenerate explanation"
+              >
+                {isRegenerating[currentIndex] ? 'Regenerating…' : 'Regenerate explanation'}
+              </button>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Step {currentIndex + 1}</span>
+            </div>
+          </div>
+
           <p className="mt-2 text-sm italic text-gray-500 dark:text-gray-400">
             {currentStep.explanation ?? 'No AI explanation available for this step.'}
           </p>
