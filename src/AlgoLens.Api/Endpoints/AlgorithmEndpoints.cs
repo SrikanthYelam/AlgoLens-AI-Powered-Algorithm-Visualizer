@@ -76,6 +76,34 @@ public static class AlgorithmEndpoints
             request => request.S);
     }
 
+    // Explain individual steps after a run. Accepts { steps: StepDto[] } and returns { explanations: string[] }.
+    public static void MapExplainEndpoint(this IEndpointRouteBuilder app)
+    {
+        app.MapPost("/api/algorithms/{algorithmId}/explain", async (
+            string algorithmId,
+            ExplainRequest request,
+            IStepExplanationService explanations,
+            CancellationToken cancellationToken) =>
+        {
+            var algoSteps = request.Steps
+                .Select(s => new AlgorithmStep(
+                    s.StepNumber,
+                    s.Action,
+                    s.State,
+                    s.Highlights,
+                    s.SourceLineStart,
+                    s.SourceLineEnd))
+                .ToList();
+
+            var texts = await explanations.ExplainStepsAsync(algorithmId, algoSteps, cancellationToken);
+            return Results.Ok(new { explanations = texts });
+        })
+        .WithName("ExplainSteps")
+        .WithOpenApi();
+    }
+
+    private sealed record ExplainRequest(IReadOnlyList<StepDto> Steps);
+
     private static void MapAlgorithm<TAlgorithm, TRequest, TInput>(
         IEndpointRouteBuilder app,
         string route,
