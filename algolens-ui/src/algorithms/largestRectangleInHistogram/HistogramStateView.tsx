@@ -47,7 +47,7 @@ export function HistogramStateView({ step }: AlgorithmStateViewProps) {
             state.stack.map((index, i) => (
               <span
                 key={i}
-                className="inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-gray-300 bg-gray-50 px-2 font-mono text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+                className="transition-colors duration-200 inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-gray-300 bg-gray-50 px-2 font-mono text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
               >
                 {index}
               </span>

@@ -24,7 +24,8 @@ function lineProps(
     id: isHighlighted ? highlightId : undefined,
     style: {
       display: 'block',
-      backgroundColor: isHighlighted ? highlightColor : undefined,
+      backgroundColor: isHighlighted ? highlightColor : 'transparent',
+      transition: 'background-color 200ms ease',
     },
   };
 }
@@ -107,7 +108,7 @@ export function CodePanel({ source, highlightStart, highlightEnd }: CodePanelPro
 
       <div
         ref={containerRef}
-        className="max-h-[32rem] overflow-auto rounded-md border border-gray-200 text-sm dark:border-gray-700"
+        className="max-h-[32rem] overflow-auto rounded-lg border border-gray-200 text-sm dark:border-gray-700"
       >
         {inner}
       </div>

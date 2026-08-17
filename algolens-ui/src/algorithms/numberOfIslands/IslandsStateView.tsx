@@ -26,7 +26,7 @@ export function IslandsStateView({ step }: AlgorithmStateViewProps) {
                 return (
                   <span
                     key={c}
-                    className={`flex h-8 w-8 items-center justify-center rounded-sm border text-xs font-mono ${
+                    className={`transition-colors duration-200 flex h-8 w-8 items-center justify-center rounded-sm border text-xs font-mono ${
                       isCurrent
                         ? 'border-indigo-500 bg-indigo-400 text-white'
                         : isVisitedLand

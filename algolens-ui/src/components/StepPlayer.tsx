@@ -87,7 +87,7 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
   }
 
   return (
-    <div className={renderCode ? 'grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start' : undefined}>
+    <div className={renderCode ? 'grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start' : undefined}>
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <button
@@ -104,7 +104,7 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
             type="button"
             onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
             disabled={currentIndex === 0}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium disabled:opacity-40 dark:border-gray-600"
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium transition-colors duration-150 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent dark:border-gray-600 dark:hover:bg-gray-800"
             aria-label={"← Prev"}
           >
             ← Prev
@@ -113,7 +113,7 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
           <button
             type="button"
             onClick={() => setIsPlaying((p) => !p)}
-            className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
+            className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-indigo-500"
             aria-pressed={isPlaying}
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
@@ -124,7 +124,7 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
             type="button"
             onClick={() => setCurrentIndex((i) => Math.min(lastIndex, i + 1))}
             disabled={currentIndex === lastIndex}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium disabled:opacity-40 dark:border-gray-600"
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium transition-colors duration-150 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent dark:border-gray-600 dark:hover:bg-gray-800"
             aria-label={"Next →"}
           >
             Next →
@@ -179,11 +179,14 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
           max={lastIndex}
           value={currentIndex}
           onChange={(e) => setCurrentIndex(Number(e.target.value))}
-          className="w-full"
+          className="w-full accent-indigo-600"
           aria-label="Step position"
         />
 
-        <div className="rounded-md border border-gray-200 p-4 dark:border-gray-700">
+        <div
+          key={currentStep.stepNumber}
+          className="step-fade rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+        >
           <div className="flex items-start justify-between gap-3">
             <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{currentStep.action}</p>
 
@@ -218,7 +221,9 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
           </p>
         </div>
 
-        <div>{renderState(currentStep)}</div>
+        <div key={`state-${currentStep.stepNumber}`} className="step-fade">
+          {renderState(currentStep)}
+        </div>
       </div>
 
       {renderCode && <div>{renderCode(currentStep)}</div>}

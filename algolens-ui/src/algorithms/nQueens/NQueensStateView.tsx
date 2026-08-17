@@ -25,7 +25,7 @@ export function NQueensStateView({ step }: AlgorithmStateViewProps) {
                 return (
                   <span
                     key={col}
-                    className={`flex h-9 w-9 items-center justify-center rounded-sm border text-lg ${
+                    className={`transition-colors duration-200 flex h-9 w-9 items-center justify-center rounded-sm border text-lg ${
                       isCurrent
                         ? 'border-indigo-500 bg-indigo-200 dark:bg-indigo-900/50'
                         : (row + col) % 2 === 0

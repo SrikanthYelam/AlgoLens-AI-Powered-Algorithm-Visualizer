@@ -35,6 +35,12 @@ export interface AlgorithmDefinition {
   category: string;
   /** The named technique this problem is an instance of, e.g. "Monotonic Stack". */
   pattern: string;
+  /** Big-O time complexity, e.g. "O(n log n)". */
+  timeComplexity: string;
+  /** Big-O space complexity, e.g. "O(n)". */
+  spaceComplexity: string;
+  /** 2-3 sentence explanation of where the time/space bounds come from. */
+  complexityNotes: string;
   /** Progressive hints, from vaguest to most specific. */
   hints: string[];
   relatedProblems: RelatedProblem[];
@@ -56,6 +62,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Breadth-first traversal of a binary tree, visiting nodes level by level.',
     category: 'Trees & Graphs',
     pattern: 'Breadth-First Search (BFS) with a Queue',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Every node is enqueued and dequeued exactly once, so the traversal touches each node a constant number of times. The queue holds at most one full level at a time, which is O(n) in the worst case (a wide tree).',
     hints: [
       'Process the tree level by level, not depth by depth — a queue naturally gives you that order.',
       "Capture the queue's size at the start of each level before dequeuing anything; that's how many nodes belong to the current level.",
@@ -76,6 +85,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Find the maximum value in every fixed-size window of an array using a monotonic deque.',
     category: 'Arrays & Stacks',
     pattern: 'Sliding Window + Monotonic Deque',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(k)',
+    complexityNotes: 'Each index enters and leaves the deque at most once, so despite the nested-looking loops the total work is linear, not quadratic. The deque never holds more than `windowSize` (k) indices at a time.',
     hints: [
       'A brute-force scan of every window is O(n·k) — think about what information from the previous window you can reuse.',
       'Keep a deque of indices whose values are in decreasing order; the max is always at the front.',
@@ -97,6 +109,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Find the largest rectangular area in a histogram using a monotonic stack.',
     category: 'Arrays & Stacks',
     pattern: 'Monotonic Stack',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Each bar is pushed and popped from the stack at most once, so the two nested-looking loops still do only O(n) total work between them. The stack can hold all n indices in the worst case, when heights are strictly increasing.',
     hints: [
       'For each bar, you want to know how far it can extend left and right before hitting a shorter bar.',
       'Keep a stack of bar indices with increasing height; when the next bar is shorter, that\'s your signal to start popping.',
@@ -118,6 +133,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Count connected land regions in a grid using BFS flood fill.',
     category: 'Trees & Graphs',
     pattern: 'Grid Traversal (BFS/DFS Flood Fill)',
+    timeComplexity: 'O(rows · cols)',
+    spaceComplexity: 'O(rows · cols)',
+    complexityNotes: 'The visited marking guarantees every cell is processed a constant number of times across the whole scan-plus-flood-fill. The BFS queue and visited grid can both grow to the size of the entire grid, for one giant island.',
     hints: [
       "Scan every cell; whenever you find unvisited land, that's the start of a brand-new island.",
       'From that cell, flood-fill outward (BFS or DFS) to every connected land cell, marking each visited as you go.',
@@ -139,6 +157,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Generate every ordering of a set of distinct numbers using backtracking.',
     category: 'Backtracking',
     pattern: 'Backtracking (Choose / Explore / Unchoose)',
+    timeComplexity: 'O(n · n!)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: "There are n! permutations, and building/copying each one into the results costs O(n), giving O(n · n!) overall. Extra space beyond the output is just the recursion depth and the `used[]`/path arrays, O(n).",
     hints: [
       "At each position, try every number that hasn't been used yet.",
       'A `used[]` array is cheaper than scanning the current path to check availability.',
@@ -160,6 +181,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Choose every k-sized group from 1..n using backtracking.',
     category: 'Backtracking',
     pattern: 'Backtracking with a Start Index',
+    timeComplexity: 'O(k · C(n, k))',
+    spaceComplexity: 'O(k)',
+    complexityNotes: 'There are C(n, k) combinations of length k, so producing all of them costs O(k · C(n, k)). Recursion depth and the path array are O(k).',
     hints: [
       "Unlike permutations, order doesn't matter — so only ever consider candidates ≥ the last one you picked.",
       'Pass a `start` index into the recursion and loop from there to n, which naturally prevents duplicates and reuse.',
@@ -181,6 +205,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Generate the power set of a list of numbers using backtracking.',
     category: 'Backtracking',
     pattern: 'Backtracking / Power Set Enumeration',
+    timeComplexity: 'O(n · 2ⁿ)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'There are 2ⁿ subsets, and copying each one into the results can cost up to O(n), giving O(n · 2ⁿ) overall. Recursion depth and the path array are O(n).',
     hints: [
       "There's no fixed stopping size — every node in the recursion tree, including the very first empty path, is a valid subset.",
       'Record the current path immediately on entering the function, before the loop that extends it.',
@@ -201,6 +228,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Place N non-attacking queens on an N×N board using backtracking with constraint checking.',
     category: 'Backtracking',
     pattern: 'Backtracking with Constraint Checking',
+    timeComplexity: 'O(n!)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Row-by-row placement with column/diagonal pruning explores far fewer boards than the naive nⁿ, bounded by O(n!) in the standard analysis. The board is stored as one column per row, so extra space is O(n).',
     hints: [
       'Place one queen per row — that alone guarantees no two queens ever share a row.',
       'Before placing a queen at (row, col), check it against every queen already placed: same column, or equal row/column distance for a diagonal hit.',
@@ -222,6 +252,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Generate every letter combination a digit string could represent on a phone keypad, using backtracking.',
     category: 'Backtracking',
     pattern: 'Backtracking / Cartesian Product',
+    timeComplexity: 'O(4ⁿ · n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Each digit maps to up to 4 letters, so there are up to 4ⁿ combinations of length n, each costing O(n) to build. Recursion depth and the path buffer are O(n).',
     hints: [
       "Each digit maps to a fixed set of letters — you're really building the Cartesian product of those sets, one digit at a time.",
       'Recurse on the digit index: at each level, try every letter for the current digit before moving to the next digit.',
@@ -243,6 +276,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Find the minimum CPU time to run every task, given a per-task cooldown, using a greedy tick-by-tick simulation.',
     category: 'Heaps & Greedy',
     pattern: 'Greedy Simulation (Max-Heap by Remaining Count)',
+    timeComplexity: 'O(T · k)',
+    spaceComplexity: 'O(k)',
+    complexityNotes: 'T is the total number of CPU ticks in the schedule and k is the number of distinct task types; each tick scans the task counts to make its greedy choice. Only per-task counts and cooldown timestamps need to be stored, so extra space is O(k).',
     hints: [
       "At each CPU tick, run the ready task (not on cooldown) with the highest remaining count — that's the greedy choice that spreads out the most frequent task as early as possible.",
       'A max-heap keyed by remaining count is the efficient way to always find that task, though a linear scan works fine for small inputs.',
@@ -264,6 +300,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Generate every well-formed combination of n pairs of parentheses using backtracking.',
     category: 'Backtracking',
     pattern: 'Backtracking with a Balance Constraint',
+    timeComplexity: 'O(4ⁿ / √n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: "The pruning (never building an invalid prefix) means the search visits exactly the valid combinations, whose count is the nth Catalan number — asymptotically O(4ⁿ / √n). Extra space beyond the output is just the recursion depth, O(n).",
     hints: [
       "At each position you have up to two choices: add '(' or add ')' — the trick is knowing when each is legal.",
       "You can always add '(' as long as you haven't used all n of them yet.",
@@ -285,6 +324,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Remove the minimum number of parentheses to make a string valid, exploring one fewer character at a time, level by level, using BFS.',
     category: 'Trees & Graphs',
     pattern: 'Breadth-First Search over Strings',
+    timeComplexity: 'O(2ⁿ)',
+    spaceComplexity: 'O(2ⁿ)',
+    complexityNotes: 'Each level can roughly double the number of candidate strings (removing any one of up to n parens), so in the worst case BFS explores an exponential number of strings before hitting a valid level. The visited set and current level both grow with that same count.',
     hints: [
       "A brute-force check of every possible removal combination is expensive — BFS removes one character at a time, level by level, so the very first level with any valid string is guaranteed to use the minimum number of removals.",
       "At each level, check every candidate for validity before removing anything else — if any are valid, that's your answer; stop right there without going deeper.",
@@ -306,6 +348,9 @@ export const algorithms: AlgorithmDefinition[] = [
     description: 'Remove the minimum number of parentheses to make a string valid, backtracking against a removal budget computed up front.',
     category: 'Backtracking',
     pattern: 'Backtracking with a Precomputed Budget',
+    timeComplexity: 'O(2ⁿ)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Each parenthesis offers up to two branches (remove or keep), so the search tree is exponential in the worst case, though the removal-budget pruning cuts it down significantly in practice. Only the recursion stack and one shared path buffer need extra space, O(n).',
     hints: [
       "First figure out exactly how many '(' and ')' must be removed — one linear scan gives you that number directly, with no search needed.",
       'Once you know the exact budget, backtrack index by index: for a parenthesis, try both removing it (spending budget) and keeping it.',

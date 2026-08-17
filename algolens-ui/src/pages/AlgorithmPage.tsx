@@ -31,9 +31,9 @@ export function AlgorithmPage() {
 
   if (!algorithm) {
     return (
-      <div className="mx-auto max-w-2xl p-8">
+      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-8">
         <p className="text-gray-700 dark:text-gray-300">Unknown algorithm: {id}</p>
-        <Link to="/" className="text-indigo-600 hover:underline">
+        <Link to="/" className="text-indigo-600 hover:underline dark:text-indigo-400">
           ← Back home
         </Link>
       </div>
@@ -60,18 +60,35 @@ export function AlgorithmPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-8">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-8">
       <div>
-        <Link to="/" className="text-sm text-indigo-600 hover:underline">
-          ← Back
+        <Link
+          to="/"
+          className="group inline-flex items-center gap-1 text-sm font-medium text-indigo-600 dark:text-indigo-400"
+        >
+          <span className="transition-transform group-hover:-translate-x-0.5">←</span>
+          <span className="group-hover:underline">Back</span>
         </Link>
-        <h1 className="mt-1 text-2xl font-semibold text-gray-900 dark:text-gray-100">{algorithm.name}</h1>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-gray-100">
+            {algorithm.name}
+          </h1>
+          <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+            {algorithm.category}
+          </span>
+        </div>
         <p className="mt-1 text-gray-500 dark:text-gray-400">{algorithm.description}</p>
       </div>
 
-      <algorithm.InputForm onSubmit={handleSubmit} isLoading={isLoading} />
+      <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+        <algorithm.InputForm onSubmit={handleSubmit} isLoading={isLoading} />
+      </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+          {error}
+        </p>
+      )}
 
       {fullSteps && fullSteps.length > STEP_DISPLAY_CAP && (
         <div className="rounded-md border-l-4 border-yellow-400 bg-yellow-50 p-3 text-sm dark:bg-yellow-900/30">
@@ -133,6 +150,9 @@ export function AlgorithmPage() {
 
       <AlgorithmInfoPanel
         pattern={algorithm.pattern}
+        timeComplexity={algorithm.timeComplexity}
+        spaceComplexity={algorithm.spaceComplexity}
+        complexityNotes={algorithm.complexityNotes}
         hints={algorithm.hints}
         relatedProblems={algorithm.relatedProblems}
       />

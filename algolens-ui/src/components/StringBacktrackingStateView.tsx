@@ -13,7 +13,7 @@ interface StringBacktrackingState {
 function CharBox({ char, highlighted }: { char: string; highlighted: boolean }) {
   return (
     <span
-      className={`inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-2 font-mono text-sm uppercase ${
+      className={`transition-colors duration-200 inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-2 font-mono text-sm uppercase ${
         highlighted
           ? 'border-indigo-500 bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200'
           : 'border-gray-300 bg-gray-50 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'

@@ -11,7 +11,7 @@ interface RemoveInvalidParenthesesDfsState {
 
 function CharBox({ char }: { char: string }) {
   return (
-    <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-gray-300 bg-gray-50 px-2 font-mono text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
+    <span className="transition-colors duration-200 inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-gray-300 bg-gray-50 px-2 font-mono text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
       {char}
     </span>
   );
@@ -19,7 +19,7 @@ function CharBox({ char }: { char: string }) {
 
 function StringChip({ value }: { value: string }) {
   return (
-    <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-gray-300 bg-gray-50 px-2 font-mono text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
+    <span className="transition-colors duration-200 inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-gray-300 bg-gray-50 px-2 font-mono text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
       {value.length === 0 ? '(empty)' : value}
     </span>
   );
