@@ -27,6 +27,7 @@ const string OpenAiModel = "gpt-4o-mini";
 var openAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? "missing-openai-api-key";
 builder.Services.AddSingleton(new ChatClient(OpenAiModel, openAiApiKey));
 builder.Services.AddScoped<IStepExplanationService, OpenAiStepExplanationService>();
+builder.Services.AddScoped<IUserSolutionJudge, RoslynUserSolutionJudge>();
 builder.Services.AddScoped<BinaryTreeLevelOrderTraversal>();
 builder.Services.AddScoped<SlidingWindowMaximum>();
 builder.Services.AddScoped<LargestRectangleInHistogram>();
@@ -40,6 +41,9 @@ builder.Services.AddScoped<TaskSchedulerAlgorithm>();
 builder.Services.AddScoped<GenerateParentheses>();
 builder.Services.AddScoped<RemoveInvalidParenthesesBfs>();
 builder.Services.AddScoped<RemoveInvalidParenthesesDfs>();
+builder.Services.AddScoped<LongestCommonSubsequence>();
+builder.Services.AddScoped<LongestPalindromicSubsequence>();
+builder.Services.AddScoped<LongestIncreasingSubsequence>();
 
 var app = builder.Build();
 
@@ -59,5 +63,6 @@ app.MapGet("/", () => app.Environment.IsDevelopment()
     .ExcludeFromDescription();
 
 app.MapAlgorithmEndpoints();
+app.MapExplainEndpoint();
 
 app.Run();

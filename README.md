@@ -23,12 +23,21 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Generate Parentheses (backtracking)
 * Remove Invalid Parentheses (BFS) — minimal-removal search, level by level
 * Remove Invalid Parentheses (DFS/Backtracking) — same problem, solved with a precomputed removal budget
+* Longest Common Subsequence (2D dynamic programming, with traceback to recover the actual subsequence)
+* Longest Palindromic Subsequence (interval dynamic programming)
+* Longest Increasing Subsequence (2D dynamic programming over index + previous-index)
 
 ### AI Explanations
 
 Each step gets a plain-English explanation from OpenAI, such as:
 
 > "-1 and -3 were removed from the deque because 5 is larger and will remain relevant for future windows."
+
+### Try Your Own Solution
+
+Below each algorithm's animation is a "Try your own solution" panel: paste a C# implementation of the documented `Solve(...)` method (matching that problem's real LeetCode signature), run it against the same input you just ran above, and compare your output to the canonical answer — with an "exact match" and an "matches ignoring order" indicator, since problems like Permutations don't care what order their solutions come back in. The code runs server-side via in-process Roslyn scripting (`Microsoft.CodeAnalysis.CSharp.Scripting`) with a soft timeout, no external services involved.
+
+**This is not sandboxed** — see Pending Enhancements below before relying on it for anything beyond local, trusted use.
 
 ## Technical Stack
 
@@ -37,6 +46,7 @@ Each step gets a plain-English explanation from OpenAI, such as:
 * ASP.NET Core Web API (.NET 8; minimal APIs, no controllers)
 * xUnit + FluentAssertions
 * Official `OpenAI` NuGet package for the OpenAI integration
+* `Microsoft.CodeAnalysis.CSharp.Scripting` (Roslyn) for running user-submitted solutions in "Try Your Own Solution"
 
 ### Frontend
 
@@ -57,9 +67,9 @@ Each step gets a plain-English explanation from OpenAI, such as:
 /algolens-ui        — React + TypeScript + Vite frontend
 ```
 
-## Long-Term Vision
+## Development Notes
 
-> Developer note: To ease local development when Vite picks a non-default dev port (e.g., 5174), the API accepts a comma-separated list of allowed dev frontend origins via the DEV_FRONTEND_ORIGINS environment variable. By default this is set to http://localhost:5173. Example:
+> To ease local development when Vite picks a non-default dev port (e.g., 5174), the API accepts a comma-separated list of allowed dev frontend origins via the DEV_FRONTEND_ORIGINS environment variable. By default this is set to http://localhost:5173. Example:
 >
 > DEV_FRONTEND_ORIGINS=http://localhost:5173,http://localhost:5174
 >
@@ -77,10 +87,11 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 
 ## Pending Enhancements
 
+* Real sandboxing for user-submitted code in "Try Your Own Solution" (currently in-process Roslyn scripting with a soft timeout — a tight infinite loop still consumes a thread until process restart, and there's no process/container isolation or resource limits — not safe beyond local, trusted use; needs a separate killable process or a container with CPU/memory limits before any public deployment)
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 13
+* Additional algorithms beyond the current 16
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

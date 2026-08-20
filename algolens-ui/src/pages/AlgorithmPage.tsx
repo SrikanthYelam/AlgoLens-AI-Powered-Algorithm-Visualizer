@@ -16,6 +16,7 @@ export function AlgorithmPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sourceCode, setSourceCode] = useState<string | null>(null);
+  const [lastInput, setLastInput] = useState<unknown | null>(null);
 
   // Step cap for large runs — default to 500 displayed steps, with an option to show the full run.
   const STEP_DISPLAY_CAP = 500;
@@ -24,6 +25,7 @@ export function AlgorithmPage() {
       return;
     }
     setSourceCode(null);
+    setLastInput(null);
     getAlgorithmSource(algorithm.id)
       .then((response) => setSourceCode(response.source))
       .catch(() => setSourceCode(null));
@@ -43,6 +45,7 @@ export function AlgorithmPage() {
   async function handleSubmit(body: unknown) {
     setIsLoading(true);
     setError(null);
+    setLastInput(body);
     try {
       const response = await runAlgorithm(algorithm!.id, body);
       setFullSteps(response.steps);
@@ -114,6 +117,9 @@ export function AlgorithmPage() {
                     source={sourceCode}
                     highlightStart={step.sourceLineStart}
                     highlightEnd={step.sourceLineEnd}
+                    algorithmId={algorithm.id}
+                    judgeSignature={algorithm.judgeSignature}
+                    input={lastInput}
                   />
                 )
               : undefined

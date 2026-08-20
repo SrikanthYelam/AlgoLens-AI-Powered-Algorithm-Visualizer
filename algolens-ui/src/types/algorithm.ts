@@ -21,6 +21,17 @@ export interface AlgorithmSourceResponse {
   source: string;
 }
 
+/** Mirrors AlgoLens.Api.Contracts.SubmitSolutionResponse (camelCase JSON). */
+export interface SubmitSolutionResponse {
+  compileSucceeded: boolean;
+  compileErrors: string[];
+  ranSuccessfully: boolean;
+  runtimeError: string | null;
+  yourAnswer: unknown;
+  expectedAnswer: unknown;
+  elapsedMilliseconds: number;
+}
+
 /** Props every algorithm's input form component must accept. */
 export interface AlgorithmInputFormProps {
   onSubmit: (body: unknown) => void;

@@ -1,4 +1,4 @@
-import type { AlgorithmRunResponse, AlgorithmSourceResponse } from '../types/algorithm';
+import type { AlgorithmRunResponse, AlgorithmSourceResponse, SubmitSolutionResponse } from '../types/algorithm';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5119';
 
@@ -54,4 +54,27 @@ export async function regenerateExplanations(
 
   const payload = (await response.json()) as { explanations: Array<string | null> };
   return payload.explanations ?? [];
+}
+
+/**
+ * Runs a user-submitted C# solution against the same input shape the algorithm's own
+ * InputForm produces, and returns both the user's answer and the canonical one for comparison.
+ */
+export async function submitSolution(
+  algorithmId: string,
+  input: unknown,
+  code: string,
+): Promise<SubmitSolutionResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/algorithms/${algorithmId}/submit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ input, code }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => '');
+    throw new Error(`Submit request for ${algorithmId} failed (${response.status}): ${text}`);
+  }
+
+  return (await response.json()) as SubmitSolutionResponse;
 }

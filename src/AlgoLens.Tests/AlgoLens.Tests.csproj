@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AlgoLens.Core\AlgoLens.Core.csproj" />
+    <ProjectReference Include="..\AlgoLens.Api\AlgoLens.Api.csproj" />
   </ItemGroup>
 
 </Project>

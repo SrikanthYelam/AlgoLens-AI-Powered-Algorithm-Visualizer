@@ -22,6 +22,12 @@ import { GenerateParenthesesInputForm } from './generateParentheses/GeneratePare
 import { RemoveInvalidParenthesesInputForm } from './removeInvalidParentheses/RemoveInvalidParenthesesInputForm';
 import { RemoveInvalidParenthesesBfsStateView } from './removeInvalidParentheses/RemoveInvalidParenthesesBfsStateView';
 import { RemoveInvalidParenthesesDfsStateView } from './removeInvalidParentheses/RemoveInvalidParenthesesDfsStateView';
+import { LongestCommonSubsequenceInputForm } from './longestCommonSubsequence/LongestCommonSubsequenceInputForm';
+import { LongestCommonSubsequenceStateView } from './longestCommonSubsequence/LongestCommonSubsequenceStateView';
+import { LongestPalindromicSubsequenceInputForm } from './longestPalindromicSubsequence/LongestPalindromicSubsequenceInputForm';
+import { LongestPalindromicSubsequenceStateView } from './longestPalindromicSubsequence/LongestPalindromicSubsequenceStateView';
+import { LongestIncreasingSubsequenceInputForm } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceInputForm';
+import { LongestIncreasingSubsequenceStateView } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -44,6 +50,8 @@ export interface AlgorithmDefinition {
   /** Progressive hints, from vaguest to most specific. */
   hints: string[];
   relatedProblems: RelatedProblem[];
+  /** The exact C# method signature "Try Your Own Solution" expects the user to implement. */
+  judgeSignature: string;
   InputForm: ComponentType<AlgorithmInputFormProps>;
   StateView: ComponentType<AlgorithmStateViewProps>;
 }
@@ -76,6 +84,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Average of Levels in Binary Tree', note: 'Same level batching, aggregate instead of collect.' },
       { name: 'Minimum Depth of Binary Tree', note: 'BFS terminates early at the first leaf — same queue mechanics.' },
     ],
+    judgeSignature: 'public static IList<IList<int>> Solve(TreeNode? root)',
     InputForm: TreeInputForm,
     StateView: TreeStateView,
   },
@@ -100,6 +109,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Daily Temperatures', note: 'Sibling monotonic-structure problem — a stack instead of a deque.' },
       { name: 'Min Stack', note: 'Same idea of maintaining running extremes in O(1) amortized.' },
     ],
+    judgeSignature: 'public static int[] Solve(int[] nums, int k)',
     InputForm: SlidingWindowInputForm,
     StateView: SlidingWindowStateView,
   },
@@ -124,6 +134,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Next Greater Element I', note: 'The monotonic stack pattern in its simplest form.' },
       { name: 'Daily Temperatures', note: 'Another direct application of a monotonic stack.' },
     ],
+    judgeSignature: 'public static int Solve(int[] heights)',
     InputForm: HistogramInputForm,
     StateView: HistogramStateView,
   },
@@ -148,6 +159,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Number of Provinces', note: 'Same connected-components idea over an adjacency matrix instead of a grid.' },
       { name: 'Pacific Atlantic Water Flow', note: 'Two flood fills from opposite borders, then intersect.' },
     ],
+    judgeSignature: 'public static int Solve(int[][] grid)',
     InputForm: IslandsInputForm,
     StateView: IslandsStateView,
   },
@@ -172,6 +184,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Combinations', note: "Same choose/unchoose shape, but order doesn't matter and no reuse." },
       { name: 'Letter Combinations of a Phone Number', note: 'Same recursion shape over a different alphabet per position.' },
     ],
+    judgeSignature: 'public static IList<IList<int>> Solve(int[] nums)',
     InputForm: PermutationsInputForm,
     StateView: BacktrackingStateView,
   },
@@ -196,6 +209,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Subsets', note: 'Nearly identical — records every node visited, not just size-k ones.' },
       { name: 'Permutations', note: "Same backtracking, but order matters and there's no start index." },
     ],
+    judgeSignature: 'public static IList<IList<int>> Solve(int n, int k)',
     InputForm: CombinationsInputForm,
     StateView: BacktrackingStateView,
   },
@@ -219,6 +233,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Combination Sum', note: 'Same tree shape, filtered by a target sum instead of collected wholesale.' },
       { name: 'Permutations', note: "Same backtracking family, but order matters and there's no start index." },
     ],
+    judgeSignature: 'public static IList<IList<int>> Solve(int[] nums)',
     InputForm: SubsetsInputForm,
     StateView: BacktrackingStateView,
   },
@@ -243,6 +258,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Valid Sudoku', note: 'The constraint-checking logic on its own, without the search.' },
       { name: 'Combinations', note: 'A simpler backtracking search to warm up on the same choose/unchoose mechanics.' },
     ],
+    judgeSignature: 'public static int Solve(int n) // return the number of distinct solutions',
     InputForm: NQueensInputForm,
     StateView: NQueensStateView,
   },
@@ -267,6 +283,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Combinations', note: 'Simpler warm-up on the same choose/explore/unchoose mechanics.' },
       { name: 'Restore IP Addresses', note: 'Same per-position choice recursion, constrained by valid octet rules.' },
     ],
+    judgeSignature: 'public static IList<string> Solve(string digits)',
     InputForm: LetterCombinationsInputForm,
     StateView: StringBacktrackingStateView,
   },
@@ -291,6 +308,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Top K Frequent Elements', note: 'Same frequency-counting + max-heap building block, without the cooldown.' },
       { name: 'Meeting Rooms II', note: 'Different problem, same family: greedy scheduling driven by a heap.' },
     ],
+    judgeSignature: 'public static int Solve(char[] tasks, int n)',
     InputForm: TaskSchedulerInputForm,
     StateView: TaskSchedulerStateView,
   },
@@ -315,6 +333,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Combinations', note: 'Same backtracking family, without the open/close balance constraint.' },
       { name: 'Remove Invalid Parentheses', note: 'Same balance idea, run in reverse: repair a string instead of building one.' },
     ],
+    judgeSignature: 'public static IList<string> Solve(int n)',
     InputForm: GenerateParenthesesInputForm,
     StateView: StringBacktrackingStateView,
   },
@@ -339,6 +358,7 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Remove Invalid Parentheses (DFS/Backtracking)', note: 'Same problem, solved by computing the removal budget up front instead of searching level by level.' },
       { name: 'Word Ladder', note: 'Another shortest-transformation search that BFS solves level by level.' },
     ],
+    judgeSignature: 'public static IList<string> Solve(string s)',
     InputForm: RemoveInvalidParenthesesInputForm,
     StateView: RemoveInvalidParenthesesBfsStateView,
   },
@@ -363,8 +383,84 @@ export const algorithms: AlgorithmDefinition[] = [
       { name: 'Remove Invalid Parentheses (BFS)', note: 'Same problem, solved by exploring level by level instead of budgeting up front.' },
       { name: 'Combination Sum', note: 'Same "search against a shrinking budget" backtracking idea.' },
     ],
+    judgeSignature: 'public static IList<string> Solve(string s)',
     InputForm: RemoveInvalidParenthesesInputForm,
     StateView: RemoveInvalidParenthesesDfsStateView,
+  },
+  {
+    id: 'longest-common-subsequence',
+    name: 'Longest Common Subsequence',
+    description: 'Find the length (and an actual instance) of the longest subsequence common to two strings, using 2D dynamic programming.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — 2D Table (Two Sequences)',
+    timeComplexity: 'O(m · n)',
+    spaceComplexity: 'O(m · n)',
+    complexityNotes: "Every cell of the (m+1)×(n+1) table is computed once in O(1), so filling it costs O(m · n). The traceback that recovers the actual subsequence afterward is only O(m + n), so it doesn't change the overall bound.",
+    hints: [
+      'Define dp[i][j] as the length of the LCS between the first i characters of text1 and the first j characters of text2.',
+      'If the characters at positions i-1 and j-1 match, they can both be part of the subsequence — extend the LCS found without either of them: dp[i][j] = dp[i-1][j-1] + 1.',
+      "If they don't match, the LCS can't use both characters at once — take whichever choice is better: dp[i][j] = max(dp[i-1][j], dp[i][j-1]).",
+      "To recover the actual subsequence (not just its length), trace back through the table from the bottom-right corner, following whichever transition produced each cell's value.",
+    ],
+    relatedProblems: [
+      { name: 'Edit Distance', note: 'Same 2D table shape, with insert/delete/replace transitions instead of match/skip.' },
+      { name: 'Shortest Common Supersequence', note: 'Builds directly on the LCS table to merge two strings.' },
+      { name: 'Longest Palindromic Subsequence', note: 'Equivalent to the LCS of a string and its own reverse.' },
+      { name: 'Delete Operation for Two Strings', note: 'The number of deletions needed is directly derived from the LCS length.' },
+    ],
+    judgeSignature: 'public static int Solve(string text1, string text2)',
+    InputForm: LongestCommonSubsequenceInputForm,
+    StateView: LongestCommonSubsequenceStateView,
+  },
+  {
+    id: 'longest-palindromic-subsequence',
+    name: 'Longest Palindromic Subsequence',
+    description: 'Find the length of the longest subsequence of a string that reads the same forwards and backwards, using interval dynamic programming.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — Interval DP (2D Table by Length)',
+    timeComplexity: 'O(n²)',
+    spaceComplexity: 'O(n²)',
+    complexityNotes: 'There are O(n²) substrings s[i..j], and each cell is computed once in O(1) from shorter, already-known intervals, giving O(n²) time and the same for the table itself.',
+    hints: [
+      "A single character is always a palindrome of length 1 — that's your base case.",
+      'Think in terms of substrings s[i..j]: if the two ends match, they can bracket whatever palindrome is inside them: dp[i][j] = dp[i+1][j-1] + 2.',
+      "If the ends don't match, the best palindrome in s[i..j] is the better of dropping one end or the other: dp[i][j] = max(dp[i+1][j], dp[i][j-1]).",
+      'Fill the table by increasing substring length, since dp[i][j] always depends on strictly shorter, more-inside substrings being already known.',
+    ],
+    relatedProblems: [
+      { name: 'Longest Palindromic Substring', note: 'The contiguous version of the same idea — no subsequence gaps allowed.' },
+      { name: 'Palindrome Partitioning', note: 'Same palindrome-structure insight, applied to splitting a string.' },
+      { name: 'Longest Common Subsequence', note: 'LPS of s is exactly the LCS of s and its reverse.' },
+      { name: 'Valid Palindrome', note: 'The basic two-pointer check this whole family of problems builds on.' },
+    ],
+    judgeSignature: 'public static int Solve(string s)',
+    InputForm: LongestPalindromicSubsequenceInputForm,
+    StateView: LongestPalindromicSubsequenceStateView,
+  },
+  {
+    id: 'longest-increasing-subsequence',
+    name: 'Longest Increasing Subsequence',
+    description: 'Find the length of the longest strictly increasing subsequence of an array, using 2D dynamic programming.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — 2D Table (Index + Previous Index)',
+    timeComplexity: 'O(n²)',
+    spaceComplexity: 'O(n²)',
+    complexityNotes: "There are (n+1)×(n+1) (index, previous-index) states, and each is computed once in O(1), giving O(n²) total work. The table itself holds all of those states, so space is also O(n²) — more than the O(n) a 1D dp[] array would need, but this formulation generalizes directly to other 'choose subject to a constraint from what you picked before' problems, which the flat dp[] version doesn't as cleanly.",
+    hints: [
+      'Define dp[i][j] as the length of the best increasing subsequence achievable from index i onward, given the previously included element sits at index j-1 (j = 0 means nothing picked yet).',
+      "At index i you have two choices: skip nums[i] (dp[i+1][j]), or — only if it's allowed to follow the previous pick — take it and continue with dp[i+1][i+1], since nums[i] becomes the new 'previous'.",
+      'nums[i] is allowed to extend the subsequence exactly when there is no previous pick yet (j == 0) or nums[i] is greater than the previous pick, nums[j-1].',
+      'Fill the table bottom-up over i from n down to 0, since row i depends on the already-known row i+1. The answer is dp[0][0]: the best subsequence over the whole array with nothing picked yet.',
+    ],
+    relatedProblems: [
+      { name: 'Longest Common Subsequence', note: 'A different route to the same answer: LIS of nums equals the LCS of nums and its sorted, de-duplicated version.' },
+      { name: 'Number of Longest Increasing Subsequence', note: 'Same index/previous-index state space, paired with a count tracking how many ways reach each length.' },
+      { name: 'Russian Doll Envelopes', note: 'The same chain-building idea, extended to two dimensions.' },
+      { name: 'Maximum Length of Pair Chain', note: 'Same DP shape over pairs ordered by a different rule.' },
+    ],
+    judgeSignature: 'public static int Solve(int[] nums)',
+    InputForm: LongestIncreasingSubsequenceInputForm,
+    StateView: LongestIncreasingSubsequenceStateView,
   },
 ];
 
