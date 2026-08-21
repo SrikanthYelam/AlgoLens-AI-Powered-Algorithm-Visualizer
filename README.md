@@ -26,6 +26,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Longest Common Subsequence (2D dynamic programming, with traceback to recover the actual subsequence)
 * Longest Palindromic Subsequence (interval dynamic programming)
 * Longest Increasing Subsequence (2D dynamic programming over index + previous-index)
+* Edit Distance (2D dynamic programming over two sequences)
 
 ### AI Explanations
 
@@ -35,7 +36,7 @@ Each step gets a plain-English explanation from OpenAI, such as:
 
 ### Try Your Own Solution
 
-Below each algorithm's animation is a "Try your own solution" panel: paste a C# implementation of the documented `Solve(...)` method (matching that problem's real LeetCode signature), run it against the same input you just ran above, and compare your output to the canonical answer — with an "exact match" and an "matches ignoring order" indicator, since problems like Permutations don't care what order their solutions come back in. The code runs server-side via in-process Roslyn scripting (`Microsoft.CodeAnalysis.CSharp.Scripting`) with a soft timeout, no external services involved.
+The code panel next to each algorithm's animation has a "Try your own solution" button that swaps the read-only source view for an editor: paste a C# implementation of the documented `Solve(...)` method (matching that problem's real LeetCode signature), run it against the same input you just ran above, and compare your output to the canonical answer — with an "exact match" and a "matches ignoring order" indicator, since problems like Permutations don't care what order their solutions come back in. The code runs server-side via in-process Roslyn scripting (`Microsoft.CodeAnalysis.CSharp.Scripting`) with a soft timeout, no external services involved.
 
 **This is not sandboxed** — see Pending Enhancements below before relying on it for anything beyond local, trusted use.
 
@@ -91,7 +92,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 16
+* Additional algorithms beyond the current 17
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

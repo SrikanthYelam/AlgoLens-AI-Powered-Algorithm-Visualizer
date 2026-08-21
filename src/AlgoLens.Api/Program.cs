@@ -44,6 +44,7 @@ builder.Services.AddScoped<RemoveInvalidParenthesesDfs>();
 builder.Services.AddScoped<LongestCommonSubsequence>();
 builder.Services.AddScoped<LongestPalindromicSubsequence>();
 builder.Services.AddScoped<LongestIncreasingSubsequence>();
+builder.Services.AddScoped<EditDistance>();
 
 var app = builder.Build();
 

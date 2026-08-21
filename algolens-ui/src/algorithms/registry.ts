@@ -28,6 +28,8 @@ import { LongestPalindromicSubsequenceInputForm } from './longestPalindromicSubs
 import { LongestPalindromicSubsequenceStateView } from './longestPalindromicSubsequence/LongestPalindromicSubsequenceStateView';
 import { LongestIncreasingSubsequenceInputForm } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceInputForm';
 import { LongestIncreasingSubsequenceStateView } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceStateView';
+import { EditDistanceInputForm } from './editDistance/EditDistanceInputForm';
+import { EditDistanceStateView } from './editDistance/EditDistanceStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -461,6 +463,31 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(int[] nums)',
     InputForm: LongestIncreasingSubsequenceInputForm,
     StateView: LongestIncreasingSubsequenceStateView,
+  },
+  {
+    id: 'edit-distance',
+    name: 'Edit Distance',
+    description: 'Find the minimum number of insert/delete/replace operations to turn one word into another, using 2D dynamic programming.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — 2D Table (Two Sequences)',
+    timeComplexity: 'O(m · n)',
+    spaceComplexity: 'O(m · n)',
+    complexityNotes: 'Every cell of the (m+1)×(n+1) table is computed once in O(1) — either inherited from the diagonal on a match, or 1 + the cheapest of three neighbors on a mismatch — so filling it costs O(m · n). The whole table is kept, so space is O(m · n) too.',
+    hints: [
+      'Define dp[i][j] as the minimum number of operations to turn the first i characters of word1 into the first j characters of word2.',
+      'Turning a prefix of word1 into an empty word2 only takes deletions, and turning an empty word1 into a prefix of word2 only takes insertions — that gives you dp[i][0] = i and dp[0][j] = j as base cases.',
+      "If the characters at positions i-1 and j-1 already match, no operation is needed there: dp[i][j] = dp[i-1][j-1].",
+      "Otherwise you must spend one operation — replace, delete, or insert — plus whichever of the three neighboring subproblems is cheapest: dp[i][j] = 1 + min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]).",
+    ],
+    relatedProblems: [
+      { name: 'Longest Common Subsequence', note: 'Same 2D two-string table shape, with match/skip transitions instead of match/replace/delete/insert.' },
+      { name: 'One Edit Distance', note: 'The yes/no version of this same question, answerable without a full table.' },
+      { name: 'Delete Operation for Two Strings', note: 'Edit Distance restricted to only the delete operation — derivable directly from the LCS length.' },
+      { name: 'Longest Palindromic Subsequence', note: 'A different 2D table shape (interval DP) over a single string instead of two.' },
+    ],
+    judgeSignature: 'public static int Solve(string word1, string word2)',
+    InputForm: EditDistanceInputForm,
+    StateView: EditDistanceStateView,
   },
 ];
 
