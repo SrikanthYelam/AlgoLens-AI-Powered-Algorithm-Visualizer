@@ -174,6 +174,15 @@ public static class AlgorithmEndpoints
                 input => new Dictionary<string, object?> { ["word1"] = input.Word1, ["word2"] = input.Word2 },
                 "Solve((string)Args[\"word1\"], (string)Args[\"word2\"])",
                 steps => ((EditDistanceState)steps[^1].State).Table[^1][^1]));
+
+        MapAlgorithm<LongestPalindromicSubstring, LongestPalindromicSubstringRequest, string>(
+            app,
+            "/api/algorithms/longest-palindromic-substring",
+            request => request.S,
+            judge: new JudgeConfig<string>(
+                s => new Dictionary<string, object?> { ["s"] = s },
+                "Solve((string)Args[\"s\"])",
+                steps => ((LongestPalindromicSubstringState)steps[^1].State).LongestSoFar));
     }
 
     // Explain individual steps after a run. Accepts { steps: StepDto[] } and returns { explanations: string[] }.

@@ -30,6 +30,8 @@ import { LongestIncreasingSubsequenceInputForm } from './longestIncreasingSubseq
 import { LongestIncreasingSubsequenceStateView } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceStateView';
 import { EditDistanceInputForm } from './editDistance/EditDistanceInputForm';
 import { EditDistanceStateView } from './editDistance/EditDistanceStateView';
+import { LongestPalindromicSubstringInputForm } from './longestPalindromicSubstring/LongestPalindromicSubstringInputForm';
+import { LongestPalindromicSubstringStateView } from './longestPalindromicSubstring/LongestPalindromicSubstringStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -488,6 +490,31 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(string word1, string word2)',
     InputForm: EditDistanceInputForm,
     StateView: EditDistanceStateView,
+  },
+  {
+    id: 'longest-palindromic-substring',
+    name: 'Longest Palindromic Substring',
+    description: 'Find the longest contiguous substring of a string that reads the same forwards and backwards, using interval dynamic programming.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — Interval DP (2D Table by Length)',
+    timeComplexity: 'O(n²)',
+    spaceComplexity: 'O(n²)',
+    complexityNotes: 'There are O(n²) substrings s[i..j], and each cell is computed once in O(1) from a strictly shorter, already-known interval, giving O(n²) time and the same for the table itself.',
+    hints: [
+      "A single character is always a palindrome — that's your base case.",
+      "A two-character span s[i..i+1] is a palindrome exactly when the two characters match — there's no shorter interval to check yet, so handle this length separately.",
+      'For longer spans, s[i..j] is a palindrome exactly when its two ends match and the interval inside them, s[i+1..j-1], is also a palindrome.',
+      'Fill the table by increasing substring length, and keep track of the longest palindrome found so far as you go — the answer is already known the moment the fill finishes.',
+    ],
+    relatedProblems: [
+      { name: 'Longest Palindromic Subsequence', note: 'The non-contiguous version of the same idea — gaps are allowed, so it reduces to a length instead of an exact span.' },
+      { name: 'Palindrome Partitioning', note: 'Reuses the same is-palindrome table to split a string into palindromic pieces.' },
+      { name: 'Valid Palindrome', note: 'The basic two-pointer check this whole family of problems builds on.' },
+      { name: 'Longest Common Subsequence', note: 'A different 2D table shape over two strings instead of intervals of one.' },
+    ],
+    judgeSignature: 'public static string Solve(string s)',
+    InputForm: LongestPalindromicSubstringInputForm,
+    StateView: LongestPalindromicSubstringStateView,
   },
 ];
 

@@ -27,6 +27,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Longest Palindromic Subsequence (interval dynamic programming)
 * Longest Increasing Subsequence (2D dynamic programming over index + previous-index)
 * Edit Distance (2D dynamic programming over two sequences)
+* Longest Palindromic Substring (interval dynamic programming)
 
 ### AI Explanations
 
@@ -92,7 +93,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 17
+* Additional algorithms beyond the current 18
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

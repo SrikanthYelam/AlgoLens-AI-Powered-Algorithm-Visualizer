@@ -5,8 +5,10 @@ namespace AlgoLens.Core.Algorithms;
 /// <summary>
 /// Longest Palindromic Subsequence via interval dynamic programming: dp[i][j] holds the
 /// length of the longest palindromic subsequence within s[i..j] (inclusive). Every single
-/// character is a base-case palindrome of length 1. The table is then filled by increasing
-/// substring length, since dp[i][j] depends on the strictly shorter interval dp[i+1][j-1].
+/// character is a base-case palindrome of length 1. The table is then filled bottom-up by
+/// row — i from n-2 down to 0, j from i+1 up to n-1 — since dp[i][j] depends on dp[i+1][j-1],
+/// dp[i+1][j], and dp[i][j-1], all of which sit in an already-filled row or an earlier column
+/// of the current row.
 /// </summary>
 public sealed class LongestPalindromicSubsequence : IAlgorithmVisualizer<string>
 {
@@ -44,11 +46,10 @@ public sealed class LongestPalindromicSubsequence : IAlgorithmVisualizer<string>
                 spanLines: 1);
         }
 
-        for (var len = 2; len <= n; len++)
+        for (var i = n - 2; i >= 0; i--)
         {
-            for (var i = 0; i <= n - len; i++)
+            for (var j = i + 1; j < n; j++)
             {
-                var j = i + len - 1;
                 string action;
                 if (s[i] == s[j])
                 {
@@ -64,7 +65,7 @@ public sealed class LongestPalindromicSubsequence : IAlgorithmVisualizer<string>
                 StepRecorder.Add(steps, ref stepNumber, action,
                     new LongestPalindromicSubsequenceState(s, Snapshot(), i, j),
                     [$"{i},{j}"],
-                    spanLines: 13);
+                    spanLines: 12);
             }
         }
 

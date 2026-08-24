@@ -58,7 +58,18 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
     // Tailwind's `dark:` media-query classes), so scroll whichever one matches the OS theme.
     const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const id = isDark ? 'code-panel-highlight-dark' : 'code-panel-highlight-light';
-    containerRef.current?.querySelector(`#${id}`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    const container = containerRef.current;
+    const target = container?.querySelector(`#${id}`);
+    if (!container || !target) {
+      return;
+    }
+    // Deliberately not element.scrollIntoView(): it walks every scrollable ancestor, including
+    // the page itself, so it would yank the whole page down on each step. Scrolling only this
+    // container's scrollTop keeps the jump contained to the code panel.
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const offset = targetRect.top - containerRect.top - container.clientHeight / 2 + targetRect.height / 2;
+    container.scrollTo({ top: container.scrollTop + offset, behavior: 'smooth' });
   }, [displayStart, displayEnd]);
 
   async function copyToClipboard() {
