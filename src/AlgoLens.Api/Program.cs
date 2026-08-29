@@ -46,6 +46,7 @@ builder.Services.AddScoped<LongestPalindromicSubsequence>();
 builder.Services.AddScoped<LongestIncreasingSubsequence>();
 builder.Services.AddScoped<EditDistance>();
 builder.Services.AddScoped<LongestPalindromicSubstring>();
+builder.Services.AddScoped<MeetingRoomsII>();
 
 var app = builder.Build();
 

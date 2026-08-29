@@ -32,6 +32,8 @@ import { EditDistanceInputForm } from './editDistance/EditDistanceInputForm';
 import { EditDistanceStateView } from './editDistance/EditDistanceStateView';
 import { LongestPalindromicSubstringInputForm } from './longestPalindromicSubstring/LongestPalindromicSubstringInputForm';
 import { LongestPalindromicSubstringStateView } from './longestPalindromicSubstring/LongestPalindromicSubstringStateView';
+import { MeetingRoomsInputForm } from './meetingRoomsII/MeetingRoomsInputForm';
+import { MeetingRoomsStateView } from './meetingRoomsII/MeetingRoomsStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -515,6 +517,31 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static string Solve(string s)',
     InputForm: LongestPalindromicSubstringInputForm,
     StateView: LongestPalindromicSubstringStateView,
+  },
+  {
+    id: 'meeting-rooms-ii',
+    name: 'Meeting Rooms II',
+    description: 'Find the minimum number of conference rooms required to hold every meeting, using a greedy min-heap of end times.',
+    category: 'Heaps & Greedy',
+    pattern: 'Greedy + Min-Heap (Sweep by Start Time)',
+    timeComplexity: 'O(n log n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Sorting the n meetings costs O(n log n). Each meeting does at most one heap pop and one heap push, each O(log n), for O(n log n) total. The heap holds at most n end times at once, so space is O(n).',
+    hints: [
+      'Sort the meetings by start time first — you need to consider them in the order they begin.',
+      'Keep a min-heap of the end times of rooms currently in use, so the earliest-ending room is always on top.',
+      "Before assigning a new room to a meeting, check whether the earliest-ending room has already freed up (its end time is <= this meeting's start) — if so, reuse it instead of adding a new room.",
+      "The answer isn't the final heap size — it's the largest the heap ever grows to during the whole sweep.",
+    ],
+    relatedProblems: [
+      { name: 'Meeting Rooms', note: 'The yes/no version of this same question — can one person attend every meeting — answerable without a heap.' },
+      { name: 'Task Scheduler', note: 'Different problem, same family: greedy scheduling driven by a heap.' },
+      { name: 'Merge Intervals', note: 'Same sort-by-start-time foundation, merging overlaps instead of counting concurrency.' },
+      { name: 'Car Pooling', note: 'The same "concurrent capacity over time" idea, applied to a passenger count instead of a room count.' },
+    ],
+    judgeSignature: 'public static int Solve(int[][] intervals)',
+    InputForm: MeetingRoomsInputForm,
+    StateView: MeetingRoomsStateView,
   },
 ];
 

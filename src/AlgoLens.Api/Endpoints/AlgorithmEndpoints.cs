@@ -183,6 +183,15 @@ public static class AlgorithmEndpoints
                 s => new Dictionary<string, object?> { ["s"] = s },
                 "Solve((string)Args[\"s\"])",
                 steps => ((LongestPalindromicSubstringState)steps[^1].State).LongestSoFar));
+
+        MapAlgorithm<MeetingRoomsII, MeetingRoomsRequest, int[][]>(
+            app,
+            "/api/algorithms/meeting-rooms-ii",
+            request => request.Intervals,
+            judge: new JudgeConfig<int[][]>(
+                intervals => new Dictionary<string, object?> { ["intervals"] = intervals },
+                "Solve((int[][])Args[\"intervals\"])",
+                steps => ((MeetingRoomsState)steps[^1].State).MaxRooms));
     }
 
     // Explain individual steps after a run. Accepts { steps: StepDto[] } and returns { explanations: string[] }.
