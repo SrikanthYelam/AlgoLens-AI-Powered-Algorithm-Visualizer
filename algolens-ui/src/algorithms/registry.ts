@@ -42,6 +42,8 @@ import { LowestCommonAncestorStateView } from './lowestCommonAncestor/LowestComm
 import { ConstructBinaryTreeInputForm } from './constructBinaryTree/ConstructBinaryTreeInputForm';
 import { ConstructBinaryTreeStateView } from './constructBinaryTree/ConstructBinaryTreeStateView';
 import { RecoverBstStateView } from './recoverBst/RecoverBstStateView';
+import { SortedListToBstInputForm } from './sortedListToBst/SortedListToBstInputForm';
+import { SortedListToBstStateView } from './sortedListToBst/SortedListToBstStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -675,6 +677,31 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static void Solve(TreeNode? root)',
     InputForm: TreeInputForm,
     StateView: RecoverBstStateView,
+  },
+  {
+    id: 'sorted-list-to-bst',
+    name: 'Convert Sorted List to Binary Search Tree',
+    description: 'Convert a sorted singly linked list into a height-balanced BST, using the slow/fast pointer technique to find each segment\'s middle.',
+    category: 'Trees & Graphs',
+    pattern: 'Slow/Fast Pointers + Recursive Divide-and-Conquer',
+    timeComplexity: 'O(n log n)',
+    spaceComplexity: 'O(log n)',
+    complexityNotes: "Finding a segment's middle with slow/fast pointers costs time proportional to that segment's length, and this happens once per node created across O(log n) levels of recursion, giving O(n log n) total. Only the recursion stack needs extra space, O(log n) for a balanced tree — the list itself is split in place, not copied.",
+    hints: [
+      "A height-balanced BST needs its middle element as the root, but a singly linked list has no random access to jump straight to it.",
+      'Walk two pointers from the start of the segment: slow moves one node at a time, fast moves two. When fast falls off the end, slow is sitting exactly on the middle.',
+      "Keep a trailing pointer one step behind slow, so you can sever its `next` link right there — that splits the list into an independent left segment and right segment with no copying.",
+      "Recurse on the left segment for the left subtree and the right segment (starting just past the middle) for the right subtree.",
+    ],
+    relatedProblems: [
+      { name: 'Convert Sorted Array to Binary Search Tree', note: 'The same idea with O(1) random access instead of a linked list, so no slow/fast pointer walk is needed.' },
+      { name: 'Construct Binary Tree from Preorder and Inorder Traversal', note: 'Another "rebuild a balanced-ish tree from a linear representation" problem, solved with index ranges instead.' },
+      { name: 'Linked List Cycle', note: 'The same slow/fast pointer technique, used to detect a cycle instead of finding a middle.' },
+      { name: 'Middle of the Linked List', note: 'The slow/fast pointer middle-finding trick on its own, without the tree-building on top.' },
+    ],
+    judgeSignature: 'public static TreeNode? Solve(ListNode? head)',
+    InputForm: SortedListToBstInputForm,
+    StateView: SortedListToBstStateView,
   },
 ];
 

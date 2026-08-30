@@ -246,6 +246,15 @@ public static class AlgorithmEndpoints
                 root => new Dictionary<string, object?> { ["root"] = root },
                 "Solve((TreeNode?)Args[\"root\"]);\nArgs[\"root\"]",
                 steps => ((RecoverBstState)steps[^1].State).Root));
+
+        MapAlgorithm<SortedListToBst, SortedListToBstRequest, IReadOnlyList<int>>(
+            app,
+            "/api/algorithms/sorted-list-to-bst",
+            request => request.Values,
+            judge: new JudgeConfig<IReadOnlyList<int>>(
+                values => new Dictionary<string, object?> { ["head"] = ListNode.FromArray(values) },
+                "Solve((ListNode?)Args[\"head\"])",
+                steps => ((SortedListToBstState)steps[^1].State).Root));
     }
 
     private static TreeNode? FindNode(TreeNode? root, int val)

@@ -52,6 +52,7 @@ builder.Services.AddScoped<KthSmallestInBst>();
 builder.Services.AddScoped<LowestCommonAncestor>();
 builder.Services.AddScoped<ConstructBinaryTree>();
 builder.Services.AddScoped<RecoverBst>();
+builder.Services.AddScoped<SortedListToBst>();
 
 var app = builder.Build();
 

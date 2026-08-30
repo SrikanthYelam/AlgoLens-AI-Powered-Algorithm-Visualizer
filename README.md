@@ -34,6 +34,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Lowest Common Ancestor of a Binary Tree (recursive post-order search)
 * Construct Binary Tree from Preorder and Inorder Traversal (recursive divide-and-conquer)
 * Recover Binary Search Tree (inorder traversal with swap detection)
+* Convert Sorted List to Binary Search Tree (slow/fast pointers + recursive divide-and-conquer)
 
 ### AI Explanations
 
@@ -99,7 +100,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 24
+* Additional algorithms beyond the current 25
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 
