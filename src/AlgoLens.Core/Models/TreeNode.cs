@@ -2,7 +2,9 @@ namespace AlgoLens.Core.Models;
 
 public sealed class TreeNode
 {
-    public required int Val { get; init; }
+    // `set`, not `init`: Recover Binary Search Tree fixes a corrupted BST by swapping two
+    // nodes' values in place, so this needs to stay mutable after construction.
+    public required int Val { get; set; }
     public TreeNode? Left { get; set; }
     public TreeNode? Right { get; set; }
 
@@ -41,5 +43,41 @@ public sealed class TreeNode
         }
 
         return root;
+    }
+
+    /// <summary>
+    /// Converts a tree back into a LeetCode-style level-order array (trailing nulls trimmed,
+    /// mirroring the canonical form <see cref="FromLevelOrderArray"/> accepts as input) — used
+    /// by every tree algorithm's step state so the frontend can render the actual tree shape.
+    /// </summary>
+    public static IReadOnlyList<int?> ToLevelOrderArray(TreeNode? root)
+    {
+        if (root is null)
+        {
+            return [];
+        }
+
+        var result = new List<int?>();
+        var queue = new Queue<TreeNode?>();
+        queue.Enqueue(root);
+
+        while (queue.Count > 0)
+        {
+            var node = queue.Dequeue();
+            result.Add(node?.Val);
+
+            if (node is not null)
+            {
+                queue.Enqueue(node.Left);
+                queue.Enqueue(node.Right);
+            }
+        }
+
+        while (result.Count > 0 && result[^1] is null)
+        {
+            result.RemoveAt(result.Count - 1);
+        }
+
+        return result;
     }
 }

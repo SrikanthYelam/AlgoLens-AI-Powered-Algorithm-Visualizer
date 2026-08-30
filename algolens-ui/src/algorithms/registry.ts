@@ -34,6 +34,14 @@ import { LongestPalindromicSubstringInputForm } from './longestPalindromicSubstr
 import { LongestPalindromicSubstringStateView } from './longestPalindromicSubstring/LongestPalindromicSubstringStateView';
 import { MeetingRoomsInputForm } from './meetingRoomsII/MeetingRoomsInputForm';
 import { MeetingRoomsStateView } from './meetingRoomsII/MeetingRoomsStateView';
+import { ValidateBstStateView } from './validateBst/ValidateBstStateView';
+import { KthSmallestInputForm } from './kthSmallestInBst/KthSmallestInputForm';
+import { KthSmallestStateView } from './kthSmallestInBst/KthSmallestStateView';
+import { LowestCommonAncestorInputForm } from './lowestCommonAncestor/LowestCommonAncestorInputForm';
+import { LowestCommonAncestorStateView } from './lowestCommonAncestor/LowestCommonAncestorStateView';
+import { ConstructBinaryTreeInputForm } from './constructBinaryTree/ConstructBinaryTreeInputForm';
+import { ConstructBinaryTreeStateView } from './constructBinaryTree/ConstructBinaryTreeStateView';
+import { RecoverBstStateView } from './recoverBst/RecoverBstStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -542,6 +550,131 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(int[][] intervals)',
     InputForm: MeetingRoomsInputForm,
     StateView: MeetingRoomsStateView,
+  },
+  {
+    id: 'validate-binary-search-tree',
+    name: 'Validate Binary Search Tree',
+    description: "Check whether a binary tree satisfies the BST property, using bounds-passing DFS.",
+    category: 'Trees & Graphs',
+    pattern: 'Recursive DFS with Bounds Propagation',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(h)',
+    complexityNotes: 'Every node is visited at most once, giving O(n) time. The extra space is just the recursion stack, bounded by the tree\'s height h (O(log n) for a balanced tree, O(n) for a completely skewed one).',
+    hints: [
+      "Checking only a node's immediate children isn't enough — a node deep in the left subtree could still violate the value of a grandparent far above it.",
+      'Pass down an allowed (lower, upper) range as you recurse; a node must fall strictly inside it.',
+      "A left child inherits its parent's lower bound but gets the parent's own value as its new upper bound — the mirror image for a right child.",
+      'Use a wide type (like long) for the bounds, or a tree containing int.MinValue/int.MaxValue could break a naive comparison.',
+    ],
+    relatedProblems: [
+      { name: 'Kth Smallest Element in a BST', note: 'Same BST structure, a different technique: inorder traversal instead of bounds-checking.' },
+      { name: 'Recover Binary Search Tree', note: 'Same "is this a valid BST" question, but fixing two swapped values instead of just detecting them.' },
+      { name: 'Binary Tree Level Order Traversal', note: 'Same tree, breadth-first instead of the depth-first bounds check here.' },
+      { name: 'Lowest Common Ancestor of a Binary Search Tree', note: 'The BST-specific shortcut version of the general tree LCA also in this app.' },
+    ],
+    judgeSignature: 'public static bool Solve(TreeNode? root)',
+    InputForm: TreeInputForm,
+    StateView: ValidateBstStateView,
+  },
+  {
+    id: 'kth-smallest-in-bst',
+    name: 'Kth Smallest Element in a BST',
+    description: 'Find the kth smallest value in a binary search tree, using an iterative inorder traversal.',
+    category: 'Trees & Graphs',
+    pattern: 'Iterative Inorder Traversal (Stack)',
+    timeComplexity: 'O(h + k)',
+    spaceComplexity: 'O(h)',
+    complexityNotes: "Descending to the leftmost node costs O(h); after that, each of the k pops does O(1) amortized work (plus at most another O(h) descent into a right subtree), so the walk stops after O(h + k) total work rather than visiting the whole tree. The explicit stack holds at most one root-to-leaf path's worth of nodes, O(h).",
+    hints: [
+      "An inorder traversal of a BST (left, node, right) visits every node in ascending sorted order — nothing needs to be sorted separately.",
+      'Simulate the recursion yourself with an explicit stack: push every left descendant first, then pop, "visit", and move to the popped node\'s right subtree.',
+      "Keep a running count of how many nodes have been visited; the answer is whichever node makes that count reach k.",
+      "Stop as soon as it's found — there's no need to keep traversing the rest of the tree.",
+    ],
+    relatedProblems: [
+      { name: 'Validate Binary Search Tree', note: 'Same BST, a different technique: bounds-checking instead of traversal.' },
+      { name: 'Binary Search Tree Iterator', note: 'Packages this exact same stack-based inorder walk into a reusable next()/hasNext() object.' },
+      { name: 'Lowest Common Ancestor of a Binary Search Tree', note: 'Another BST-property-driven shortcut, this time for ancestor search instead of ranking.' },
+      { name: 'Two Sum IV - Input is a BST', note: 'Same inorder-gives-sorted-order idea, applied to a two-pointer search.' },
+    ],
+    judgeSignature: 'public static int Solve(TreeNode? root, int k)',
+    InputForm: KthSmallestInputForm,
+    StateView: KthSmallestStateView,
+  },
+  {
+    id: 'lowest-common-ancestor',
+    name: 'Lowest Common Ancestor of a Binary Tree',
+    description: 'Find the lowest node that has two given nodes as descendants, using recursive post-order search.',
+    category: 'Trees & Graphs',
+    pattern: 'Recursive Post-Order Search',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(h)',
+    complexityNotes: "Every node is visited at most once in the worst case, giving O(n) time. The recursion depth — and therefore the extra space used — is bounded by the tree's height h.",
+    hints: [
+      "This is the general binary tree version — there's no left-vs-right value comparison to rely on the way a BST would allow.",
+      'Recurse to the bottom first: a call should return the target it found in its own subtree (p, q, or null), not decide anything about ancestry itself.',
+      "A node is the answer exactly when its left and right calls report back two different non-null targets — that's the point where p and q's paths split.",
+      "If only one side reports something, just pass that result further up unchanged — the real answer might still be higher in the tree.",
+    ],
+    relatedProblems: [
+      { name: 'Lowest Common Ancestor of a Binary Search Tree', note: 'The easier version: BST ordering tells you which way to go without searching both subtrees.' },
+      { name: 'Validate Binary Search Tree', note: 'Same tree, a different bounds-vs-search technique.' },
+      { name: 'Binary Tree Maximum Path Sum', note: 'Same "gather information from both children before deciding at this node" recursion shape.' },
+      { name: 'Diameter of Binary Tree', note: 'Another post-order recursion where the answer can be decided at any node, not just the root.' },
+    ],
+    judgeSignature: 'public static TreeNode? Solve(TreeNode? root, TreeNode? p, TreeNode? q)',
+    InputForm: LowestCommonAncestorInputForm,
+    StateView: LowestCommonAncestorStateView,
+  },
+  {
+    id: 'construct-binary-tree',
+    name: 'Construct Binary Tree from Preorder and Inorder Traversal',
+    description: 'Rebuild a binary tree from its preorder and inorder traversal arrays, using recursive divide-and-conquer.',
+    category: 'Trees & Graphs',
+    pattern: 'Recursive Divide-and-Conquer',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: "Each node is created exactly once, and a precomputed value→index dictionary makes finding a root's split point in the inorder array O(1) instead of an O(n) scan — without it the whole algorithm would degrade to O(n²). Extra space is that dictionary plus the recursion stack, both O(n).",
+    hints: [
+      "preorder always lists a subtree's root before either of its children — the next unused preorder value is always the root of whatever is currently being built.",
+      "Find that root's value in the inorder array: everything to its left is the entire left subtree, everything to its right is the entire right subtree.",
+      'Precompute a value→index lookup for the inorder array first, so finding that split point is O(1) instead of scanning — otherwise the whole algorithm degrades to O(n²).',
+      'Build the left subtree before the right one, using the shrinking inorder range each recursive call operates on.',
+    ],
+    relatedProblems: [
+      { name: 'Construct Binary Tree from Inorder and Postorder Traversal', note: 'Same divide-and-conquer idea, reading the root from the end of postorder instead of the start of preorder.' },
+      { name: 'Binary Tree Level Order Traversal', note: 'The reverse direction in spirit: this rebuilds a tree from traversals, that one produces a traversal from a tree.' },
+      { name: 'Validate Binary Search Tree', note: "A different tree-shape problem worth comparing this one's construction logic against." },
+      { name: 'Serialize and Deserialize Binary Tree', note: 'Another "rebuild a tree from a flat representation" problem, solved differently.' },
+    ],
+    judgeSignature: 'public static TreeNode? Solve(int[] preorder, int[] inorder)',
+    InputForm: ConstructBinaryTreeInputForm,
+    StateView: ConstructBinaryTreeStateView,
+  },
+  {
+    id: 'recover-binary-search-tree',
+    name: 'Recover Binary Search Tree',
+    description: 'Fix a BST where exactly two nodes were swapped by mistake, using inorder traversal to find the two misplaced values.',
+    category: 'Trees & Graphs',
+    pattern: 'Recursive Inorder Traversal (Swap Detection)',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(h)',
+    complexityNotes: "Every node is visited exactly once, giving O(n) time. The extra space is just the recursion stack, bounded by the tree's height h.",
+    hints: [
+      "A valid BST's inorder sequence is strictly increasing — two swapped values break that in one or two places.",
+      'Track the previously visited node as you walk the tree in sorted order; whenever it turns out larger than the current node, that\'s a violation.',
+      "The first violation's earlier node is always the first misplaced value; whichever node ends the *most recent* violation is always the second — for adjacent swaps that's the same single violation.",
+      "Once both are identified, just swap their values — the tree's shape never needs to change.",
+    ],
+    relatedProblems: [
+      { name: 'Validate Binary Search Tree', note: 'Same "is this a valid BST" question, but only detecting the problem instead of fixing it.' },
+      { name: 'Kth Smallest Element in a BST', note: 'Same inorder-traversal technique, used for ranking instead of violation detection.' },
+      { name: 'Lowest Common Ancestor of a Binary Search Tree', note: 'Another BST-property-driven shortcut in this app.' },
+      { name: 'Binary Tree Level Order Traversal', note: 'Same tree, a completely different (breadth-first) traversal order.' },
+    ],
+    judgeSignature: 'public static void Solve(TreeNode? root)',
+    InputForm: TreeInputForm,
+    StateView: RecoverBstStateView,
   },
 ];
 

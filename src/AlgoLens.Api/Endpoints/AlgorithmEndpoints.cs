@@ -192,6 +192,75 @@ public static class AlgorithmEndpoints
                 intervals => new Dictionary<string, object?> { ["intervals"] = intervals },
                 "Solve((int[][])Args[\"intervals\"])",
                 steps => ((MeetingRoomsState)steps[^1].State).MaxRooms));
+
+        MapAlgorithm<ValidateBst, TraversalRequest, TreeNode?>(
+            app,
+            "/api/algorithms/validate-binary-search-tree",
+            request => TreeNode.FromLevelOrderArray(request.Values),
+            judge: new JudgeConfig<TreeNode?>(
+                root => new Dictionary<string, object?> { ["root"] = root },
+                "Solve((TreeNode?)Args[\"root\"])",
+                steps => ((ValidateBstState)steps[^1].State).IsValidSoFar));
+
+        MapAlgorithm<KthSmallestInBst, KthSmallestRequest, KthSmallestInput>(
+            app,
+            "/api/algorithms/kth-smallest-in-bst",
+            request => new KthSmallestInput(TreeNode.FromLevelOrderArray(request.Values), request.K),
+            judge: new JudgeConfig<KthSmallestInput>(
+                input => new Dictionary<string, object?> { ["root"] = input.Root, ["k"] = input.K },
+                "Solve((TreeNode?)Args[\"root\"], (int)Args[\"k\"])",
+                steps => ((KthSmallestState)steps[^1].State).Answer));
+
+        MapAlgorithm<LowestCommonAncestor, LowestCommonAncestorRequest, LowestCommonAncestorInput>(
+            app,
+            "/api/algorithms/lowest-common-ancestor",
+            request => new LowestCommonAncestorInput(TreeNode.FromLevelOrderArray(request.Values), request.P, request.Q),
+            judge: new JudgeConfig<LowestCommonAncestorInput>(
+                input => new Dictionary<string, object?>
+                {
+                    ["root"] = input.Root,
+                    ["p"] = FindNode(input.Root, input.P),
+                    ["q"] = FindNode(input.Root, input.Q),
+                },
+                "Solve((TreeNode?)Args[\"root\"], (TreeNode?)Args[\"p\"], (TreeNode?)Args[\"q\"])",
+                steps => ((LowestCommonAncestorState)steps[^1].State).AncestorNode));
+
+        MapAlgorithm<ConstructBinaryTree, ConstructBinaryTreeRequest, ConstructBinaryTreeInput>(
+            app,
+            "/api/algorithms/construct-binary-tree",
+            request => new ConstructBinaryTreeInput(request.Preorder, request.Inorder),
+            judge: new JudgeConfig<ConstructBinaryTreeInput>(
+                input => new Dictionary<string, object?>
+                {
+                    ["preorder"] = input.Preorder.ToArray(),
+                    ["inorder"] = input.Inorder.ToArray(),
+                },
+                "Solve((int[])Args[\"preorder\"], (int[])Args[\"inorder\"])",
+                steps => ((ConstructBinaryTreeState)steps[^1].State).Root));
+
+        MapAlgorithm<RecoverBst, TraversalRequest, TreeNode?>(
+            app,
+            "/api/algorithms/recover-binary-search-tree",
+            request => TreeNode.FromLevelOrderArray(request.Values),
+            judge: new JudgeConfig<TreeNode?>(
+                root => new Dictionary<string, object?> { ["root"] = root },
+                "Solve((TreeNode?)Args[\"root\"]);\nArgs[\"root\"]",
+                steps => ((RecoverBstState)steps[^1].State).Root));
+    }
+
+    private static TreeNode? FindNode(TreeNode? root, int val)
+    {
+        if (root is null)
+        {
+            return null;
+        }
+
+        if (root.Val == val)
+        {
+            return root;
+        }
+
+        return FindNode(root.Left, val) ?? FindNode(root.Right, val);
     }
 
     // Explain individual steps after a run. Accepts { steps: StepDto[] } and returns { explanations: string[] }.
@@ -280,10 +349,13 @@ public static class AlgorithmEndpoints
                 IUserSolutionJudge judgeService,
                 CancellationToken cancellationToken) =>
             {
-                var input = toAlgorithmInput(request.Input);
-                var canonicalSteps = algorithm.Run(input);
+                var canonicalSteps = algorithm.Run(toAlgorithmInput(request.Input));
                 var expected = judge.ExtractExpectedAnswer(canonicalSteps);
-                var args = judge.BuildArgs(input);
+
+                // Parsed independently from the canonical run above, not shared with it: an
+                // algorithm that mutates its input in place (e.g. Recover Binary Search Tree)
+                // would otherwise hand the judged script an already-fixed tree.
+                var args = judge.BuildArgs(toAlgorithmInput(request.Input));
 
                 var result = await judgeService.RunAsync(
                     request.Code, judge.InvocationExpression, args, TimeSpan.FromSeconds(5), cancellationToken);
