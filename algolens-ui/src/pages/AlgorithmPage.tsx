@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAlgorithm } from '../algorithms/registry';
+import { getCategoryStyle } from '../algorithms/categoryStyles';
 import { getAlgorithmSource, runAlgorithm, regenerateExplanations } from '../api/client';
 import { AlgorithmInfoPanel } from '../components/AlgorithmInfoPanel';
 import { CodePanel } from '../components/CodePanel';
@@ -42,6 +43,8 @@ export function AlgorithmPage() {
     );
   }
 
+  const style = getCategoryStyle(algorithm.category);
+
   async function handleSubmit(body: unknown) {
     setIsLoading(true);
     setError(null);
@@ -73,17 +76,20 @@ export function AlgorithmPage() {
           <span className="group-hover:underline">Back</span>
         </Link>
         <div className="mt-1 flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-gray-100">
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-gray-100">
             {algorithm.name}
           </h1>
-          <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+          <span
+            className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${style.bg} ${style.text}`}
+          >
+            {style.icon}
             {algorithm.category}
           </span>
         </div>
         <p className="mt-1 text-gray-500 dark:text-gray-400">{algorithm.description}</p>
       </div>
 
-      <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+      <div className={`rounded-lg border border-gray-200 border-t-4 p-4 dark:border-gray-700 ${style.borderTop}`}>
         <algorithm.InputForm onSubmit={handleSubmit} isLoading={isLoading} />
       </div>
 

@@ -54,9 +54,9 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
   const displayEnd = mapLine(highlightEnd);
 
   useEffect(() => {
-    // Both the light and dark instances render in the DOM (only one is visually shown, via
-    // Tailwind's `dark:` media-query classes), so scroll whichever one matches the OS theme.
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Both the light and dark instances render in the DOM (only one is visually shown, via the
+    // `dark` class on <html>), so scroll whichever one is actually visible.
+    const isDark = document.documentElement.classList.contains('dark');
     const id = isDark ? 'code-panel-highlight-dark' : 'code-panel-highlight-light';
     const container = containerRef.current;
     const target = container?.querySelector(`#${id}`);
@@ -68,7 +68,18 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
     // container's scrollTop keeps the jump contained to the code panel.
     const containerRect = container.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
-    const offset = targetRect.top - containerRect.top - container.clientHeight / 2 + targetRect.height / 2;
+    const margin = 24; // keep the highlighted line a bit clear of the container edge
+    const above = targetRect.top - containerRect.top;
+    const below = targetRect.bottom - containerRect.bottom;
+    let offset = 0;
+    if (above < margin) {
+      offset = above - margin;
+    } else if (below > -margin) {
+      offset = below + margin;
+    }
+    if (offset === 0) {
+      return; // already visible — don't scroll at all
+    }
     container.scrollTo({ top: container.scrollTop + offset, behavior: 'smooth' });
   }, [displayStart, displayEnd]);
 

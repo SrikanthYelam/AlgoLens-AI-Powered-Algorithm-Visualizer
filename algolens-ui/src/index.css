@@ -1,16 +1,23 @@
 @import "tailwindcss";
 
+/* Switches every `dark:` utility from OS-media-query-driven to class-driven, matched against
+   the `dark` class index.html's blocking script applies to <html> before first paint. This is
+   additive over the existing `dark:` usage throughout the app — no component classes change. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-heading: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+}
+
 body {
   margin: 0;
   background-color: #ffffff;
   color: #111827;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111827;
-    color: #f3f4f6;
-  }
+.dark body {
+  background-color: #111827;
+  color: #f3f4f6;
 }
 
 @keyframes step-fade-in {
