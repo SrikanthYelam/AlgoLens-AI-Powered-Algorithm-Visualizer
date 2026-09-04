@@ -30,6 +30,7 @@ builder.Services.AddScoped<IStepExplanationService, OpenAiStepExplanationService
 builder.Services.AddScoped<IUserSolutionJudge, RoslynUserSolutionJudge>();
 builder.Services.AddScoped<BinaryTreeLevelOrderTraversal>();
 builder.Services.AddScoped<SlidingWindowMaximum>();
+builder.Services.AddScoped<LongestSubarrayAbsDiffLimit>();
 builder.Services.AddScoped<LargestRectangleInHistogram>();
 builder.Services.AddScoped<NumberOfIslands>();
 builder.Services.AddScoped<Permutations>();

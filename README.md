@@ -12,6 +12,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 
 * Binary Tree Level Order Traversal (BFS)
 * Sliding Window Maximum (monotonic deque)
+* Longest Continuous Subarray With Absolute Diff Less Than Or Equal To Limit (sliding window with two monotonic deques)
 * Largest Rectangle in Histogram (monotonic stack)
 * Number of Islands (BFS flood fill over a grid)
 * Permutations (backtracking)

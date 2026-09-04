@@ -28,6 +28,15 @@ public static class AlgorithmEndpoints
                 "Solve((int[])Args[\"nums\"], (int)Args[\"k\"])",
                 steps => ((SlidingWindowState)steps[^1].State).Result));
 
+        MapAlgorithm<LongestSubarrayAbsDiffLimit, LongestSubarrayAbsDiffLimitRequest, LongestSubarrayAbsDiffLimitInput>(
+            app,
+            "/api/algorithms/longest-continuous-subarray-abs-diff-limit",
+            request => new LongestSubarrayAbsDiffLimitInput(request.Nums, request.Limit),
+            judge: new JudgeConfig<LongestSubarrayAbsDiffLimitInput>(
+                input => new Dictionary<string, object?> { ["nums"] = input.Nums.ToArray(), ["limit"] = input.Limit },
+                "Solve((int[])Args[\"nums\"], (int)Args[\"limit\"])",
+                steps => ((LongestSubarrayAbsDiffLimitState)steps[^1].State).BestLength));
+
         MapAlgorithm<LargestRectangleInHistogram, HistogramRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/largest-rectangle-in-histogram",

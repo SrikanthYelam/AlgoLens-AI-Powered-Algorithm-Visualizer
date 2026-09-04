@@ -6,6 +6,8 @@ import { TreeInputForm } from './binaryTreeLevelOrder/TreeInputForm';
 import { TreeStateView } from './binaryTreeLevelOrder/TreeStateView';
 import { SlidingWindowInputForm } from './slidingWindowMaximum/SlidingWindowInputForm';
 import { SlidingWindowStateView } from './slidingWindowMaximum/SlidingWindowStateView';
+import { LongestSubarrayAbsDiffLimitInputForm } from './longestSubarrayAbsDiffLimit/LongestSubarrayAbsDiffLimitInputForm';
+import { LongestSubarrayAbsDiffLimitStateView } from './longestSubarrayAbsDiffLimit/LongestSubarrayAbsDiffLimitStateView';
 import { HistogramInputForm } from './largestRectangleInHistogram/HistogramInputForm';
 import { HistogramStateView } from './largestRectangleInHistogram/HistogramStateView';
 import { IslandsInputForm } from './numberOfIslands/IslandsInputForm';
@@ -128,6 +130,30 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int[] Solve(int[] nums, int k)',
     InputForm: SlidingWindowInputForm,
     StateView: SlidingWindowStateView,
+  },
+  {
+    id: 'longest-continuous-subarray-abs-diff-limit',
+    name: 'Longest Continuous Subarray With Absolute Diff Less Than Or Equal To Limit',
+    description: 'Find the longest subarray whose max and min differ by at most a given limit, using a sliding window guarded by two monotonic deques.',
+    category: 'Arrays & Stacks',
+    pattern: 'Sliding Window + Two Monotonic Deques',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Each index enters and leaves each deque at most once, and the left pointer only ever advances, so the total work across the whole scan is linear despite the nested-looking shrink loop.',
+    hints: [
+      "The window is valid exactly when its max minus its min is ≤ limit — you need running max and min as the window slides, not just a sum or count.",
+      'Maintain two monotonic deques of indices: one decreasing (front is the max) and one increasing (front is the min), the same trick Sliding Window Maximum uses for just one extreme.',
+      'Before pushing index right, pop from each deque\'s back any indices whose values can no longer be that extreme.',
+      "While the window's max minus min exceeds limit, advance left, popping either deque's front if it points at the index leaving the window.",
+    ],
+    relatedProblems: [
+      { name: 'Sliding Window Maximum', note: 'Same monotonic-deque trick, but tracking only the max over a fixed-size window.' },
+      { name: 'Subarrays with K Different Integers', note: 'Same two-pointer shrink-while-invalid shape, different validity condition.' },
+      { name: 'Longest Substring Without Repeating Characters', note: 'Same sliding-window skeleton over a different constraint (no duplicates).' },
+    ],
+    judgeSignature: 'public static int Solve(int[] nums, int limit)',
+    InputForm: LongestSubarrayAbsDiffLimitInputForm,
+    StateView: LongestSubarrayAbsDiffLimitStateView,
   },
   {
     id: 'largest-rectangle-in-histogram',
