@@ -34,6 +34,8 @@ import { EditDistanceInputForm } from './editDistance/EditDistanceInputForm';
 import { EditDistanceStateView } from './editDistance/EditDistanceStateView';
 import { LongestPalindromicSubstringInputForm } from './longestPalindromicSubstring/LongestPalindromicSubstringInputForm';
 import { LongestPalindromicSubstringStateView } from './longestPalindromicSubstring/LongestPalindromicSubstringStateView';
+import { UniqueBinarySearchTreesInputForm } from './uniqueBinarySearchTrees/UniqueBinarySearchTreesInputForm';
+import { UniqueBinarySearchTreesStateView } from './uniqueBinarySearchTrees/UniqueBinarySearchTreesStateView';
 import { MeetingRoomsInputForm } from './meetingRoomsII/MeetingRoomsInputForm';
 import { MeetingRoomsStateView } from './meetingRoomsII/MeetingRoomsStateView';
 import { ValidateBstStateView } from './validateBst/ValidateBstStateView';
@@ -553,6 +555,30 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static string Solve(string s)',
     InputForm: LongestPalindromicSubstringInputForm,
     StateView: LongestPalindromicSubstringStateView,
+  },
+  {
+    id: 'unique-binary-search-trees',
+    name: 'Unique Binary Search Trees',
+    description: 'Count how many structurally unique binary search trees can be built from n distinct keys, using 1D dynamic programming over Catalan numbers.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — 1D Table (Catalan Numbers)',
+    timeComplexity: 'O(n²)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Computing dp[i] means trying each of i possible roots, so the total work summed over all i from 1 to n is O(n²). Only a single 1D array of size n+1 is kept, unlike the 2D tables most other DP problems here use.',
+    hints: [
+      'Pick any value as the root of the BST — every node smaller than it must end up in the left subtree, and every node larger in the right, regardless of which value you picked.',
+      "That means the number of trees for a root only depends on how many nodes are to its left and right, not on the specific values — so dp[k] (unique trees over k nodes) is well-defined independent of which k values they are.",
+      'For a tree of i nodes with root j, the left and right subtrees are built independently, so their tree-shape counts multiply: dp[j-1] * dp[i-j].',
+      'Sum that product over every possible root j from 1 to i to get dp[i]. dp[0] = 1 (the empty tree) is the base case.',
+    ],
+    relatedProblems: [
+      { name: 'Unique Binary Search Trees II', note: 'Same recurrence, but actually construct and return every tree instead of just counting them.' },
+      { name: 'Catalan Number', note: 'dp[n] here is exactly the nth Catalan number — the same count shows up for balanced parentheses and polygon triangulations.' },
+      { name: 'Generate Parentheses', note: 'Counts (if you counted its outputs) the same Catalan sequence, reached via backtracking instead of DP.' },
+    ],
+    judgeSignature: 'public static int Solve(int n)',
+    InputForm: UniqueBinarySearchTreesInputForm,
+    StateView: UniqueBinarySearchTreesStateView,
   },
   {
     id: 'meeting-rooms-ii',

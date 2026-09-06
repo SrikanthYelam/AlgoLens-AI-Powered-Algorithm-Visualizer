@@ -209,6 +209,15 @@ public static class AlgorithmEndpoints
                 "Solve((string)Args[\"s\"])",
                 steps => ((LongestPalindromicSubstringState)steps[^1].State).LongestSoFar));
 
+        MapAlgorithm<UniqueBinarySearchTrees, UniqueBinarySearchTreesRequest, int>(
+            app,
+            "/api/algorithms/unique-binary-search-trees",
+            request => request.N,
+            judge: new JudgeConfig<int>(
+                n => new Dictionary<string, object?> { ["n"] = n },
+                "Solve((int)Args[\"n\"])",
+                steps => ((UniqueBstCountState)steps[^1].State).Table[^1]));
+
         MapAlgorithm<MeetingRoomsII, MeetingRoomsRequest, int[][]>(
             app,
             "/api/algorithms/meeting-rooms-ii",

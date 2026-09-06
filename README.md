@@ -29,6 +29,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Longest Increasing Subsequence (2D dynamic programming over index + previous-index)
 * Edit Distance (2D dynamic programming over two sequences)
 * Longest Palindromic Substring (interval dynamic programming)
+* Unique Binary Search Trees (1D dynamic programming over Catalan numbers)
 * Meeting Rooms II (greedy min-heap sweep)
 * Validate Binary Search Tree (recursive DFS with bounds propagation)
 * Kth Smallest Element in a BST (iterative inorder traversal)
@@ -114,7 +115,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 26
+* Additional algorithms beyond the current 27
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 
