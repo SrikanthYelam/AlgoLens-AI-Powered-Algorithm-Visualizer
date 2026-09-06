@@ -8,6 +8,22 @@ namespace AlgoLens.Api.Endpoints;
 
 public static class AlgorithmEndpoints
 {
+    /// <summary>
+    /// Rate-limit policy for the "Try Your Own Solution" judge — the API's most expensive and
+    /// least-trusted endpoint (it compiles and runs arbitrary submitted C#, see
+    /// <see cref="Services.RoslynUserSolutionJudge"/>'s doc comment), so it gets the tightest cap.
+    /// Registered against <see cref="Microsoft.AspNetCore.RateLimiting.RateLimiterOptions"/> in
+    /// Program.cs; the name is shared here so both sides can't drift apart.
+    /// </summary>
+    public const string JudgeRateLimitPolicy = "judge";
+
+    /// <summary>
+    /// Rate-limit policy for on-demand explanation regeneration — a direct OpenAI call, looser
+    /// than <see cref="JudgeRateLimitPolicy"/> but still bounded since it's an external, billed
+    /// dependency.
+    /// </summary>
+    public const string ExplainRateLimitPolicy = "explain";
+
     public static void MapAlgorithmEndpoints(this IEndpointRouteBuilder app)
     {
         MapAlgorithm<BinaryTreeLevelOrderTraversal, TraversalRequest, TreeNode?>(
@@ -303,6 +319,7 @@ public static class AlgorithmEndpoints
             var texts = await explanations.ExplainStepsAsync(algorithmId, algoSteps, cancellationToken);
             return Results.Ok(new { explanations = texts });
         })
+        .RequireRateLimiting(ExplainRateLimitPolicy)
         .WithName("ExplainSteps")
         .WithOpenApi();
     }
@@ -387,6 +404,7 @@ public static class AlgorithmEndpoints
                     expected,
                     result.ElapsedMilliseconds));
             })
+            .RequireRateLimiting(JudgeRateLimitPolicy)
             .WithName($"{typeof(TAlgorithm).Name}Submit")
             .WithOpenApi();
         }

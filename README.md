@@ -49,6 +49,19 @@ The code panel next to each algorithm's animation has a "Try your own solution" 
 
 **This is not sandboxed** — see Pending Enhancements below before relying on it for anything beyond local, trusted use.
 
+### System Design Decisions
+
+Two backend features exist specifically to demonstrate production-facing system design thinking, not because a local demo strictly needs them:
+
+**AI explanation caching.** `CachingStepExplanationService` decorates `IStepExplanationService`, sitting in front of the OpenAI-backed implementation. Each step is cached under a SHA-256 hash of `(algorithmId, action, state, highlights)` — not the step number — so two runs that reach the same state (the same default input run twice, or a single step regenerated via "Regenerate explanation" that matches one already explained during a full run) share a cache entry instead of paying for an OpenAI call for text it already generated. A batch request only forwards its cache *misses* upstream and stitches the response back into the original order, so a run that's 90% cached and 10% new content only pays for the 10%. The cache is a bounded `IMemoryCache` (a `SizeLimit` set in `Program.cs`), not an unbounded dictionary — a deliberate choice so it can't grow without limit. Only successful explanations are cached; a failure (including "no API key configured") is retried on the next request rather than permanently pinned as a miss.
+
+**Per-client rate limiting.** The two endpoints that carry real cost are capped independently, using ASP.NET Core's built-in `Microsoft.AspNetCore.RateLimiting` middleware, partitioned by client IP so one caller can't exhaust another's quota:
+
+* `POST .../submit` ("Try Your Own Solution", the judge) — 10 requests/minute. This is the API's most expensive and least-trusted endpoint (it compiles and executes arbitrary submitted C# in-process — see Pending Enhancements below), so it gets the tightest cap.
+* `POST /api/algorithms/{id}/explain` (on-demand explanation regeneration) — 30 requests/minute: a direct, billed external call, but not arbitrary code execution.
+
+Both use a fixed-window limiter with `QueueLimit: 0`, so an over-limit request is rejected immediately with `429 Too Many Requests`, a `Retry-After` header, and a JSON error body, instead of being queued and left hanging. The plain `/run` endpoints are deliberately left unlimited, since they only execute the app's own trusted, bounded algorithm code.
+
 ## Technical Stack
 
 ### Backend
@@ -101,7 +114,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 25
+* Additional algorithms beyond the current 26
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 
