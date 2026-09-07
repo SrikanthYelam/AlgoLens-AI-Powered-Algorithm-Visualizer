@@ -4,7 +4,7 @@
 
 AlgoLens is a full-stack web application that visualizes classic LeetCode-style algorithms step-by-step and uses OpenAI to generate a plain-English explanation for what's happening at each step.
 
-**Backend** (ASP.NET Core Web API, .NET 8): each algorithm is a pure function (`IAlgorithmVisualizer<TInput>`) that captures its own execution as an ordered sequence of steps — an `AlgorithmStep` carries a short mechanical action description, an algorithm-specific state snapshot (e.g. a queue, a stack, a grid, a backtracking path), and the elements touched that step. A single generic endpoint-mapping helper wires each algorithm to its own route. A shared `IStepExplanationService` sends the whole step sequence to OpenAI once per request — using structured JSON output so the response reliably parses into one explanation per step — and degrades gracefully (returns `null` explanations rather than failing the request) if no API key is configured.
+**Backend** (ASP.NET Core Web API, .NET 8): each algorithm is a pure function (`IAlgorithmVisualizer<TInput>`) that captures its own execution as an ordered sequence of steps — an `AlgorithmStep` carries a short mechanical action description, an algorithm-specific state snapshot (e.g. a queue, a stack, a grid, a backtracking path), and the elements touched that step. A single generic endpoint-mapping helper wires each algorithm to its own route. A shared `IStepExplanationService` sends the whole step sequence to an AI provider once per request — using structured JSON output so the response reliably parses into one explanation per step — and degrades gracefully (returns `null` explanations rather than failing the request) if no API key is configured. The AI call itself goes through `Microsoft.Extensions.AI`'s provider-agnostic `IChatClient` abstraction rather than a hardcoded OpenAI SDK call, so switching providers is a one-line DI change (see System Design Decisions below), not a rewrite.
 
 **Frontend** (React + TypeScript + Vite, Tailwind CSS): a generic `StepPlayer` component (play/pause/prev/next/step-slider) drives through the steps returned by the API, rendering each algorithm's own visualization via a small per-algorithm `StateView` component. Every algorithm plugs into one central registry — adding a new one means adding one registry entry plus an `InputForm`/`StateView` pair, with no changes to the player, routing, or API client.
 
@@ -36,6 +36,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Lowest Common Ancestor of a Binary Tree (recursive post-order search)
 * Construct Binary Tree from Preorder and Inorder Traversal (recursive divide-and-conquer)
 * Recover Binary Search Tree (inorder traversal with swap detection)
+* Find Duplicate Subtrees (post-order serialization + hash map)
 * Convert Sorted List to Binary Search Tree (slow/fast pointers + recursive divide-and-conquer)
 
 ### AI Explanations
@@ -52,9 +53,11 @@ The code panel next to each algorithm's animation has a "Try your own solution" 
 
 ### System Design Decisions
 
-Two backend features exist specifically to demonstrate production-facing system design thinking, not because a local demo strictly needs them:
+Three backend decisions exist specifically to demonstrate production-facing system design thinking, not because a local demo strictly needs them:
 
-**AI explanation caching.** `CachingStepExplanationService` decorates `IStepExplanationService`, sitting in front of the OpenAI-backed implementation. Each step is cached under a SHA-256 hash of `(algorithmId, action, state, highlights)` — not the step number — so two runs that reach the same state (the same default input run twice, or a single step regenerated via "Regenerate explanation" that matches one already explained during a full run) share a cache entry instead of paying for an OpenAI call for text it already generated. A batch request only forwards its cache *misses* upstream and stitches the response back into the original order, so a run that's 90% cached and 10% new content only pays for the 10%. The cache is a bounded `IMemoryCache` (a `SizeLimit` set in `Program.cs`), not an unbounded dictionary — a deliberate choice so it can't grow without limit. Only successful explanations are cached; a failure (including "no API key configured") is retried on the next request rather than permanently pinned as a miss.
+**Provider-agnostic AI integration.** `AiStepExplanationService` depends on `IChatClient` — Microsoft.Extensions.AI's abstraction over chat-completion providers — instead of calling the OpenAI SDK directly. The *only* OpenAI-specific line in the entire backend lives in `Program.cs`, where an `OpenAI.Chat.ChatClient` is wrapped as an `IChatClient` via `.AsIChatClient()` (from the `Microsoft.Extensions.AI.OpenAI` adapter package) and registered in DI. Everything downstream — `AiStepExplanationService`, the caching decorator below, every endpoint — depends only on the interface. Swapping providers (Azure OpenAI, a local Ollama model, another Microsoft.Extensions.AI-compatible provider) means changing that one registration, not rewriting prompt-building, structured-output parsing, or any caller.
+
+**AI explanation caching.** `CachingStepExplanationService` decorates `IStepExplanationService`, sitting in front of the `IChatClient`-backed implementation above. Each step is cached under a SHA-256 hash of `(algorithmId, action, state, highlights)` — not the step number — so two runs that reach the same state (the same default input run twice, or a single step regenerated via "Regenerate explanation" that matches one already explained during a full run) share a cache entry instead of paying for an AI call for text it already generated. A batch request only forwards its cache *misses* upstream and stitches the response back into the original order, so a run that's 90% cached and 10% new content only pays for the 10%. The cache is a bounded `IMemoryCache` (a `SizeLimit` set in `Program.cs`), not an unbounded dictionary — a deliberate choice so it can't grow without limit. Only successful explanations are cached; a failure (including "no API key configured") is retried on the next request rather than permanently pinned as a miss.
 
 **Per-client rate limiting.** The two endpoints that carry real cost are capped independently, using ASP.NET Core's built-in `Microsoft.AspNetCore.RateLimiting` middleware, partitioned by client IP so one caller can't exhaust another's quota:
 
@@ -69,7 +72,7 @@ Both use a fixed-window limiter with `QueueLimit: 0`, so an over-limit request i
 
 * ASP.NET Core Web API (.NET 8; minimal APIs, no controllers)
 * xUnit + FluentAssertions
-* Official `OpenAI` NuGet package for the OpenAI integration
+* `Microsoft.Extensions.AI` (provider-agnostic `IChatClient` abstraction) with the `Microsoft.Extensions.AI.OpenAI` adapter and the official `OpenAI` NuGet package as the current backing provider
 * `Microsoft.CodeAnalysis.CSharp.Scripting` (Roslyn) for running user-submitted solutions in "Try Your Own Solution"
 
 ### Frontend
@@ -84,7 +87,7 @@ Both use a fixed-window limiter with `QueueLimit: 0`, so an over-limit request i
 
 ```
 /src
-  AlgoLens.Api      — HTTP layer: endpoints, request/response contracts, the OpenAI explanation service
+  AlgoLens.Api      — HTTP layer: endpoints, request/response contracts, the AI explanation service
   AlgoLens.Core     — algorithm implementations + step-capture models (no I/O, no AI dependency)
   AlgoLens.Tests    — xUnit tests against AlgoLens.Core
 
@@ -115,7 +118,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 27
+* Additional algorithms beyond the current 28
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

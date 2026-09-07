@@ -3,6 +3,7 @@ using AlgoLens.Api.Endpoints;
 using AlgoLens.Api.Services;
 using AlgoLens.Core.Algorithms;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Caching.Memory;
 using OpenAI.Chat;
 
@@ -28,8 +29,12 @@ builder.Services.AddCors(options =>
 // try/catch degrades to null explanations on the resulting auth failure at request time.
 const string OpenAiModel = "gpt-4o-mini";
 var openAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? "missing-openai-api-key";
-builder.Services.AddSingleton(new ChatClient(OpenAiModel, openAiApiKey));
-builder.Services.AddScoped<OpenAiStepExplanationService>();
+
+// This is the ONLY OpenAI-specific line in the app: wrap OpenAI's SDK client as a provider-agnostic
+// IChatClient (Microsoft.Extensions.AI). AiStepExplanationService and everything downstream of it
+// depends only on IChatClient, so switching AI providers means changing this one registration.
+builder.Services.AddSingleton<IChatClient>(new ChatClient(OpenAiModel, openAiApiKey).AsIChatClient());
+builder.Services.AddScoped<AiStepExplanationService>();
 
 // Bounded (SizeLimit-capped, not unlimited) in-memory cache of AI explanations, keyed by a
 // content hash of each step — see CachingStepExplanationService for why. Each cached string
@@ -37,7 +42,7 @@ builder.Services.AddScoped<OpenAiStepExplanationService>();
 // the cache at ~2000 distinct step explanations, evicting least-recently-used entries beyond that.
 builder.Services.AddMemoryCache(options => options.SizeLimit = 2000);
 builder.Services.AddScoped<IStepExplanationService>(sp => new CachingStepExplanationService(
-    sp.GetRequiredService<OpenAiStepExplanationService>(),
+    sp.GetRequiredService<AiStepExplanationService>(),
     sp.GetRequiredService<IMemoryCache>(),
     sp.GetRequiredService<ILogger<CachingStepExplanationService>>()));
 
@@ -68,6 +73,7 @@ builder.Services.AddScoped<KthSmallestInBst>();
 builder.Services.AddScoped<LowestCommonAncestor>();
 builder.Services.AddScoped<ConstructBinaryTree>();
 builder.Services.AddScoped<RecoverBst>();
+builder.Services.AddScoped<FindDuplicateSubtrees>();
 builder.Services.AddScoped<SortedListToBst>();
 
 // Per-client (by IP) fixed-window rate limiting on the two endpoints that carry real cost: the

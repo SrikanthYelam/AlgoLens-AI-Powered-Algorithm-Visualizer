@@ -1,24 +1,27 @@
 using System.Text.Json;
 using AlgoLens.Core.Models;
-using OpenAI.Chat;
+using Microsoft.Extensions.AI;
 
 namespace AlgoLens.Api.Services;
 
 /// <summary>
-/// Generates per-step explanations via the OpenAI Chat Completions API, using structured
-/// JSON output (a strict JSON schema response format) so the response reliably parses
-/// into one explanation per step.
+/// Generates per-step explanations via an injected <see cref="IChatClient"/> — Microsoft.Extensions.AI's
+/// provider-agnostic chat abstraction — using structured JSON output (a strict JSON schema response
+/// format) so the response reliably parses into one explanation per step. This class has no
+/// OpenAI-specific code in it: swapping AI providers means changing what <see cref="IChatClient"/>
+/// <c>Program.cs</c> registers (today, OpenAI's own <c>ChatClient.AsIChatClient()</c>), not this class
+/// or any of its callers.
 /// </summary>
-public sealed class OpenAiStepExplanationService : IStepExplanationService
+public sealed class AiStepExplanationService : IStepExplanationService
 {
     private static readonly JsonSerializerOptions DeserializeOptions = new() { PropertyNameCaseInsensitive = true };
 
-    private readonly ChatClient _client;
-    private readonly ILogger<OpenAiStepExplanationService> _logger;
+    private readonly IChatClient _chatClient;
+    private readonly ILogger<AiStepExplanationService> _logger;
 
-    public OpenAiStepExplanationService(ChatClient client, ILogger<OpenAiStepExplanationService> logger)
+    public AiStepExplanationService(IChatClient chatClient, ILogger<AiStepExplanationService> logger)
     {
-        _client = client;
+        _chatClient = chatClient;
         _logger = logger;
     }
 
@@ -47,24 +50,21 @@ public sealed class OpenAiStepExplanationService : IStepExplanationService
                 happened and why. Return exactly {steps.Count} explanations, in the same order as the steps.
                 """;
 
-            var options = new ChatCompletionOptions
+            // The parsed schema document must outlive the request — ChatResponseFormat.ForJsonSchema
+            // holds a JsonElement view into it, not a copy.
+            using var schemaDoc = JsonDocument.Parse(BuildExplanationsSchema());
+            var options = new ChatOptions
             {
-                MaxOutputTokenCount = 4096,
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
-                    "step_explanations",
-                    BinaryData.FromBytes(BuildExplanationsSchema()),
-                    jsonSchemaIsStrict: true),
+                MaxOutputTokens = 4096,
+                ResponseFormat = ChatResponseFormat.ForJsonSchema(schemaDoc.RootElement, schemaName: "step_explanations"),
             };
 
-            var response = await _client.CompleteChatAsync([new UserChatMessage(prompt)], options, cancellationToken);
+            var response = await _chatClient.GetResponseAsync(prompt, options, cancellationToken);
 
-            var text = response.Value.Content
-                .Select(part => part.Text)
-                .FirstOrDefault(t => !string.IsNullOrEmpty(t));
-
-            if (text is null)
+            var text = response.Text;
+            if (string.IsNullOrEmpty(text))
             {
-                _logger.LogWarning("OpenAI returned no text content when explaining steps for {AlgorithmId}", algorithmId);
+                _logger.LogWarning("Chat client returned no text content when explaining steps for {AlgorithmId}", algorithmId);
                 return NullExplanations(steps.Count);
             }
 

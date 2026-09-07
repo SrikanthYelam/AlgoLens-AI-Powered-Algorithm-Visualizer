@@ -281,6 +281,15 @@ public static class AlgorithmEndpoints
                 "Solve((TreeNode?)Args[\"root\"]);\nArgs[\"root\"]",
                 steps => ((RecoverBstState)steps[^1].State).Root));
 
+        MapAlgorithm<FindDuplicateSubtrees, TraversalRequest, TreeNode?>(
+            app,
+            "/api/algorithms/find-duplicate-subtrees",
+            request => TreeNode.FromLevelOrderArray(request.Values),
+            judge: new JudgeConfig<TreeNode?>(
+                root => new Dictionary<string, object?> { ["root"] = root },
+                "Solve((TreeNode?)Args[\"root\"])",
+                steps => ((FindDuplicateSubtreesState)steps[^1].State).DuplicateRoots));
+
         MapAlgorithm<SortedListToBst, SortedListToBstRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/sorted-list-to-bst",

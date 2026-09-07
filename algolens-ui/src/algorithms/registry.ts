@@ -46,6 +46,7 @@ import { LowestCommonAncestorStateView } from './lowestCommonAncestor/LowestComm
 import { ConstructBinaryTreeInputForm } from './constructBinaryTree/ConstructBinaryTreeInputForm';
 import { ConstructBinaryTreeStateView } from './constructBinaryTree/ConstructBinaryTreeStateView';
 import { RecoverBstStateView } from './recoverBst/RecoverBstStateView';
+import { FindDuplicateSubtreesStateView } from './findDuplicateSubtrees/FindDuplicateSubtreesStateView';
 import { SortedListToBstInputForm } from './sortedListToBst/SortedListToBstInputForm';
 import { SortedListToBstStateView } from './sortedListToBst/SortedListToBstStateView';
 
@@ -729,6 +730,30 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static void Solve(TreeNode? root)',
     InputForm: TreeInputForm,
     StateView: RecoverBstStateView,
+  },
+  {
+    id: 'find-duplicate-subtrees',
+    name: 'Find Duplicate Subtrees',
+    description: 'Find every subtree shape that appears more than once in a binary tree, using post-order serialization and a hash map.',
+    category: 'Trees & Graphs',
+    pattern: 'Post-Order Serialization + Hash Map',
+    timeComplexity: 'O(n²)',
+    spaceComplexity: 'O(n²)',
+    complexityNotes: "Each of the n nodes builds a serialization string by concatenating its children's, so a node at depth d can produce a string of length O(n) in the worst (skewed-tree) case — summed over all nodes that's O(n²) time and space for the map. A rolling-hash or tree-isomorphism-numbering approach can bring this down to O(n), but the direct string approach is the standard, most-readable solution.",
+    hints: [
+      "Two subtrees are duplicates exactly when they have identical structure and values — you need a way to turn a whole subtree into a single comparable value.",
+      'Serialize each subtree recursively as "val,leftSerialization,rightSerialization", using a sentinel like "#" for null children — this is just a preorder traversal with null markers, which uniquely determines a tree shape.',
+      'Build serializations bottom-up (post-order), so a node can use its already-computed children serializations instead of re-deriving them.',
+      'Track how many times each serialization has been seen in a hash map; record a node as a duplicate only the moment its count reaches exactly 2, so each duplicate shape is reported once, not once per repeat.',
+    ],
+    relatedProblems: [
+      { name: 'Serialize and Deserialize Binary Tree', note: "Uses the exact same preorder-with-null-markers encoding, just to rebuild the tree instead of hashing it." },
+      { name: 'Same Tree', note: 'The two-tree special case of the same "identical structure and values" comparison this problem generalizes to many subtrees at once.' },
+      { name: 'Subtree of Another Tree', note: 'Same subtree-matching idea, checking one specific shape against every subtree instead of finding all repeated shapes.' },
+    ],
+    judgeSignature: 'public static IList<TreeNode> Solve(TreeNode? root)',
+    InputForm: TreeInputForm,
+    StateView: FindDuplicateSubtreesStateView,
   },
   {
     id: 'sorted-list-to-bst',
