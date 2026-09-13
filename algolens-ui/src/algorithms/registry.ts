@@ -47,6 +47,8 @@ import { ConstructBinaryTreeInputForm } from './constructBinaryTree/ConstructBin
 import { ConstructBinaryTreeStateView } from './constructBinaryTree/ConstructBinaryTreeStateView';
 import { RecoverBstStateView } from './recoverBst/RecoverBstStateView';
 import { FindDuplicateSubtreesStateView } from './findDuplicateSubtrees/FindDuplicateSubtreesStateView';
+import { DeleteNodeInBstInputForm } from './deleteNodeInBst/DeleteNodeInBstInputForm';
+import { DeleteNodeInBstStateView } from './deleteNodeInBst/DeleteNodeInBstStateView';
 import { SortedListToBstInputForm } from './sortedListToBst/SortedListToBstInputForm';
 import { SortedListToBstStateView } from './sortedListToBst/SortedListToBstStateView';
 
@@ -754,6 +756,30 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static IList<TreeNode> Solve(TreeNode? root)',
     InputForm: TreeInputForm,
     StateView: FindDuplicateSubtreesStateView,
+  },
+  {
+    id: 'delete-node-in-a-bst',
+    name: 'Delete Node in a BST',
+    description: 'Delete a node from a binary search tree by key, using recursive search-and-splice with the inorder successor for the two-children case.',
+    category: 'Trees & Graphs',
+    pattern: 'Recursive BST Search + Successor Splice',
+    timeComplexity: 'O(h)',
+    spaceComplexity: 'O(h)',
+    complexityNotes: "The search for the target is a standard BST walk, O(h) where h is the tree's height. Finding the inorder successor only ever walks further down the already-found node's right subtree, still bounded by O(h). The recursion stack is also O(h).",
+    hints: [
+      'This is a BST, so finding the node to delete is just a normal search: go left or right by comparing the key against each node, same as a lookup.',
+      "A leaf or a node with only one child is easy to remove — just splice it out by returning its (possibly null) child up to the parent.",
+      "A node with two children can't just be unlinked without breaking the tree. Instead, find a value that can safely take its place — the inorder successor (smallest value in the right subtree) works, since everything in the left subtree is still smaller than it and everything else in the right subtree is still larger.",
+      "Copy the successor's value into the node being deleted, then recursively delete the successor (by its own value) from the right subtree — it has at most one child, so that second deletion is always the easy case.",
+    ],
+    relatedProblems: [
+      { name: 'Insert into a Binary Search Tree', note: 'The mirror-image operation — same recursive BST-navigation shape, building instead of removing.' },
+      { name: 'Validate Binary Search Tree', note: 'Same BST-property reasoning, checking the invariant this problem has to preserve after deleting.' },
+      { name: 'Kth Smallest Element in a BST', note: "Same 'smallest value in a subtree' idea this problem uses to find the inorder successor, applied to the whole tree instead of one subtree." },
+    ],
+    judgeSignature: 'public static TreeNode? Solve(TreeNode? root, int key)',
+    InputForm: DeleteNodeInBstInputForm,
+    StateView: DeleteNodeInBstStateView,
   },
   {
     id: 'sorted-list-to-bst',

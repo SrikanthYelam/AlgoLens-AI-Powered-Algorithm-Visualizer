@@ -290,6 +290,15 @@ public static class AlgorithmEndpoints
                 "Solve((TreeNode?)Args[\"root\"])",
                 steps => ((FindDuplicateSubtreesState)steps[^1].State).DuplicateRoots));
 
+        MapAlgorithm<DeleteNodeInBst, DeleteNodeInBstRequest, DeleteNodeInBstInput>(
+            app,
+            "/api/algorithms/delete-node-in-a-bst",
+            request => new DeleteNodeInBstInput(TreeNode.FromLevelOrderArray(request.Values), request.Key),
+            judge: new JudgeConfig<DeleteNodeInBstInput>(
+                input => new Dictionary<string, object?> { ["root"] = input.Root, ["key"] = input.Key },
+                "Solve((TreeNode?)Args[\"root\"], (int)Args[\"key\"])",
+                steps => ((DeleteNodeInBstState)steps[^1].State).Root));
+
         MapAlgorithm<SortedListToBst, SortedListToBstRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/sorted-list-to-bst",
