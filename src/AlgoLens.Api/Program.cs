@@ -75,6 +75,11 @@ builder.Services.AddScoped<ConstructBinaryTree>();
 builder.Services.AddScoped<RecoverBst>();
 builder.Services.AddScoped<FindDuplicateSubtrees>();
 builder.Services.AddScoped<DeleteNodeInBst>();
+builder.Services.AddScoped<FlattenBinaryTreeRecursive>();
+builder.Services.AddScoped<FlattenBinaryTreeIterative>();
+builder.Services.AddScoped<NumberOfProvinces>();
+builder.Services.AddScoped<RedundantConnection>();
+builder.Services.AddScoped<AccountsMerge>();
 builder.Services.AddScoped<SortedListToBst>();
 
 // Per-client (by IP) fixed-window rate limiting on the two endpoints that carry real cost: the

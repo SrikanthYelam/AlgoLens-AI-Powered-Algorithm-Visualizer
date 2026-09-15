@@ -299,6 +299,58 @@ public static class AlgorithmEndpoints
                 "Solve((TreeNode?)Args[\"root\"], (int)Args[\"key\"])",
                 steps => ((DeleteNodeInBstState)steps[^1].State).Root));
 
+        MapAlgorithm<FlattenBinaryTreeRecursive, TraversalRequest, TreeNode?>(
+            app,
+            "/api/algorithms/flatten-binary-tree-recursive",
+            request => TreeNode.FromLevelOrderArray(request.Values),
+            judge: new JudgeConfig<TreeNode?>(
+                root => new Dictionary<string, object?> { ["root"] = root },
+                "Solve((TreeNode?)Args[\"root\"]);\nArgs[\"root\"]",
+                steps => ((FlattenBinaryTreeRecursiveState)steps[^1].State).Root));
+
+        MapAlgorithm<FlattenBinaryTreeIterative, TraversalRequest, TreeNode?>(
+            app,
+            "/api/algorithms/flatten-binary-tree-iterative",
+            request => TreeNode.FromLevelOrderArray(request.Values),
+            judge: new JudgeConfig<TreeNode?>(
+                root => new Dictionary<string, object?> { ["root"] = root },
+                "Solve((TreeNode?)Args[\"root\"]);\nArgs[\"root\"]",
+                steps => ((FlattenBinaryTreeIterativeState)steps[^1].State).Root));
+
+        MapAlgorithm<NumberOfProvinces, NumberOfProvincesRequest, int[][]>(
+            app,
+            "/api/algorithms/number-of-provinces",
+            request => request.IsConnected,
+            judge: new JudgeConfig<int[][]>(
+                isConnected => new Dictionary<string, object?> { ["isConnected"] = isConnected },
+                "Solve((int[][])Args[\"isConnected\"])",
+                steps => ((NumberOfProvincesState)steps[^1].State).Components));
+
+        MapAlgorithm<RedundantConnection, RedundantConnectionRequest, int[][]>(
+            app,
+            "/api/algorithms/redundant-connection",
+            request => request.Edges,
+            judge: new JudgeConfig<int[][]>(
+                edges => new Dictionary<string, object?> { ["edges"] = edges },
+                "Solve((int[][])Args[\"edges\"])",
+                steps => ((RedundantConnectionState)steps[^1].State).Answer));
+
+        MapAlgorithm<AccountsMerge, AccountsMergeRequest, IReadOnlyList<IReadOnlyList<string>>>(
+            app,
+            "/api/algorithms/accounts-merge",
+            request => request.Accounts,
+            judge: new JudgeConfig<IReadOnlyList<IReadOnlyList<string>>>(
+                accounts => new Dictionary<string, object?>
+                {
+                    // IList<IList<string>> is invariant, so a plain List<List<string>> (what
+                    // System.Text.Json deserializes IReadOnlyList<IReadOnlyList<string>> into)
+                    // won't implicitly satisfy the cast the judge script needs — rebuild it as a
+                    // List<IList<string>> whose element type genuinely is the interface.
+                    ["accounts"] = accounts.Select(a => (IList<string>)a.ToList()).ToList(),
+                },
+                "Solve((IList<IList<string>>)Args[\"accounts\"])",
+                steps => ((AccountsMergeState)steps[^1].State).Groups));
+
         MapAlgorithm<SortedListToBst, SortedListToBstRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/sorted-list-to-bst",

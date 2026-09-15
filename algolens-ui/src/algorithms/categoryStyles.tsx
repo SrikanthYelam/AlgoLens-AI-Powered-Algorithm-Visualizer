@@ -71,6 +71,15 @@ function DpIcon() {
   );
 }
 
+function UnionFindIcon() {
+  return (
+    <svg {...iconProps}>
+      <circle cx="9" cy="12" r="6" />
+      <circle cx="15" cy="12" r="6" />
+    </svg>
+  );
+}
+
 const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   'Trees & Graphs': {
     icon: <TreeIcon />,
@@ -106,6 +115,13 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
     bg: 'bg-emerald-50 dark:bg-emerald-950/40',
     border: 'border-emerald-500 dark:border-emerald-400',
     borderTop: 'border-t-emerald-500 dark:border-t-emerald-400',
+  },
+  'Union-Find': {
+    icon: <UnionFindIcon />,
+    text: 'text-rose-600 dark:text-rose-400',
+    bg: 'bg-rose-50 dark:bg-rose-950/40',
+    border: 'border-rose-500 dark:border-rose-400',
+    borderTop: 'border-t-rose-500 dark:border-t-rose-400',
   },
 };
 

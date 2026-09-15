@@ -49,6 +49,14 @@ import { RecoverBstStateView } from './recoverBst/RecoverBstStateView';
 import { FindDuplicateSubtreesStateView } from './findDuplicateSubtrees/FindDuplicateSubtreesStateView';
 import { DeleteNodeInBstInputForm } from './deleteNodeInBst/DeleteNodeInBstInputForm';
 import { DeleteNodeInBstStateView } from './deleteNodeInBst/DeleteNodeInBstStateView';
+import { FlattenBinaryTreeRecursiveStateView } from './flattenBinaryTree/FlattenBinaryTreeRecursiveStateView';
+import { FlattenBinaryTreeIterativeStateView } from './flattenBinaryTree/FlattenBinaryTreeIterativeStateView';
+import { NumberOfProvincesInputForm } from './numberOfProvinces/NumberOfProvincesInputForm';
+import { NumberOfProvincesStateView } from './numberOfProvinces/NumberOfProvincesStateView';
+import { RedundantConnectionInputForm } from './redundantConnection/RedundantConnectionInputForm';
+import { RedundantConnectionStateView } from './redundantConnection/RedundantConnectionStateView';
+import { AccountsMergeInputForm } from './accountsMerge/AccountsMergeInputForm';
+import { AccountsMergeStateView } from './accountsMerge/AccountsMergeStateView';
 import { SortedListToBstInputForm } from './sortedListToBst/SortedListToBstInputForm';
 import { SortedListToBstStateView } from './sortedListToBst/SortedListToBstStateView';
 
@@ -782,6 +790,54 @@ export const algorithms: AlgorithmDefinition[] = [
     StateView: DeleteNodeInBstStateView,
   },
   {
+    id: 'flatten-binary-tree-recursive',
+    name: 'Flatten Binary Tree to Linked List (Recursive)',
+    description: "Flatten a binary tree into a right-only linked list in preorder order, using a recursive preorder traversal that links nodes as it visits them.",
+    category: 'Trees & Graphs',
+    pattern: 'Recursive Preorder Traversal with In-Place Linking',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(h)',
+    complexityNotes: "Every node is visited exactly once, giving O(n) time. The only extra space is the recursion stack, bounded by the tree's height h.",
+    hints: [
+      "The final shape is exactly a preorder traversal — every node's left pointer becomes null and its right pointer becomes 'whatever comes next in preorder'.",
+      "Before you touch a node's children pointers, save the original left and right children — you're about to overwrite them, but you still need to recurse into the real subtrees.",
+      "Keep track of the previously-visited node. When you visit a new node, point the previous node's right at this one (and clear its left) — that's the link.",
+      "Recurse into the saved left child first, then the saved right child, to keep the traversal in true preorder order.",
+    ],
+    relatedProblems: [
+      { name: 'Flatten Binary Tree to Linked List (Iterative)', note: 'Same result, same traversal order, but using O(1) space via in-place threading instead of the recursion call stack.' },
+      { name: 'Binary Tree Preorder Traversal', note: 'The traversal order this problem is built directly on top of.' },
+      { name: 'Convert Sorted List to Binary Search Tree', note: 'The inverse direction — building a tree from a list instead of collapsing one into a list.' },
+    ],
+    judgeSignature: 'public static void Solve(TreeNode? root)',
+    InputForm: TreeInputForm,
+    StateView: FlattenBinaryTreeRecursiveStateView,
+  },
+  {
+    id: 'flatten-binary-tree-iterative',
+    name: 'Flatten Binary Tree to Linked List (Iterative)',
+    description: "Flatten a binary tree into a right-only linked list in preorder order, in-place and with no extra memory, by threading each node's right subtree onto its left subtree's rightmost node.",
+    category: 'Trees & Graphs',
+    pattern: 'O(1)-Space Threading (No Recursion, No Stack)',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(1)',
+    complexityNotes: "No recursion and no explicit stack — curr just walks forward through the tree, so this uses only a constant handful of pointers. Finding each node's left subtree's rightmost node looks like it could add up to O(n²) in the worst case, but once a subtree is threaded into the chain it's never searched again, so the total cost of every 'find rightmost' walk across the whole run is bounded by the number of edges in the tree — O(n) overall, not O(n²).",
+    hints: [
+      "Think about the final shape: a right-only chain in preorder order. If curr has no left child, it's already exactly where it needs to be in that chain — just move on.",
+      "If curr does have a left child, that whole left subtree needs to slide over to become curr's new right subtree — but curr's *original* right subtree can't just be dropped.",
+      "Find the rightmost node of curr's left subtree (walk right pointers until one is null) — that node has no right child yet, which is exactly the free slot curr's original right subtree needs.",
+      'Attach the old right subtree there first, then move the left subtree into curr.Right and clear curr.Left — in that order, nothing is ever lost, and no extra memory beyond a couple of pointers is needed.',
+    ],
+    relatedProblems: [
+      { name: 'Flatten Binary Tree to Linked List (Recursive)', note: 'Same result, same traversal order, but via recursion (and its call stack) instead of O(1) space.' },
+      { name: 'Morris Inorder Traversal', note: 'The classic O(1)-space tree traversal this same "thread onto the rightmost node" trick is best known from.' },
+      { name: 'Binary Tree Preorder Traversal', note: 'The traversal order this problem is built directly on top of.' },
+    ],
+    judgeSignature: 'public static void Solve(TreeNode? root)',
+    InputForm: TreeInputForm,
+    StateView: FlattenBinaryTreeIterativeStateView,
+  },
+  {
     id: 'sorted-list-to-bst',
     name: 'Convert Sorted List to Binary Search Tree',
     description: 'Convert a sorted singly linked list into a height-balanced BST, using the slow/fast pointer technique to find each segment\'s middle.',
@@ -805,6 +861,78 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static TreeNode? Solve(ListNode? head)',
     InputForm: SortedListToBstInputForm,
     StateView: SortedListToBstStateView,
+  },
+  {
+    id: 'number-of-provinces',
+    name: 'Number of Provinces',
+    description: 'Count the number of connected groups of cities from an adjacency matrix, using Union-Find.',
+    category: 'Union-Find',
+    pattern: 'Union-Find (Disjoint Set Union)',
+    timeComplexity: 'O(n² · α(n))',
+    spaceComplexity: 'O(n)',
+    complexityNotes: "Every pair of cities is checked once, giving O(n²) pair checks. Each Find/Union is nearly O(1) amortized (α is the inverse Ackermann function, effectively constant) thanks to path compression, so the O(n²) matrix scan dominates. Only the parent array is extra space, O(n).",
+    hints: [
+      'Start with every city as its own province — a parent array where parent[i] = i.',
+      "When two cities are directly connected, union their provinces: find each one's root, and if they differ, point one root at the other.",
+      "Path compression (making every visited node point straight at the root during Find) keeps the structure flat, so it doesn't matter what order the connections come in.",
+      "Track the province count as a running total that decrements by one on every successful union, rather than counting distinct roots at the end.",
+    ],
+    relatedProblems: [
+      { name: 'Redundant Connection', note: 'Same Union-Find mechanics, used to detect the one edge that creates a cycle instead of counting groups.' },
+      { name: 'Accounts Merge', note: 'Same disjoint-set idea over email strings instead of plain city indices.' },
+      { name: 'Number of Islands', note: 'A different (BFS flood-fill) way to count connected components, here over a grid instead of a matrix.' },
+    ],
+    judgeSignature: 'public static int Solve(int[][] isConnected)',
+    InputForm: NumberOfProvincesInputForm,
+    StateView: NumberOfProvincesStateView,
+  },
+  {
+    id: 'redundant-connection',
+    name: 'Redundant Connection',
+    description: 'Find the one edge that turns a tree into a graph with a cycle, using Union-Find to spot the first edge whose endpoints are already connected.',
+    category: 'Union-Find',
+    pattern: 'Union-Find (Disjoint Set Union)',
+    timeComplexity: 'O(n · α(n))',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Each of the n edges triggers one Find/Union pair, each nearly O(1) amortized thanks to path compression — so the whole pass is effectively linear in the number of edges.',
+    hints: [
+      "A tree with n nodes always has exactly n-1 edges — this input has n edges, so exactly one is extra and creates a cycle.",
+      'Process edges in the given order, unioning each edge\'s two endpoints as you go.',
+      "Before unioning, check whether the two endpoints are already in the same set — if they are, this edge connects two nodes that were already reachable from each other, which is exactly what creates a cycle.",
+      "The problem guarantees only one such edge exists, and asks for the one that appears last in the input — so the very first edge you find already-connected endpoints on is the answer; stop there.",
+    ],
+    relatedProblems: [
+      { name: 'Number of Provinces', note: 'Same Union-Find mechanics, used to count groups instead of detecting a cycle.' },
+      { name: 'Redundant Connection II', note: 'The directed-graph version of this same problem, where a node can also have two parents.' },
+      { name: 'Graph Valid Tree', note: 'Checks the same "no cycle, fully connected" property this problem\'s input almost satisfies.' },
+    ],
+    judgeSignature: 'public static int[] Solve(int[][] edges)',
+    InputForm: RedundantConnectionInputForm,
+    StateView: RedundantConnectionStateView,
+  },
+  {
+    id: 'accounts-merge',
+    name: 'Accounts Merge',
+    description: 'Merge accounts that share an email address into one, using Union-Find over email strings instead of plain array indices.',
+    category: 'Union-Find',
+    pattern: 'Union-Find over Strings',
+    timeComplexity: 'O(n log n · α(n))',
+    spaceComplexity: 'O(n)',
+    complexityNotes: "Every email is unioned at most once per account it appears in, each Find/Union nearly O(1) amortized. Sorting each merged group's emails for the final output is what actually dominates, O(n log n) overall. The parent map and name lookup are O(n) space.",
+    hints: [
+      "Two accounts belong to the same person exactly when they share at least one email — names alone can't be trusted, since two different people can share a name.",
+      'Union-Find works over any hashable key, not just array indices — use each email string itself as the set element, with a Dictionary<string, string> playing the role of the usual int[] parent array.',
+      "Within one account, union every email with that account's first email — that's enough to eventually merge every email in the account into one set.",
+      "Once every account has been processed, group all emails by their root, and attach the name from any account that used that root — the emails within each group need to be sorted for the expected output format.",
+    ],
+    relatedProblems: [
+      { name: 'Number of Provinces', note: 'The same Union-Find idea over plain integer indices instead of strings.' },
+      { name: 'Redundant Connection', note: 'Another Union-Find problem, here detecting a cycle instead of merging groups.' },
+      { name: 'Friend Circles', note: "Another name for Number of Provinces — same underlying 'count the groups' problem." },
+    ],
+    judgeSignature: 'public static IList<IList<string>> Solve(IList<IList<string>> accounts)',
+    InputForm: AccountsMergeInputForm,
+    StateView: AccountsMergeStateView,
   },
 ];
 
