@@ -15,6 +15,8 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Longest Continuous Subarray With Absolute Diff Less Than Or Equal To Limit (sliding window with two monotonic deques)
 * Largest Rectangle in Histogram (monotonic stack)
 * Number of Islands (BFS flood fill over a grid)
+* Course Schedule (Kahn's Algorithm) — BFS topological sort over the prerequisite graph
+* Course Schedule (DFS Cycle Detection) — same problem, solved by detecting a back edge during DFS
 * Permutations (backtracking)
 * Combinations (backtracking)
 * Subsets (backtracking)
@@ -124,7 +126,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 34
+* Additional algorithms beyond the current 36
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

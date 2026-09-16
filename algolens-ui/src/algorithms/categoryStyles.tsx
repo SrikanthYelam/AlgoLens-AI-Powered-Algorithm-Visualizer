@@ -80,13 +80,32 @@ function UnionFindIcon() {
   );
 }
 
+function GraphIcon() {
+  return (
+    <svg {...iconProps}>
+      <circle cx="5" cy="6" r="2.5" />
+      <circle cx="19" cy="6" r="2.5" />
+      <circle cx="5" cy="18" r="2.5" />
+      <circle cx="19" cy="18" r="2.5" />
+      <path d="M7.2 6h9.6M5 8.5v7M19 8.5v7M7.2 18h9.6M7 7.8l10 8.4M17 7.8L7 16.2" />
+    </svg>
+  );
+}
+
 const CATEGORY_STYLES: Record<string, CategoryStyle> = {
-  'Trees & Graphs': {
+  Trees: {
     icon: <TreeIcon />,
     text: 'text-indigo-600 dark:text-indigo-400',
     bg: 'bg-indigo-50 dark:bg-indigo-950/40',
     border: 'border-indigo-500 dark:border-indigo-400',
     borderTop: 'border-t-indigo-500 dark:border-t-indigo-400',
+  },
+  Graphs: {
+    icon: <GraphIcon />,
+    text: 'text-teal-600 dark:text-teal-400',
+    bg: 'bg-teal-50 dark:bg-teal-950/40',
+    border: 'border-teal-500 dark:border-teal-400',
+    borderTop: 'border-t-teal-500 dark:border-t-teal-400',
   },
   'Arrays & Stacks': {
     icon: <StackIcon />,

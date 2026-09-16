@@ -52,6 +52,8 @@ builder.Services.AddScoped<SlidingWindowMaximum>();
 builder.Services.AddScoped<LongestSubarrayAbsDiffLimit>();
 builder.Services.AddScoped<LargestRectangleInHistogram>();
 builder.Services.AddScoped<NumberOfIslands>();
+builder.Services.AddScoped<CourseScheduleKahn>();
+builder.Services.AddScoped<CourseScheduleDfs>();
 builder.Services.AddScoped<Permutations>();
 builder.Services.AddScoped<Combinations>();
 builder.Services.AddScoped<Subsets>();

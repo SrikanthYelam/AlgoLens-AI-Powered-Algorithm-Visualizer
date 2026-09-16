@@ -16,8 +16,8 @@ you which one to copy from.
 - Confirm the exact problem (LeetCode number + name if given) and work out the algorithmic approach
   yourself first — state your intended approach in a sentence before coding, per this repo's "Think
   Before Coding" principle.
-- Pick a `category` (`Trees & Graphs`, `Arrays & Stacks`, `Backtracking`, `Heaps & Greedy`, `Dynamic
-  Programming`, or a new one) and find 1–2 existing algorithms in that category to use as a template.
+- Pick a `category` (`Trees`, `Graphs`, `Arrays & Stacks`, `Backtracking`, `Heaps & Greedy`, `Dynamic
+  Programming`, `Union-Find`, or a new one) and find 1–2 existing algorithms in that category to use as a template.
 - Decide the `*State` shape. Reuse before creating:
   - Choose/undo backtracking over `int` values → reuse `BacktrackingState` (Core) /
     `BacktrackingStateView` (frontend).

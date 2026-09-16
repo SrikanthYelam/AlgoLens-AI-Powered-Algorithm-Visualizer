@@ -71,6 +71,24 @@ public static class AlgorithmEndpoints
                 "Solve((int[][])Args[\"grid\"])",
                 steps => ((IslandsState)steps[^1].State).IslandCount));
 
+        MapAlgorithm<CourseScheduleKahn, CourseScheduleRequest, CourseScheduleInput>(
+            app,
+            "/api/algorithms/course-schedule-kahn",
+            request => new CourseScheduleInput(request.NumCourses, request.Prerequisites),
+            judge: new JudgeConfig<CourseScheduleInput>(
+                input => new Dictionary<string, object?> { ["numCourses"] = input.NumCourses, ["prerequisites"] = input.Prerequisites },
+                "Solve((int)Args[\"numCourses\"], (int[][])Args[\"prerequisites\"])",
+                steps => ((CourseScheduleKahnState)steps[^1].State).CanFinish));
+
+        MapAlgorithm<CourseScheduleDfs, CourseScheduleRequest, CourseScheduleInput>(
+            app,
+            "/api/algorithms/course-schedule-dfs",
+            request => new CourseScheduleInput(request.NumCourses, request.Prerequisites),
+            judge: new JudgeConfig<CourseScheduleInput>(
+                input => new Dictionary<string, object?> { ["numCourses"] = input.NumCourses, ["prerequisites"] = input.Prerequisites },
+                "Solve((int)Args[\"numCourses\"], (int[][])Args[\"prerequisites\"])",
+                steps => ((CourseScheduleDfsState)steps[^1].State).CanFinish));
+
         MapAlgorithm<Permutations, PermutationsRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/permutations",
