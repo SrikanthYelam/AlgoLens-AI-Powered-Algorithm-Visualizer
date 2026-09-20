@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import type { Step } from '../types/algorithm';
 
 const PLAYBACK_INTERVAL_MS = 900; // base interval at 1x speed
@@ -57,6 +57,18 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
     return () => clearTimeout(timer);
   }, [isPlaying, currentIndex, lastIndex, speed, loop]);
 
+  // Pressing Play on the last step restarts from the top instead of immediately stopping again.
+  const togglePlay = useCallback(() => {
+    if (isPlaying) {
+      setIsPlaying(false);
+      return;
+    }
+    if (currentIndex === lastIndex) {
+      setCurrentIndex(0);
+    }
+    setIsPlaying(true);
+  }, [isPlaying, currentIndex, lastIndex]);
+
   // Keyboard shortcuts: Space = play/pause, ArrowLeft/Right = prev/next, Home/End = first/last
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -66,7 +78,7 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
 
       if (e.code === 'Space') {
         e.preventDefault();
-        setIsPlaying((p) => !p);
+        togglePlay();
       } else if (e.code === 'ArrowLeft') {
         setCurrentIndex((i) => Math.max(0, i - 1));
       } else if (e.code === 'ArrowRight') {
@@ -80,7 +92,7 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [lastIndex]);
+  }, [lastIndex, togglePlay]);
 
   if (steps.length === 0 || !currentStep) {
     return <p className="text-gray-500 dark:text-gray-400">No steps to show.</p>;
@@ -92,96 +104,106 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
   return (
     <div className="flex flex-col gap-4">
       {/* Controls sit full-width, above the code/visualization split — otherwise they only get
-          half the page width and wrap awkwardly once speed/loop are in the mix. */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setCurrentIndex(0)}
-            disabled={currentIndex === 0}
-            className={navButtonClass}
-            aria-label="First step"
-          >
-            ⏮ First
-          </button>
-          <button
-            type="button"
-            onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-            disabled={currentIndex === 0}
-            className={navButtonClass}
-            aria-label={"← Prev"}
-          >
-            ← Prev
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsPlaying((p) => !p)}
-            className="whitespace-nowrap rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-indigo-500"
-            aria-pressed={isPlaying}
-            aria-label={isPlaying ? 'Pause' : 'Play'}
-          >
-            {isPlaying ? 'Pause' : 'Play'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setCurrentIndex((i) => Math.min(lastIndex, i + 1))}
-            disabled={currentIndex === lastIndex}
-            className={navButtonClass}
-            aria-label={"Next →"}
-          >
-            Next →
-          </button>
-          <button
-            type="button"
-            onClick={() => setCurrentIndex(lastIndex)}
-            disabled={currentIndex === lastIndex}
-            className={navButtonClass}
-            aria-label={"Last ⏭"}
-          >
-            Last ⏭
-          </button>
+          half the page width and wrap awkwardly once speed/loop are in the mix. They stay pinned
+          to the top of the viewport while the (often tall) visualization scrolls underneath, so
+          Prev/Next never scroll out of reach. */}
+      <div className="sticky top-0 z-10 -mb-2 flex flex-col gap-2 border-b border-gray-200 bg-white/95 py-2 backdrop-blur dark:border-gray-800 dark:bg-gray-900/95">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setCurrentIndex(0)}
+              disabled={currentIndex === 0}
+              className={navButtonClass}
+              aria-label="First step"
+            >
+              ⏮ First
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+              disabled={currentIndex === 0}
+              className={navButtonClass}
+              aria-label={"← Prev"}
+            >
+              ← Prev
+            </button>
+            <button
+              type="button"
+              onClick={togglePlay}
+              className="whitespace-nowrap rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-indigo-500"
+              aria-pressed={isPlaying}
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+            >
+              {isPlaying ? 'Pause' : 'Play'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentIndex((i) => Math.min(lastIndex, i + 1))}
+              disabled={currentIndex === lastIndex}
+              className={navButtonClass}
+              aria-label={"Next →"}
+            >
+              Next →
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentIndex(lastIndex)}
+              disabled={currentIndex === lastIndex}
+              className={navButtonClass}
+              aria-label={"Last ⏭"}
+            >
+              Last ⏭
+            </button>
+          </div>
+
+          <span className="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+            Step {currentIndex + 1} of {steps.length}
+          </span>
+
+          <span className="hidden whitespace-nowrap text-xs text-gray-400 md:inline dark:text-gray-500">
+            <kbd className="rounded border border-gray-300 px-1 font-sans dark:border-gray-600">←</kbd>{' '}
+            <kbd className="rounded border border-gray-300 px-1 font-sans dark:border-gray-600">→</kbd> step ·{' '}
+            <kbd className="rounded border border-gray-300 px-1 font-sans dark:border-gray-600">Space</kbd> play
+          </span>
+
+          <div className="ml-auto flex items-center gap-3">
+            <label className="text-sm text-gray-600 dark:text-gray-300">Speed</label>
+            <select
+              value={String(speed)}
+              onChange={(e) => setSpeed(Number(e.target.value))}
+              className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-800 dark:border-gray-600"
+              aria-label="Playback speed"
+            >
+              <option value={0.25}>0.25x</option>
+              <option value={0.5}>0.5x</option>
+              <option value={1}>1x</option>
+              <option value={2}>2x</option>
+              <option value={4}>4x</option>
+            </select>
+
+            <button
+              type="button"
+              onClick={() => setLoop((l) => !l)}
+              className={`whitespace-nowrap rounded-md px-2 py-1 text-sm font-medium transition-colors duration-150 ${loop ? 'bg-green-600 text-white hover:bg-green-500' : 'border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800'}`}
+              aria-pressed={loop}
+              aria-label="Toggle loop"
+            >
+              {loop ? 'Looping' : 'Loop Off'}
+            </button>
+          </div>
         </div>
 
-        <span className="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-          Step {currentIndex + 1} of {steps.length}
-        </span>
-
-        <div className="ml-auto flex items-center gap-3">
-          <label className="text-sm text-gray-600 dark:text-gray-300">Speed</label>
-          <select
-            value={String(speed)}
-            onChange={(e) => setSpeed(Number(e.target.value))}
-            className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-800 dark:border-gray-600"
-            aria-label="Playback speed"
-          >
-            <option value={0.25}>0.25x</option>
-            <option value={0.5}>0.5x</option>
-            <option value={1}>1x</option>
-            <option value={2}>2x</option>
-            <option value={4}>4x</option>
-          </select>
-
-          <button
-            type="button"
-            onClick={() => setLoop((l) => !l)}
-            className={`whitespace-nowrap rounded-md px-2 py-1 text-sm font-medium transition-colors duration-150 ${loop ? 'bg-green-600 text-white hover:bg-green-500' : 'border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800'}`}
-            aria-pressed={loop}
-            aria-label="Toggle loop"
-          >
-            {loop ? 'Looping' : 'Loop Off'}
-          </button>
-        </div>
+        <input
+          type="range"
+          min={0}
+          max={lastIndex}
+          value={currentIndex}
+          onChange={(e) => setCurrentIndex(Number(e.target.value))}
+          className="w-full accent-indigo-600"
+          aria-label="Step position"
+        />
       </div>
-
-      <input
-        type="range"
-        min={0}
-        max={lastIndex}
-        value={currentIndex}
-        onChange={(e) => setCurrentIndex(Number(e.target.value))}
-        className="w-full accent-indigo-600"
-        aria-label="Step position"
-      />
 
       <div className={renderCode ? 'grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start' : undefined}>
         <div className="flex flex-col gap-4">
@@ -190,7 +212,11 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
             className="step-fade rounded-lg border border-gray-200 p-4 dark:border-gray-700"
           >
             <div className="flex items-start justify-between gap-3">
-              <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{currentStep.action}</p>
+              {currentStep.explanation ? (
+                <p className="text-base leading-relaxed text-gray-900 dark:text-gray-100">{currentStep.explanation}</p>
+              ) : (
+                <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{currentStep.action}</p>
+              )}
 
               <button
                 type="button"
@@ -215,9 +241,13 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
               </button>
             </div>
 
-            <p className="mt-2 text-sm italic text-gray-500 dark:text-gray-400">
-              {currentStep.explanation ?? 'No AI explanation available for this step.'}
-            </p>
+            {currentStep.explanation ? (
+              <p className="mt-2 font-mono text-xs text-gray-500 dark:text-gray-400">{currentStep.action}</p>
+            ) : (
+              <p className="mt-2 text-sm italic text-gray-500 dark:text-gray-400">
+                No AI explanation available for this step.
+              </p>
+            )}
           </div>
 
           <div key={`state-${currentStep.stepNumber}`} className="step-fade">

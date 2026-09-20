@@ -74,6 +74,27 @@ describe('StepPlayer', () => {
     expect(screen.getByText('Step 2 of 3')).toBeInTheDocument();
   });
 
+  it('restarts from the first step when Play is pressed on the last step', async () => {
+    const user = userEvent.setup();
+    renderPlayer();
+
+    await user.click(screen.getByRole('button', { name: /Last/ }));
+    expect(screen.getByText('Step 3 of 3')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Play' }));
+
+    expect(screen.getByText('Step 1 of 3')).toBeInTheDocument();
+  });
+
+  it('leads with the AI explanation and demotes the action to a caption when one exists', () => {
+    renderPlayer();
+
+    const explanation = screen.getByText('First explanation');
+    const action = screen.getByText('Step zero');
+    expect(explanation).toHaveClass('text-base');
+    expect(action).toHaveClass('text-xs');
+  });
+
   it('renders the algorithm-specific state for the current step', () => {
     renderPlayer();
 

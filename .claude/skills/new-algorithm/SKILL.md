@@ -97,6 +97,10 @@ you which one to copy from.
     specific), `relatedProblems` (name + one-line connection to related LeetCode problems),
     `judgeSignature` (the real LeetCode method signature, cast-for-cast matching the backend's
     `InvocationExpression`). Place it near other algorithms in the same category.
+11. `algolens-ui/src/algorithms/examples.ts`: add one entry keyed by the same `id` with 2–3 one-click
+    example inputs — a typical case plus at least one edge/failure/worst case, labelled by what makes
+    it interesting. Each `input` must be exactly the request body the `InputForm` submits.
+    `examples.test.ts` fails the frontend test run if a registry entry has no examples.
 
 ## 5. Verify — don't skip this
 

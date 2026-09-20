@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { getExamples } from '../algorithms/examples';
 import { getAlgorithm } from '../algorithms/registry';
 import { getCategoryStyle } from '../algorithms/categoryStyles';
 import { getAlgorithmSource, runAlgorithm, regenerateExplanations } from '../api/client';
@@ -18,6 +19,8 @@ export function AlgorithmPage() {
   const [error, setError] = useState<string | null>(null);
   const [sourceCode, setSourceCode] = useState<string | null>(null);
   const [lastInput, setLastInput] = useState<unknown | null>(null);
+  // Label of the example last run via a preset chip; null when the last run came from the form.
+  const [activeExample, setActiveExample] = useState<string | null>(null);
 
   // Step cap for large runs — default to 500 displayed steps, with an option to show the full run.
   const STEP_DISPLAY_CAP = 500;
@@ -27,6 +30,7 @@ export function AlgorithmPage() {
     }
     setSourceCode(null);
     setLastInput(null);
+    setActiveExample(null);
     getAlgorithmSource(algorithm.id)
       .then((response) => setSourceCode(response.source))
       .catch(() => setSourceCode(null));
@@ -44,11 +48,13 @@ export function AlgorithmPage() {
   }
 
   const style = getCategoryStyle(algorithm.category);
+  const examples = getExamples(algorithm.id);
 
-  async function handleSubmit(body: unknown) {
+  async function handleSubmit(body: unknown, exampleLabel: string | null = null) {
     setIsLoading(true);
     setError(null);
     setLastInput(body);
+    setActiveExample(exampleLabel);
     try {
       const response = await runAlgorithm(algorithm!.id, body);
       setFullSteps(response.steps);
@@ -90,7 +96,35 @@ export function AlgorithmPage() {
       </div>
 
       <div className={`rounded-lg border border-gray-200 border-t-4 p-4 dark:border-gray-700 ${style.borderTop}`}>
-        <algorithm.InputForm onSubmit={handleSubmit} isLoading={isLoading} />
+        {examples.length > 0 && (
+          <div className="mb-4 flex flex-col gap-2 border-b border-gray-200 pb-4 dark:border-gray-700">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Try an example:</span>
+              {examples.map((example) => (
+                <button
+                  key={example.label}
+                  type="button"
+                  onClick={() => handleSubmit(example.input, example.label)}
+                  disabled={isLoading}
+                  aria-pressed={activeExample === example.label}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-150 disabled:opacity-50 ${
+                    activeExample === example.label
+                      ? 'border-indigo-600 bg-indigo-600 text-white'
+                      : 'border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  {example.label}
+                </button>
+              ))}
+            </div>
+            {activeExample && (
+              <p className="truncate font-mono text-xs text-gray-500 dark:text-gray-400" title={JSON.stringify(lastInput)}>
+                Input: {JSON.stringify(lastInput)}
+              </p>
+            )}
+          </div>
+        )}
+        <algorithm.InputForm onSubmit={(body) => handleSubmit(body)} isLoading={isLoading} />
       </div>
 
       {error && (
