@@ -29,6 +29,12 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: 'Classic', input: { heights: [2, 1, 5, 6, 2, 3] } },
     { label: 'Ascending staircase', input: { heights: [1, 2, 3, 4, 5] } },
   ],
+  'string-compression': [
+    { label: '"aabbccc"', input: { chars: 'aabbccc' } },
+    { label: 'Run of 12 — multi-digit count', input: { chars: 'abbbbbbbbbbbb' } },
+    { label: 'No repeats — nothing shrinks', input: { chars: 'abc' } },
+    { label: 'Single character', input: { chars: 'a' } },
+  ],
   'number-of-islands': [
     {
       label: 'Three islands',
