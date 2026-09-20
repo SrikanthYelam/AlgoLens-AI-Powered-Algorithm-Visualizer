@@ -12,6 +12,15 @@ import { HistogramInputForm } from './largestRectangleInHistogram/HistogramInput
 import { HistogramStateView } from './largestRectangleInHistogram/HistogramStateView';
 import { StringCompressionInputForm } from './stringCompression/StringCompressionInputForm';
 import { StringCompressionStateView } from './stringCompression/StringCompressionStateView';
+import { DecodeStringInputForm } from './decodeString/DecodeStringInputForm';
+import { DecodeStringStateView } from './decodeString/DecodeStringStateView';
+import { MoveZeroesInputForm } from './moveZeroes/MoveZeroesInputForm';
+import { MoveZeroesStateView } from './moveZeroes/MoveZeroesStateView';
+import { ContainerInputForm, TrappingRainWaterInputForm } from './waterContainers/HeightsInputForms';
+import { ContainerWithMostWaterStateView } from './containerWithMostWater/ContainerWithMostWaterStateView';
+import { TrappingRainWaterStateView } from './trappingRainWater/TrappingRainWaterStateView';
+import { EncodeAndDecodeStringsInputForm } from './encodeAndDecodeStrings/EncodeAndDecodeStringsInputForm';
+import { EncodeAndDecodeStringsStateView } from './encodeAndDecodeStrings/EncodeAndDecodeStringsStateView';
 import { IslandsInputForm } from './numberOfIslands/IslandsInputForm';
 import { IslandsStateView } from './numberOfIslands/IslandsStateView';
 import { CourseScheduleInputForm } from './courseSchedule/CourseScheduleInputForm';
@@ -201,10 +210,35 @@ export const algorithms: AlgorithmDefinition[] = [
     StateView: HistogramStateView,
   },
   {
+    id: 'decode-string',
+    name: 'Decode String',
+    description: 'Expand an encoded string like "3[a2[c]]" into "accaccacc", using a stack that remembers each open bracket\'s prefix and repeat count.',
+    category: 'Arrays & Stacks',
+    pattern: 'Stack (Nested Structure)',
+    timeComplexity: 'O(n + L)',
+    spaceComplexity: 'O(L)',
+    complexityNotes: "Every input character is processed once, but each ']' rebuilds a string by repeating the inner one, so the total work is proportional to the length L of the decoded output — which can be far larger than the input. The stack holds at most one frame per nesting level, and the strings saved on it never total more than L.",
+    hints: [
+      "Nested brackets mean the innermost group has to be finished before the group around it — a last-in, first-out structure is a strong hint.",
+      'Scan left to right while building "the string at the current nesting level". Letters append to it, and digits accumulate into a repeat count (counts can have several digits, like 12[a]).',
+      "On '[', you're about to start a nested level: save the string built so far and the pending repeat count on a stack, then reset both.",
+      "On ']', the nested level is finished: pop the saved (prefix, count), and the new current string is prefix + (the current string repeated count times).",
+    ],
+    relatedProblems: [
+      { name: 'Basic Calculator', note: 'The same "save the outer level on a stack at ( and restore it at )" idea, applied to arithmetic.' },
+      { name: 'Valid Parentheses', note: 'The simplest stack-and-brackets problem — no decoding, just checking the nesting is balanced.' },
+      { name: 'Encode and Decode Strings', note: 'Another round trip through a counted format, decoded with a cursor instead of a stack.' },
+      { name: 'String Compression', note: 'Compresses runs into "character + count" — the flat, single-level cousin of this problem.' },
+    ],
+    judgeSignature: 'public static string Solve(string s)',
+    InputForm: DecodeStringInputForm,
+    StateView: DecodeStringStateView,
+  },
+  {
     id: 'string-compression',
     name: 'String Compression',
     description: 'Compress runs of repeated characters in place — "aabbccc" becomes "a2b2c3" — using a read pointer and a write pointer over the same array.',
-    category: 'Arrays & Stacks',
+    category: 'Two Pointers',
     pattern: 'Two Pointers (Read/Write)',
     timeComplexity: 'O(n)',
     spaceComplexity: 'O(1)',
@@ -224,6 +258,106 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(char[] chars)',
     InputForm: StringCompressionInputForm,
     StateView: StringCompressionStateView,
+  },
+  {
+    id: 'move-zeroes',
+    name: 'Move Zeroes',
+    description: 'Move every zero to the end of an array, in place, while keeping the non-zero elements in their original order.',
+    category: 'Two Pointers',
+    pattern: 'Two Pointers (Read/Write)',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(1)',
+    complexityNotes: 'The read pointer visits each element exactly once and the write pointer only moves forward. Each element causes at most one O(1) swap, so the whole pass is linear, and nothing beyond a few integers is allocated.',
+    hints: [
+      "The non-zero elements must keep their relative order, and you can't allocate a second array — so think about moving non-zeros forward rather than pushing zeros backward.",
+      'Keep a write pointer marking the next slot a non-zero belongs in, and scan the array with a separate read pointer.',
+      'Whenever the read pointer lands on a non-zero, put it in the write slot and advance the write pointer. Everything before the write pointer is then always the non-zeros found so far, in order.',
+      "Swapping (instead of copying and zero-filling afterwards) finishes in one pass: the zero that was sitting in the write slot lands where the non-zero came from. Before any zero has been seen, read and write are the same index, so the swap is with itself and harmless.",
+    ],
+    relatedProblems: [
+      { name: 'Remove Element', note: 'The same write-pointer idea with the removed values simply dropped instead of preserved at the end.' },
+      { name: 'Remove Duplicates from Sorted Array', note: 'A write pointer that keeps only the first of each run — the closest sibling to this technique.' },
+      { name: 'Sort Colors', note: 'Partitioning in place again, but into three groups, which needs a third pointer.' },
+      { name: 'String Compression', note: 'In-place read/write pointers where the written output is shorter than what was read.' },
+    ],
+    judgeSignature: 'public static void Solve(int[] nums)',
+    InputForm: MoveZeroesInputForm,
+    StateView: MoveZeroesStateView,
+  },
+  {
+    id: 'container-with-most-water',
+    name: 'Container With Most Water',
+    description: 'Find the two bars that, with the x-axis, hold the most water — by starting with the widest container and always moving the shorter side inward.',
+    category: 'Two Pointers',
+    pattern: 'Two Pointers (Converging)',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(1)',
+    complexityNotes: 'Every step moves one pointer inward and the pointers meet after n − 1 steps, so the pass is linear — versus O(n²) for checking every pair. Only a few integers are kept.',
+    hints: [
+      "A container's area is (distance between the two bars) × (the shorter of their heights). Checking every pair of bars works but costs O(n²).",
+      'Start with the widest container possible — the first and last bars. From here the width can only shrink, so the only way to do better is a taller wall.',
+      "The shorter bar caps the height. Moving the taller bar's pointer can't help: the width shrinks and the height is still capped by that same shorter bar. So move the pointer on the shorter bar inward instead.",
+      "Record the area at every step and keep the maximum. When the pointers meet, every container that could possibly have been the best has either been measured or provably ruled out.",
+    ],
+    relatedProblems: [
+      { name: 'Trapping Rain Water', note: 'The same converging pointers on a bar chart, but measuring the water held above each bar instead of one best container.' },
+      { name: 'Two Sum II - Input Array Is Sorted', note: 'Converging pointers again, moving whichever end brings the sum closer to the target.' },
+      { name: '3Sum', note: 'Fixes one element and runs converging pointers over the rest.' },
+      { name: 'Largest Rectangle in Histogram', note: 'Also maximizes an area over bars, but with a monotonic stack because the rectangle must fit under every bar it spans.' },
+    ],
+    judgeSignature: 'public static int Solve(int[] height)',
+    InputForm: ContainerInputForm,
+    StateView: ContainerWithMostWaterStateView,
+  },
+  {
+    id: 'trapping-rain-water',
+    name: 'Trapping Rain Water',
+    description: 'Compute how much rain water a bar chart traps, using two pointers and the tallest bar seen from each side.',
+    category: 'Two Pointers',
+    pattern: 'Two Pointers (Converging)',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(1)',
+    complexityNotes: 'Each bar is processed exactly once as the pointers close in, and only the two running maxima and a total are stored — versus O(n) extra space for the version that precomputes a left-max and right-max array for every bar.',
+    hints: [
+      "The water above a bar is min(tallest bar to its left, tallest bar to its right) − its own height, when that is positive.",
+      "Precomputing both maxima for every bar takes two passes and two arrays. Can you get the same answer scanning from both ends at once?",
+      "Keep left and right pointers plus the running maximum seen from each side. Always process the pointer whose bar is shorter: that side's water level is decided by its own side's maximum, because a taller-or-equal bar is already known to exist on the other side.",
+      "If the bar is at least as tall as its side's maximum, it becomes the new maximum and holds nothing; otherwise it holds (maximum − height). Then advance that pointer. The bar where the pointers meet is the tallest overall and holds nothing.",
+    ],
+    relatedProblems: [
+      { name: 'Container With Most Water', note: 'Converging pointers on the same kind of bar chart, but looking for one best container rather than water over every bar.' },
+      { name: 'Largest Rectangle in Histogram', note: 'A monotonic stack is the other classic tool for bar-chart problems, and can solve this problem too.' },
+      { name: 'Product of Array Except Self', note: 'The same "what is to my left / to my right" idea, done with prefix and suffix passes.' },
+      { name: 'Trapping Rain Water II', note: 'The 2D version, where a priority queue replaces the two pointers.' },
+    ],
+    judgeSignature: 'public static int Solve(int[] height)',
+    InputForm: TrappingRainWaterInputForm,
+    StateView: TrappingRainWaterStateView,
+  },
+  {
+    id: 'encode-and-decode-strings',
+    name: 'Encode and Decode Strings',
+    description: 'Encode a list of strings into one string and decode it back — even when the strings contain any character — by prefixing each with its length and a "#".',
+    category: 'Two Pointers',
+    pattern: 'Length-Prefix Encoding',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Encoding appends each string once, and decoding touches each character once: the scan pointer only walks the short length prefix, and the string itself is skipped in one jump of `length` characters. n is the total number of characters, and the encoded output itself takes O(n) space.',
+    hints: [
+      'A delimiter such as "," or "#" alone cannot work: any character you pick might also appear inside one of the strings.',
+      'Instead of marking where a string ends, record how long it is. Write each string as its length, a separator, then the string itself — "4#lint".',
+      'To decode, keep a start pointer i at the beginning of a token and move a second pointer j forward until it hits "#". Since i is always at the start of a length prefix, that first "#" can only be the separator, never a character inside a string.',
+      'The digits between i and j give the length L, and the next L characters are the string, taken verbatim. Then jump i past them. You never inspect the string\'s contents, so "#" and digits inside them are harmless.',
+    ],
+    relatedProblems: [
+      { name: 'Decode String', note: 'Another counted format to parse, but nested, so it needs a stack instead of a single cursor.' },
+      { name: 'Serialize and Deserialize Binary Tree', note: 'Another encode-then-decode round trip, where the format has to be unambiguous.' },
+      { name: 'String Compression', note: 'Writes each run as "character + count" in place — a compact encoding with a read/write pointer pair.' },
+    ],
+    judgeSignature:
+      'public static string Encode(IList<string> strs)\n{\n    // your code here\n}\n\npublic static IList<string> Decode(string s)\n{\n    // your code here\n}',
+    InputForm: EncodeAndDecodeStringsInputForm,
+    StateView: EncodeAndDecodeStringsStateView,
   },
   {
     id: 'number-of-islands',

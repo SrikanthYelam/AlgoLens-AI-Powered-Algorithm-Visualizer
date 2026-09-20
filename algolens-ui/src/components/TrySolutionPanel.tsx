@@ -10,6 +10,11 @@ interface TrySolutionPanelProps {
 }
 
 function skeletonFor(judgeSignature: string): string {
+  // A multi-line judgeSignature is already a complete skeleton (e.g. Encode and Decode Strings,
+  // where the user implements two methods), so don't wrap it in one more body.
+  if (judgeSignature.includes('\n')) {
+    return judgeSignature;
+  }
   return `${judgeSignature}\n{\n    // your code here\n}`;
 }
 

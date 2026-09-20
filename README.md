@@ -48,6 +48,11 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Accounts Merge (Union-Find over email strings instead of plain indices)
 * Number of Islands II (Union-Find on a grid, tracking the island count as land is added one cell at a time)
 * String Compression (in-place read/write two pointers, run-length encoding an array)
+* Move Zeroes (in-place read/write two pointers, swapping non-zeros forward)
+* Container With Most Water (converging two pointers)
+* Trapping Rain Water (converging two pointers with running maxima)
+* Decode String (a stack of saved frames for nested repeat counts)
+* Encode and Decode Strings (length-prefix encoding, decoded with a start pointer and a scan pointer)
 
 ### AI Explanations
 
@@ -104,6 +109,19 @@ Both use a fixed-window limiter with `QueueLimit: 0`, so an over-limit request i
 /algolens-ui        — React + TypeScript + Vite frontend
 ```
 
+## Running Locally
+
+Prerequisites: the .NET 8 SDK and Node.js. Optionally set `OPENAI_API_KEY` to get AI step explanations — everything else works without it.
+
+From the repo root, install once, then start the API and the UI together:
+
+```bash
+npm install
+npm run dev
+```
+
+The API runs on http://localhost:5119 and the UI on http://localhost:5173. Stopping either process stops both. (You'll also need `npm install` inside `algolens-ui/` the first time.)
+
 ## Development Notes
 
 > To ease local development when Vite picks a non-default dev port (e.g., 5174), the API accepts a comma-separated list of allowed dev frontend origins via the DEV_FRONTEND_ORIGINS environment variable. By default this is set to http://localhost:5173. Example:
@@ -128,7 +146,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 38
+* Additional algorithms beyond the current 43
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 
