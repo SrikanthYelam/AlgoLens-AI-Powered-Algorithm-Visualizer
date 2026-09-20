@@ -1,0 +1,11 @@
+{
+  "name": "algolens",
+  "private": true,
+  "description": "Repo-root convenience scripts. The frontend's own package.json lives in algolens-ui/.",
+  "scripts": {
+    "dev": "concurrently --kill-others --names api,ui --prefix-colors blue,green \"dotnet run --project src/AlgoLens.Api\" \"npm --prefix algolens-ui run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
