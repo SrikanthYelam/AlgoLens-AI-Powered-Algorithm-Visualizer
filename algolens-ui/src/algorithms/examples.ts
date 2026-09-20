@@ -35,6 +35,35 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: 'No repeats — nothing shrinks', input: { chars: 'abc' } },
     { label: 'Single character', input: { chars: 'a' } },
   ],
+  'decode-string': [
+    { label: '"3[a]2[bc]"', input: { s: '3[a]2[bc]' } },
+    { label: 'Nested — "3[a2[c]]"', input: { s: '3[a2[c]]' } },
+    { label: 'Deeply nested', input: { s: '2[a2[b2[c]]]' } },
+    { label: 'Multi-digit count', input: { s: '10[a]' } },
+    { label: 'Letters around a group', input: { s: 'ab2[c]d' } },
+  ],
+  'move-zeroes': [
+    { label: 'Classic', input: { nums: [0, 1, 0, 3, 12] } },
+    { label: 'Leading zeros', input: { nums: [0, 0, 0, 1] } },
+    { label: 'No zeros — every swap is with itself', input: { nums: [1, 2, 3] } },
+    { label: 'Single zero', input: { nums: [0] } },
+  ],
+  'container-with-most-water': [
+    { label: 'Classic', input: { heights: [1, 8, 6, 2, 5, 4, 8, 3, 7] } },
+    { label: 'Tall ends beat everything', input: { heights: [9, 1, 1, 1, 9] } },
+    { label: 'Equal heights — widest wins', input: { heights: [5, 5, 5, 5] } },
+  ],
+  'trapping-rain-water': [
+    { label: 'Classic', input: { heights: [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1] } },
+    { label: 'Tall wall on the right', input: { heights: [4, 2, 0, 3, 2, 5] } },
+    { label: 'One deep valley', input: { heights: [5, 0, 5] } },
+    { label: 'Increasing — traps nothing', input: { heights: [1, 2, 3, 4, 5] } },
+  ],
+  'encode-and-decode-strings': [
+    { label: 'Classic', input: { strs: ['lint', 'code', 'love', 'you'] } },
+    { label: 'Strings containing "#" and digits', input: { strs: ['a#b', '3#x', '#'] } },
+    { label: 'Empty strings', input: { strs: ['', 'a', ''] } },
+  ],
   'number-of-islands': [
     {
       label: 'Three islands',

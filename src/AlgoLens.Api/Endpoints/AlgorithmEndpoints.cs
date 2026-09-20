@@ -395,6 +395,56 @@ public static class AlgorithmEndpoints
                 "var __k = Solve((char[])Args[\"chars\"]);\nnew string((char[])Args[\"chars\"], 0, __k)",
                 steps => ((StringCompressionState)steps[^1].State).Compressed));
 
+        MapAlgorithm<MoveZeroes, MoveZeroesRequest, int[]>(
+            app,
+            "/api/algorithms/move-zeroes",
+            request => request.Nums.ToArray(),
+            judge: new JudgeConfig<int[]>(
+                nums => new Dictionary<string, object?> { ["nums"] = nums },
+                // Real signature returns void and rearranges `nums` in place, so call Solve for
+                // its effect, then judge the (now-mutated) array itself — same trick as Recover BST.
+                "Solve((int[])Args[\"nums\"]);\nArgs[\"nums\"]",
+                steps => ((MoveZeroesState)steps[^1].State).Nums));
+
+        MapAlgorithm<ContainerWithMostWater, HistogramRequest, IReadOnlyList<int>>(
+            app,
+            "/api/algorithms/container-with-most-water",
+            request => request.Heights,
+            judge: new JudgeConfig<IReadOnlyList<int>>(
+                heights => new Dictionary<string, object?> { ["height"] = heights.ToArray() },
+                "Solve((int[])Args[\"height\"])",
+                steps => ((ContainerWithMostWaterState)steps[^1].State).MaxArea));
+
+        MapAlgorithm<TrappingRainWater, HistogramRequest, IReadOnlyList<int>>(
+            app,
+            "/api/algorithms/trapping-rain-water",
+            request => request.Heights,
+            judge: new JudgeConfig<IReadOnlyList<int>>(
+                heights => new Dictionary<string, object?> { ["height"] = heights.ToArray() },
+                "Solve((int[])Args[\"height\"])",
+                steps => ((TrappingRainWaterState)steps[^1].State).Total));
+
+        MapAlgorithm<DecodeString, DecodeStringRequest, string>(
+            app,
+            "/api/algorithms/decode-string",
+            request => request.S,
+            judge: new JudgeConfig<string>(
+                s => new Dictionary<string, object?> { ["s"] = s },
+                "Solve((string)Args[\"s\"])",
+                steps => ((DecodeStringState)steps[^1].State).Result));
+
+        MapAlgorithm<EncodeAndDecodeStrings, EncodeAndDecodeStringsRequest, IReadOnlyList<string>>(
+            app,
+            "/api/algorithms/encode-and-decode-strings",
+            request => request.Strs,
+            judge: new JudgeConfig<IReadOnlyList<string>>(
+                strs => new Dictionary<string, object?> { ["strs"] = strs.ToList() },
+                // A design problem (LeetCode's `Codec` class), so the user supplies both halves and
+                // the judge checks the round trip: decoding what they encoded must give back the
+                // original list.
+                "Decode(Encode((IList<string>)Args[\"strs\"]))",
+                steps => ((EncodeAndDecodeStringsState)steps[^1].State).Decoded));
+
         MapAlgorithm<SortedListToBst, SortedListToBstRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/sorted-list-to-bst",

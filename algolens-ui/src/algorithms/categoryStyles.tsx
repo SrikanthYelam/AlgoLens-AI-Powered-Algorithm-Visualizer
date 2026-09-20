@@ -80,6 +80,16 @@ function UnionFindIcon() {
   );
 }
 
+function TwoPointersIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M3 18h18" />
+      <path d="M7 4v8M4.5 9.5L7 12l2.5-2.5" />
+      <path d="M17 4v8M14.5 9.5L17 12l2.5-2.5" />
+    </svg>
+  );
+}
+
 function GraphIcon() {
   return (
     <svg {...iconProps}>
@@ -141,6 +151,13 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
     bg: 'bg-rose-50 dark:bg-rose-950/40',
     border: 'border-rose-500 dark:border-rose-400',
     borderTop: 'border-t-rose-500 dark:border-t-rose-400',
+  },
+  'Two Pointers': {
+    icon: <TwoPointersIcon />,
+    text: 'text-fuchsia-600 dark:text-fuchsia-400',
+    bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/40',
+    border: 'border-fuchsia-500 dark:border-fuchsia-400',
+    borderTop: 'border-t-fuchsia-500 dark:border-t-fuchsia-400',
   },
 };
 
