@@ -369,6 +369,20 @@ public static class AlgorithmEndpoints
                 "Solve((IList<IList<string>>)Args[\"accounts\"])",
                 steps => ((AccountsMergeState)steps[^1].State).Groups));
 
+        MapAlgorithm<NumberOfIslandsII, NumberOfIslandsIIRequest, NumberOfIslandsIIInput>(
+            app,
+            "/api/algorithms/number-of-islands-ii",
+            request => new NumberOfIslandsIIInput(request.Rows, request.Cols, request.Positions),
+            judge: new JudgeConfig<NumberOfIslandsIIInput>(
+                input => new Dictionary<string, object?>
+                {
+                    ["m"] = input.Rows,
+                    ["n"] = input.Cols,
+                    ["positions"] = input.Positions,
+                },
+                "Solve((int)Args[\"m\"], (int)Args[\"n\"], (int[][])Args[\"positions\"])",
+                steps => ((NumberOfIslandsIIState)steps[^1].State).Counts));
+
         MapAlgorithm<SortedListToBst, SortedListToBstRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/sorted-list-to-bst",

@@ -60,6 +60,8 @@ import { RedundantConnectionInputForm } from './redundantConnection/RedundantCon
 import { RedundantConnectionStateView } from './redundantConnection/RedundantConnectionStateView';
 import { AccountsMergeInputForm } from './accountsMerge/AccountsMergeInputForm';
 import { AccountsMergeStateView } from './accountsMerge/AccountsMergeStateView';
+import { NumberOfIslandsIIInputForm } from './numberOfIslandsII/NumberOfIslandsIIInputForm';
+import { NumberOfIslandsIIStateView } from './numberOfIslandsII/NumberOfIslandsIIStateView';
 import { SortedListToBstInputForm } from './sortedListToBst/SortedListToBstInputForm';
 import { SortedListToBstStateView } from './sortedListToBst/SortedListToBstStateView';
 
@@ -986,6 +988,30 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static IList<IList<string>> Solve(IList<IList<string>> accounts)',
     InputForm: AccountsMergeInputForm,
     StateView: AccountsMergeStateView,
+  },
+  {
+    id: 'number-of-islands-ii',
+    name: 'Number of Islands II',
+    description: 'Add land to an all-water grid one cell at a time and report the island count after every addition, using Union-Find to merge islands as they touch.',
+    category: 'Union-Find',
+    pattern: 'Union-Find (Dynamic Connectivity)',
+    timeComplexity: 'O(k · α(m·n))',
+    spaceComplexity: 'O(m · n)',
+    complexityNotes: 'Each of the k added positions does at most four Find/Union pairs (one per neighbor), each nearly O(1) amortized thanks to path compression, so the whole run is effectively linear in the number of positions. The flat parent array over the m × n grid is the only extra space.',
+    hints: [
+      'Re-counting islands with a full flood fill after every addition would cost O(m·n) per position — there has to be a way to update the count incrementally instead.',
+      'Keep a flat parent array over the grid cells (index = row * n + col), with -1 meaning "still water" and parent[i] = i meaning "land, and the root of its own island".',
+      'Adding land at a new cell starts a brand-new island, so the count goes up by one — unless that cell is already land, in which case nothing changes.',
+      "Then union the new cell with each of its four neighbors that is already land: every union that joins two previously-separate islands decrements the count by one, and a neighbor already in the same island changes nothing.",
+    ],
+    relatedProblems: [
+      { name: 'Number of Islands', note: 'The static version of this problem — count the islands of a fixed grid in one pass, usually with a flood fill instead of Union-Find.' },
+      { name: 'Number of Provinces', note: 'The same Union-Find count-the-groups idea over an adjacency matrix instead of a growing grid.' },
+      { name: 'Redundant Connection', note: 'Another Union-Find problem, using a failed union to detect a cycle instead of tracking a running component count.' },
+    ],
+    judgeSignature: 'public static IList<int> Solve(int m, int n, int[][] positions)',
+    InputForm: NumberOfIslandsIIInputForm,
+    StateView: NumberOfIslandsIIStateView,
   },
 ];
 
