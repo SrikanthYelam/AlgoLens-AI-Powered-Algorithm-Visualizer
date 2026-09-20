@@ -10,6 +10,8 @@ import { LongestSubarrayAbsDiffLimitInputForm } from './longestSubarrayAbsDiffLi
 import { LongestSubarrayAbsDiffLimitStateView } from './longestSubarrayAbsDiffLimit/LongestSubarrayAbsDiffLimitStateView';
 import { HistogramInputForm } from './largestRectangleInHistogram/HistogramInputForm';
 import { HistogramStateView } from './largestRectangleInHistogram/HistogramStateView';
+import { StringCompressionInputForm } from './stringCompression/StringCompressionInputForm';
+import { StringCompressionStateView } from './stringCompression/StringCompressionStateView';
 import { IslandsInputForm } from './numberOfIslands/IslandsInputForm';
 import { IslandsStateView } from './numberOfIslands/IslandsStateView';
 import { CourseScheduleInputForm } from './courseSchedule/CourseScheduleInputForm';
@@ -197,6 +199,31 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(int[] heights)',
     InputForm: HistogramInputForm,
     StateView: HistogramStateView,
+  },
+  {
+    id: 'string-compression',
+    name: 'String Compression',
+    description: 'Compress runs of repeated characters in place — "aabbccc" becomes "a2b2c3" — using a read pointer and a write pointer over the same array.',
+    category: 'Arrays & Stacks',
+    pattern: 'Two Pointers (Read/Write)',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(1)',
+    complexityNotes: "The read pointer visits every character exactly once, and the write pointer only ever moves forward, so the whole pass is linear. Extra space is just a few integers — the compressed output is written over the input array itself, and turning a run's length into digits touches only O(log n) characters at a time.",
+    hints: [
+      "The array itself has to be modified and only constant extra space is allowed, so building a new string and copying it back is off the table.",
+      'Use two pointers over the same array: a read pointer that scans ahead through the input, and a write pointer that lays down the compressed output behind it.',
+      "At each position, advance read across the entire run of equal characters, then write the character and — only if the run is longer than 1 — the run's length, one digit at a time (a run of 12 is written as '1' then '2', not as a single cell).",
+      "Write can never overtake read: a run of length c writes at most c cells, so you never overwrite a character before you've read it. Once read reaches the end, the answer is simply where write ended up.",
+    ],
+    relatedProblems: [
+      { name: 'Remove Duplicates from Sorted Array', note: 'The same read/write pointer overwrite-in-place technique, keeping one copy per run instead of encoding its length.' },
+      { name: 'Move Zeroes', note: 'Another in-place pass where a write pointer trails a read pointer.' },
+      { name: 'Count and Say', note: 'Builds each term by run-length encoding the previous one — the same "character and its count" idea, with a new string each time.' },
+      { name: 'Decode String', note: 'The inverse direction: expanding counted runs back out.' },
+    ],
+    judgeSignature: 'public static int Solve(char[] chars)',
+    InputForm: StringCompressionInputForm,
+    StateView: StringCompressionStateView,
   },
   {
     id: 'number-of-islands',

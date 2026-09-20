@@ -47,6 +47,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Redundant Connection (Union-Find, detecting the edge that closes a cycle)
 * Accounts Merge (Union-Find over email strings instead of plain indices)
 * Number of Islands II (Union-Find on a grid, tracking the island count as land is added one cell at a time)
+* String Compression (in-place read/write two pointers, run-length encoding an array)
 
 ### AI Explanations
 
@@ -127,7 +128,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 37
+* Additional algorithms beyond the current 38
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

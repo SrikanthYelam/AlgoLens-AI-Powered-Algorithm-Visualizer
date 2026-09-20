@@ -83,6 +83,7 @@ builder.Services.AddScoped<NumberOfProvinces>();
 builder.Services.AddScoped<RedundantConnection>();
 builder.Services.AddScoped<AccountsMerge>();
 builder.Services.AddScoped<NumberOfIslandsII>();
+builder.Services.AddScoped<StringCompression>();
 builder.Services.AddScoped<SortedListToBst>();
 
 // Per-client (by IP) fixed-window rate limiting on the two endpoints that carry real cost: the

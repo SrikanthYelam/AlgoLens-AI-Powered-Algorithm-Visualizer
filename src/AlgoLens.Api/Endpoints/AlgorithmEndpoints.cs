@@ -383,6 +383,18 @@ public static class AlgorithmEndpoints
                 "Solve((int)Args[\"m\"], (int)Args[\"n\"], (int[][])Args[\"positions\"])",
                 steps => ((NumberOfIslandsIIState)steps[^1].State).Counts));
 
+        MapAlgorithm<StringCompression, StringCompressionRequest, char[]>(
+            app,
+            "/api/algorithms/string-compression",
+            request => request.Chars.ToCharArray(),
+            judge: new JudgeConfig<char[]>(
+                chars => new Dictionary<string, object?> { ["chars"] = chars },
+                // The real problem returns the new length and compresses `chars` in place, so — as
+                // with Recover BST — call Solve for its effect, then judge the compressed prefix
+                // it left in the array (which also proves the length was right).
+                "var __k = Solve((char[])Args[\"chars\"]);\nnew string((char[])Args[\"chars\"], 0, __k)",
+                steps => ((StringCompressionState)steps[^1].State).Compressed));
+
         MapAlgorithm<SortedListToBst, SortedListToBstRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/sorted-list-to-bst",
