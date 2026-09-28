@@ -32,6 +32,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Edit Distance (2D dynamic programming over two sequences)
 * Longest Palindromic Substring (interval dynamic programming)
 * Unique Binary Search Trees (1D dynamic programming over Catalan numbers)
+* Decode Ways (1D dynamic programming)
 * Meeting Rooms II (greedy min-heap sweep)
 * Validate Binary Search Tree (recursive DFS with bounds propagation)
 * Kth Smallest Element in a BST (iterative inorder traversal)
@@ -122,6 +123,16 @@ npm run dev
 
 The API runs on http://localhost:5119 and the UI on http://localhost:5173. Stopping either process stops both. (You'll also need `npm install` inside `algolens-ui/` the first time.)
 
+### Running with Docker
+
+Prerequisite: Docker (with Compose). From the repo root:
+
+```bash
+docker compose up --build
+```
+
+This builds and runs both services: the API on http://localhost:5119 and the UI (built and served via nginx) on http://localhost:5173. Set `OPENAI_API_KEY` in your shell (or a `.env` file next to `docker-compose.yml`) before running to enable AI step explanations — everything else works without it. `src/AlgoLens.Api/Dockerfile` and `algolens-ui/Dockerfile` can also be built/run standalone if you only need one service.
+
 ## Development Notes
 
 > To ease local development when Vite picks a non-default dev port (e.g., 5174), the API accepts a comma-separated list of allowed dev frontend origins via the DEV_FRONTEND_ORIGINS environment variable. By default this is set to http://localhost:5173. Example:
@@ -146,7 +157,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 43
+* Additional algorithms beyond the current 44
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

@@ -160,6 +160,11 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: 'n = 3', input: { n: 3 } },
     { label: 'n = 5', input: { n: 5 } },
   ],
+  'decode-ways': [
+    { label: '"226" — 3 ways', input: { s: '226' } },
+    { label: '"06" — leading zero, 0 ways', input: { s: '06' } },
+    { label: '"100" — a stray "0" dead-ends the whole string', input: { s: '100' } },
+  ],
   'meeting-rooms-ii': [
     { label: 'Overlaps — 2 rooms', input: { intervals: [[0, 30], [5, 10], [15, 20]] } },
     { label: 'No overlap — 1 room', input: { intervals: [[7, 10], [2, 4]] } },

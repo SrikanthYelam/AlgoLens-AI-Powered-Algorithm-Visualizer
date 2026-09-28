@@ -69,6 +69,7 @@ builder.Services.AddScoped<LongestIncreasingSubsequence>();
 builder.Services.AddScoped<EditDistance>();
 builder.Services.AddScoped<LongestPalindromicSubstring>();
 builder.Services.AddScoped<UniqueBinarySearchTrees>();
+builder.Services.AddScoped<DecodeWays>();
 builder.Services.AddScoped<MeetingRoomsII>();
 builder.Services.AddScoped<ValidateBst>();
 builder.Services.AddScoped<KthSmallestInBst>();

@@ -236,6 +236,15 @@ public static class AlgorithmEndpoints
                 "Solve((int)Args[\"n\"])",
                 steps => ((UniqueBstCountState)steps[^1].State).Table[^1]));
 
+        MapAlgorithm<DecodeWays, DecodeWaysRequest, string>(
+            app,
+            "/api/algorithms/decode-ways",
+            request => request.S,
+            judge: new JudgeConfig<string>(
+                s => new Dictionary<string, object?> { ["s"] = s },
+                "Solve((string)Args[\"s\"])",
+                steps => ((DecodeWaysState)steps[^1].State).Table[^1]));
+
         MapAlgorithm<MeetingRoomsII, MeetingRoomsRequest, int[][]>(
             app,
             "/api/algorithms/meeting-rooms-ii",

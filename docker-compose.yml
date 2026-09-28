@@ -1,0 +1,22 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/AlgoLens.Api/Dockerfile
+    ports:
+      - "5119:5119"
+    environment:
+      # Set OPENAI_API_KEY in a .env file (or the shell) to enable AI step explanations;
+      # the API degrades to null explanations without it (see CLAUDE.md's Resilience note).
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      DEV_FRONTEND_ORIGINS: http://localhost:5173
+
+  ui:
+    build:
+      context: ./algolens-ui
+      args:
+        VITE_API_BASE_URL: http://localhost:5119
+    ports:
+      - "5173:80"
+    depends_on:
+      - api

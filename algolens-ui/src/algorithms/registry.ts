@@ -50,6 +50,8 @@ import { LongestPalindromicSubstringInputForm } from './longestPalindromicSubstr
 import { LongestPalindromicSubstringStateView } from './longestPalindromicSubstring/LongestPalindromicSubstringStateView';
 import { UniqueBinarySearchTreesInputForm } from './uniqueBinarySearchTrees/UniqueBinarySearchTreesInputForm';
 import { UniqueBinarySearchTreesStateView } from './uniqueBinarySearchTrees/UniqueBinarySearchTreesStateView';
+import { DecodeWaysInputForm } from './decodeWays/DecodeWaysInputForm';
+import { DecodeWaysStateView } from './decodeWays/DecodeWaysStateView';
 import { MeetingRoomsInputForm } from './meetingRoomsII/MeetingRoomsInputForm';
 import { MeetingRoomsStateView } from './meetingRoomsII/MeetingRoomsStateView';
 import { ValidateBstStateView } from './validateBst/ValidateBstStateView';
@@ -806,6 +808,30 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(int n)',
     InputForm: UniqueBinarySearchTreesInputForm,
     StateView: UniqueBinarySearchTreesStateView,
+  },
+  {
+    id: 'decode-ways',
+    name: 'Decode Ways',
+    description: 'Count how many ways a digit string can be decoded into letters (1=A .. 26=Z), using 1D dynamic programming.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — 1D Table (Two-Term Recurrence)',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Each cell dp[i] looks back at most two positions (dp[i-1] and dp[i-2]), so the whole table fills in a single O(n) pass — unlike Unique Binary Search Trees, whose 1D table still needs an O(n) inner loop per cell.',
+    hints: [
+      "dp[i] is the number of ways to decode just the first i characters of the string.",
+      "A trailing single digit s[i-1] extends every decoding of the first i-1 characters, but only if it isn't '0' — '0' has no letter of its own.",
+      "A trailing pair s[i-2..i-1] extends every decoding of the first i-2 characters, but only if it reads as 10 through 26.",
+      "dp[i] is the sum of whichever of those two are valid. If neither is valid, dp[i] = 0 — that dead-end propagates forward, since nothing later can decode through it. dp[0] = 1 (the empty prefix) is the base case.",
+    ],
+    relatedProblems: [
+      { name: 'Climbing Stairs', note: 'The same dp[i] = dp[i-1] + dp[i-2] recurrence, without the validity conditions this problem adds.' },
+      { name: 'Decode Ways II', note: "Adds a wildcard digit '*' that can stand in for any digit, multiplying instead of just summing contributions." },
+      { name: 'Unique Binary Search Trees', note: "AlgoLens' other 1D DP table, but with a full inner loop per cell instead of at most two lookups." },
+    ],
+    judgeSignature: 'public static int Solve(string s)',
+    InputForm: DecodeWaysInputForm,
+    StateView: DecodeWaysStateView,
   },
   {
     id: 'meeting-rooms-ii',
