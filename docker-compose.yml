@@ -10,6 +10,11 @@ services:
       # the API degrades to null explanations without it (see CLAUDE.md's Resilience note).
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       DEV_FRONTEND_ORIGINS: http://localhost:5173
+      # The container image has no ASPNETCORE_ENVIRONMENT of its own (it defaults to
+      # Production), but this compose file is a local-dev convenience alongside `npm run
+      # dev`, so run it the same way `dotnet run`'s launchSettings.json does: Swagger UI
+      # at /swagger (Program.cs only registers it when IsDevelopment()).
+      ASPNETCORE_ENVIRONMENT: Development
 
   ui:
     build:

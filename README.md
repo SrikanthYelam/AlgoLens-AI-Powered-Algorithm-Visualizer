@@ -133,6 +133,17 @@ docker compose up --build
 
 This builds and runs both services: the API on http://localhost:5119 and the UI (built and served via nginx) on http://localhost:5173. Set `OPENAI_API_KEY` in your shell (or a `.env` file next to `docker-compose.yml`) before running to enable AI step explanations — everything else works without it. `src/AlgoLens.Api/Dockerfile` and `algolens-ui/Dockerfile` can also be built/run standalone if you only need one service.
 
+Both containers running locally via `docker compose up --build`:
+
+**Home page**, served from the `ui` (nginx) container:
+![Home page served from the UI container](docs/screenshots/docker-home.png)
+
+**Decode Ways**, run end-to-end through the `ui` container talking to the `api` container, AI explanation included:
+![Decode Ways visualizer running end-to-end against the containerized API](docs/screenshots/docker-decode-ways.png)
+
+**Swagger UI**, served directly from the `api` container:
+![Swagger UI served from the API container](docs/screenshots/docker-swagger.png)
+
 ## Development Notes
 
 > To ease local development when Vite picks a non-default dev port (e.g., 5174), the API accepts a comma-separated list of allowed dev frontend origins via the DEV_FRONTEND_ORIGINS environment variable. By default this is set to http://localhost:5173. Example:
