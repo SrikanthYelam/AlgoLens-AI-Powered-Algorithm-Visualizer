@@ -4,9 +4,10 @@ import type { AlgorithmInputFormProps } from '../../types/algorithm';
 const DEFAULT_TASKS = 'AAABBB';
 const DEFAULT_COOLDOWN = 2;
 
-export function TaskSchedulerInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [tasksText, setTasksText] = useState(DEFAULT_TASKS);
-  const [cooldown, setCooldown] = useState(DEFAULT_COOLDOWN);
+export function TaskSchedulerInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { tasks?: string; n?: number } | undefined;
+  const [tasksText, setTasksText] = useState(() => parsed?.tasks ?? DEFAULT_TASKS);
+  const [cooldown, setCooldown] = useState(() => parsed?.n ?? DEFAULT_COOLDOWN);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

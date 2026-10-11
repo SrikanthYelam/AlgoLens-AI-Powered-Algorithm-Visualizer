@@ -12,9 +12,10 @@ function parseIntArray(text: string): number[] {
     .map(Number);
 }
 
-export function SlidingWindowInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [numsText, setNumsText] = useState(DEFAULT_NUMS);
-  const [windowSize, setWindowSize] = useState(DEFAULT_WINDOW_SIZE);
+export function SlidingWindowInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { nums?: number[]; windowSize?: number } | undefined;
+  const [numsText, setNumsText] = useState(() => parsed?.nums?.join(',') ?? DEFAULT_NUMS);
+  const [windowSize, setWindowSize] = useState(() => parsed?.windowSize ?? DEFAULT_WINDOW_SIZE);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

@@ -12,9 +12,12 @@ function parseLevelOrderArray(text: string): (number | null)[] {
     .map((token) => (token.toLowerCase() === 'null' ? null : Number(token)));
 }
 
-export function KthSmallestInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_VALUES);
-  const [kText, setKText] = useState(DEFAULT_K);
+export function KthSmallestInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { values?: (number | null)[]; k?: number } | undefined;
+  const [text, setText] = useState(() =>
+    parsed?.values ? parsed.values.map((v) => (v === null ? 'null' : String(v))).join(',') : DEFAULT_VALUES,
+  );
+  const [kText, setKText] = useState(() => (parsed?.k !== undefined ? String(parsed.k) : DEFAULT_K));
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

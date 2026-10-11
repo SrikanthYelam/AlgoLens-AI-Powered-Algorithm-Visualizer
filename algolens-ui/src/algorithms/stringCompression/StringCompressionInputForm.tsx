@@ -4,8 +4,8 @@ import type { AlgorithmInputFormProps } from '../../types/algorithm';
 const DEFAULT_CHARS = 'aabbccc';
 const MAX_LENGTH = 40;
 
-export function StringCompressionInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [chars, setChars] = useState(DEFAULT_CHARS);
+export function StringCompressionInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [chars, setChars] = useState(() => (initialInput as { chars?: string })?.chars ?? DEFAULT_CHARS);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

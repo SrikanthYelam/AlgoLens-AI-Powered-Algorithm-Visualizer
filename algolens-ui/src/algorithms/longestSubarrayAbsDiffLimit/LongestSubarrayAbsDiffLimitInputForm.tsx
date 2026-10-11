@@ -12,9 +12,10 @@ function parseIntArray(text: string): number[] {
     .map(Number);
 }
 
-export function LongestSubarrayAbsDiffLimitInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [numsText, setNumsText] = useState(DEFAULT_NUMS);
-  const [limit, setLimit] = useState(DEFAULT_LIMIT);
+export function LongestSubarrayAbsDiffLimitInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { nums?: number[]; limit?: number } | undefined;
+  const [numsText, setNumsText] = useState(() => parsed?.nums?.join(',') ?? DEFAULT_NUMS);
+  const [limit, setLimit] = useState(() => parsed?.limit ?? DEFAULT_LIMIT);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

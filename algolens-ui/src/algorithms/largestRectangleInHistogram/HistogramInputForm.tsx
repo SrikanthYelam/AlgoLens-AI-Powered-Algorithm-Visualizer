@@ -11,8 +11,8 @@ function parseIntArray(text: string): number[] {
     .map(Number);
 }
 
-export function HistogramInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_HEIGHTS);
+export function HistogramInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => (initialInput as { heights?: number[] })?.heights?.join(',') ?? DEFAULT_HEIGHTS);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

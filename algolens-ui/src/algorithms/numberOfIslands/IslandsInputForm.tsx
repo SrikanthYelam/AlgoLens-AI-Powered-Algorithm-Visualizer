@@ -17,8 +17,11 @@ function parseGrid(text: string): number[][] {
     );
 }
 
-export function IslandsInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_GRID);
+export function IslandsInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => {
+    const grid = (initialInput as { grid?: number[][] })?.grid;
+    return grid ? grid.map((row) => row.join(',')).join('\n') : DEFAULT_GRID;
+  });
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

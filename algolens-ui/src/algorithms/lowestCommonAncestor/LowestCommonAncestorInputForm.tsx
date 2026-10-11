@@ -13,10 +13,13 @@ function parseLevelOrderArray(text: string): (number | null)[] {
     .map((token) => (token.toLowerCase() === 'null' ? null : Number(token)));
 }
 
-export function LowestCommonAncestorInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_VALUES);
-  const [pText, setPText] = useState(DEFAULT_P);
-  const [qText, setQText] = useState(DEFAULT_Q);
+export function LowestCommonAncestorInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { values?: (number | null)[]; p?: number; q?: number } | undefined;
+  const [text, setText] = useState(() =>
+    parsed?.values ? parsed.values.map((v) => (v === null ? 'null' : String(v))).join(',') : DEFAULT_VALUES,
+  );
+  const [pText, setPText] = useState(() => (parsed?.p !== undefined ? String(parsed.p) : DEFAULT_P));
+  const [qText, setQText] = useState(() => (parsed?.q !== undefined ? String(parsed.q) : DEFAULT_Q));
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

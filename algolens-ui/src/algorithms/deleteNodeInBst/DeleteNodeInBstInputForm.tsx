@@ -12,9 +12,12 @@ function parseLevelOrderArray(text: string): (number | null)[] {
     .map((token) => (token.toLowerCase() === 'null' ? null : Number(token)));
 }
 
-export function DeleteNodeInBstInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_VALUES);
-  const [keyText, setKeyText] = useState(DEFAULT_KEY);
+export function DeleteNodeInBstInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { values?: (number | null)[]; key?: number } | undefined;
+  const [text, setText] = useState(() =>
+    parsed?.values ? parsed.values.map((v) => (v === null ? 'null' : String(v))).join(',') : DEFAULT_VALUES,
+  );
+  const [keyText, setKeyText] = useState(() => (parsed?.key !== undefined ? String(parsed.key) : DEFAULT_KEY));
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

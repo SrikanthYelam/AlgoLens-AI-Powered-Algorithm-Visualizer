@@ -5,8 +5,8 @@ const DEFAULT_S = '()())()';
 const MAX_LENGTH = 10;
 const VALID_CHARS = /^[a-z()]*$/;
 
-export function RemoveInvalidParenthesesInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [s, setS] = useState(DEFAULT_S);
+export function RemoveInvalidParenthesesInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [s, setS] = useState(() => (initialInput as { s?: string })?.s ?? DEFAULT_S);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

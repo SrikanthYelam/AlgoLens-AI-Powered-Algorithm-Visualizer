@@ -6,9 +6,10 @@ const DEFAULT_TEXT2 = 'ace';
 const MAX_LENGTH = 8;
 const VALID_CHARS = /^[a-z]*$/;
 
-export function LongestCommonSubsequenceInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text1, setText1] = useState(DEFAULT_TEXT1);
-  const [text2, setText2] = useState(DEFAULT_TEXT2);
+export function LongestCommonSubsequenceInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { text1?: string; text2?: string } | undefined;
+  const [text1, setText1] = useState(() => parsed?.text1 ?? DEFAULT_TEXT1);
+  const [text2, setText2] = useState(() => parsed?.text2 ?? DEFAULT_TEXT2);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

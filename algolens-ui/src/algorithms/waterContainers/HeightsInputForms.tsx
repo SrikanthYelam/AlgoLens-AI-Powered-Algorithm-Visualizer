@@ -17,8 +17,8 @@ function parseIntArray(text: string): number[] {
  * make sense, so one form is built twice rather than duplicated.
  */
 function createHeightsInputForm(inputId: string, defaultText: string, minBars: number) {
-  return function HeightsInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-    const [text, setText] = useState(defaultText);
+  return function HeightsInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+    const [text, setText] = useState(() => (initialInput as { heights?: number[] })?.heights?.join(',') ?? defaultText);
     const [error, setError] = useState<string | null>(null);
 
     function handleSubmit(e: FormEvent) {

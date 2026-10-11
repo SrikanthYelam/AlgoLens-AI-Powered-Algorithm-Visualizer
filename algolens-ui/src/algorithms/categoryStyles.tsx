@@ -90,6 +90,15 @@ function TwoPointersIcon() {
   );
 }
 
+function CacheIcon() {
+  return (
+    <svg {...iconProps}>
+      <rect x="3" y="7" width="13" height="13" rx="2" />
+      <path d="M8 7V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+    </svg>
+  );
+}
+
 function GraphIcon() {
   return (
     <svg {...iconProps}>
@@ -158,6 +167,13 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
     bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/40',
     border: 'border-fuchsia-500 dark:border-fuchsia-400',
     borderTop: 'border-t-fuchsia-500 dark:border-t-fuchsia-400',
+  },
+  Design: {
+    icon: <CacheIcon />,
+    text: 'text-orange-600 dark:text-orange-400',
+    bg: 'bg-orange-50 dark:bg-orange-950/40',
+    border: 'border-orange-500 dark:border-orange-400',
+    borderTop: 'border-t-orange-500 dark:border-t-orange-400',
   },
 };
 

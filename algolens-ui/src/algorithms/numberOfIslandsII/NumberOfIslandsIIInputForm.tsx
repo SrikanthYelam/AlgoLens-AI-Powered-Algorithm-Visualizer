@@ -20,10 +20,13 @@ function parsePositions(text: string): number[][] {
     );
 }
 
-export function NumberOfIslandsIIInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [rows, setRows] = useState(DEFAULT_ROWS);
-  const [cols, setCols] = useState(DEFAULT_COLS);
-  const [text, setText] = useState(DEFAULT_POSITIONS);
+export function NumberOfIslandsIIInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { rows?: number; cols?: number; positions?: number[][] } | undefined;
+  const [rows, setRows] = useState(() => parsed?.rows ?? DEFAULT_ROWS);
+  const [cols, setCols] = useState(() => parsed?.cols ?? DEFAULT_COLS);
+  const [text, setText] = useState(() =>
+    parsed?.positions ? parsed.positions.map((p) => p.join(',')).join('\n') : DEFAULT_POSITIONS,
+  );
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

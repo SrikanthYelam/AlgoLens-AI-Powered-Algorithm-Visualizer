@@ -4,9 +4,10 @@ import type { AlgorithmInputFormProps } from '../../types/algorithm';
 const DEFAULT_N = 4;
 const DEFAULT_K = 2;
 
-export function CombinationsInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [n, setN] = useState(DEFAULT_N);
-  const [k, setK] = useState(DEFAULT_K);
+export function CombinationsInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { n?: number; k?: number } | undefined;
+  const [n, setN] = useState(parsed?.n ?? DEFAULT_N);
+  const [k, setK] = useState(parsed?.k ?? DEFAULT_K);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

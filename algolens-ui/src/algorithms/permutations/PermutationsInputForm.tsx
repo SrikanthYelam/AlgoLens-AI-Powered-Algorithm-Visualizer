@@ -12,8 +12,8 @@ function parseIntArray(text: string): number[] {
     .map(Number);
 }
 
-export function PermutationsInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_NUMS);
+export function PermutationsInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => (initialInput as { nums?: number[] })?.nums?.join(',') ?? DEFAULT_NUMS);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

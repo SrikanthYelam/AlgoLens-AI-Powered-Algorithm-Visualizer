@@ -13,9 +13,10 @@ function parseIntArray(text: string): number[] {
     .map(Number);
 }
 
-export function ConstructBinaryTreeInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [preorderText, setPreorderText] = useState(DEFAULT_PREORDER);
-  const [inorderText, setInorderText] = useState(DEFAULT_INORDER);
+export function ConstructBinaryTreeInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { preorder?: number[]; inorder?: number[] } | undefined;
+  const [preorderText, setPreorderText] = useState(() => parsed?.preorder?.join(',') ?? DEFAULT_PREORDER);
+  const [inorderText, setInorderText] = useState(() => parsed?.inorder?.join(',') ?? DEFAULT_INORDER);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

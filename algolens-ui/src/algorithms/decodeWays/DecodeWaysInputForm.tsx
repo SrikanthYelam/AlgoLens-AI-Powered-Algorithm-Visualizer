@@ -5,8 +5,8 @@ const DEFAULT_S = '226';
 const MAX_LENGTH = 15;
 const VALID_CHARS = /^[0-9]*$/;
 
-export function DecodeWaysInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [s, setS] = useState(DEFAULT_S);
+export function DecodeWaysInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [s, setS] = useState(() => (initialInput as { s?: string })?.s ?? DEFAULT_S);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

@@ -36,6 +36,12 @@ export interface SubmitSolutionResponse {
 export interface AlgorithmInputFormProps {
   onSubmit: (body: unknown) => void;
   isLoading: boolean;
+  /**
+   * When set, the form should seed its fields from this (the exact request-body shape it would
+   * itself submit) instead of its hardcoded default — set when the page remounts the form after
+   * an example chip is clicked, read once via `useState(() => ...)`, not kept in sync afterward.
+   */
+  initialInput?: unknown;
 }
 
 /** Props every algorithm's per-step state view component must accept. */

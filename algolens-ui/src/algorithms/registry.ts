@@ -77,6 +77,10 @@ import { NumberOfIslandsIIInputForm } from './numberOfIslandsII/NumberOfIslandsI
 import { NumberOfIslandsIIStateView } from './numberOfIslandsII/NumberOfIslandsIIStateView';
 import { SortedListToBstInputForm } from './sortedListToBst/SortedListToBstInputForm';
 import { SortedListToBstStateView } from './sortedListToBst/SortedListToBstStateView';
+import { LruCacheInputForm } from './lruCache/LruCacheInputForm';
+import { LruCacheStateView } from './lruCache/LruCacheStateView';
+import { LfuCacheInputForm } from './lfuCache/LfuCacheInputForm';
+import { LfuCacheStateView } from './lfuCache/LfuCacheStateView';
 
 export interface RelatedProblem {
   name: string;
@@ -1199,6 +1203,56 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static IList<int> Solve(int m, int n, int[][] positions)',
     InputForm: NumberOfIslandsIIInputForm,
     StateView: NumberOfIslandsIIStateView,
+  },
+  {
+    id: 'lru-cache',
+    name: 'LRU Cache',
+    description: 'Design a fixed-capacity cache that evicts the least-recently-used entry once full, supporting O(1) get and put via a hash map of nodes plus a doubly linked list ordered by recency.',
+    category: 'Design',
+    pattern: 'Design — Hash Map + Doubly Linked List',
+    timeComplexity: 'O(1) per operation',
+    spaceComplexity: 'O(capacity)',
+    complexityNotes: 'Both get and put only ever touch the hash map entry for their own key plus a constant number of pointer updates around it — no traversal of the cache, so capacity affects only how much space it occupies, never how long an operation takes.',
+    hints: [
+      'You need O(1) time for both get and put — a plain array, or a structure kept sorted by recency, will not be fast enough.',
+      "A hash map alone gives O(1) lookup, but it has no way to tell which key was used least recently without scanning everything.",
+      'Pair the hash map with a doubly linked list ordered by recency. The map gives O(1) access to a node; the list lets that exact node be moved to the front, or the node at the back be evicted, in O(1), since you already hold a direct reference to it — no searching required.',
+      'Give the list two dummy sentinel nodes, head and tail, so every real node always has a non-null neighbor on both sides. That removes every "is this the first/last node" special case from insert and remove.',
+    ],
+    relatedProblems: [
+      { name: 'LFU Cache', note: 'Adds a second dimension, access frequency, on top of recency — evicting the least-frequently-used entry instead, with ties broken by recency.' },
+      { name: 'Design Linked List', note: "The same node/pointer manipulation this cache's internal list is built from, without the hash map or an eviction policy on top." },
+      { name: "All O`one Data Structure", note: 'Another O(1)-per-operation design problem pairing a hash map with a linked structure — ordered by count instead of recency.' },
+    ],
+    judgeSignature:
+      'public class LRUCache\n{\n    public LRUCache(int capacity)\n    {\n        // your code here\n    }\n\n    public int Get(int key)\n    {\n        // your code here\n        return -1;\n    }\n\n    public void Put(int key, int value)\n    {\n        // your code here\n    }\n}',
+    InputForm: LruCacheInputForm,
+    StateView: LruCacheStateView,
+  },
+  {
+    id: 'lfu-cache',
+    name: 'LFU Cache',
+    description: 'Design a fixed-capacity cache that evicts the least-frequently-used entry once full (ties broken by recency), supporting O(1) get and put via a hash map of nodes plus one doubly linked list per access frequency.',
+    category: 'Design',
+    pattern: 'Design — Hash Map + Frequency-Bucketed Doubly Linked Lists',
+    timeComplexity: 'O(1) amortized per operation',
+    spaceComplexity: 'O(capacity)',
+    complexityNotes: "Every get/put still only touches its key's own hash map entry plus a constant number of pointer updates and dictionary lookups around it — no traversal, same as LRU Cache. The extra bookkeeping is a second hash map keyed by frequency instead of by key.",
+    hints: [
+      'Like LRU Cache, you need O(1) get and put — but eviction is no longer just "least recently used": you now also have to track how many times each key has been accessed.',
+      "A single recency-ordered list isn't enough anymore. Give every distinct frequency its own list, so each key lives in the list for its current access count.",
+      "Within a frequency's list, keep it ordered by recency — exactly like LRU Cache's single list — so when two keys tie on frequency, the one at the back of that list is the correct tie-break eviction victim.",
+      "Track the lowest frequency present as its own variable. Since every access only ever increases a key's frequency by exactly one, that minimum can only ever move from f to f+1 — never further — and only when its own list has just emptied out.",
+    ],
+    relatedProblems: [
+      { name: 'LRU Cache', note: "The simpler cousin this one builds on — a single recency-ordered list is exactly what each of this cache's per-frequency lists already is." },
+      { name: 'Design Linked List', note: 'The same node/pointer manipulation every per-frequency list here is built from.' },
+      { name: 'Top K Frequent Elements', note: 'Another problem organized entirely around grouping by frequency — via buckets there too, instead of a heap or a full sort.' },
+    ],
+    judgeSignature:
+      'public class LFUCache\n{\n    public LFUCache(int capacity)\n    {\n        // your code here\n    }\n\n    public int Get(int key)\n    {\n        // your code here\n        return -1;\n    }\n\n    public void Put(int key, int value)\n    {\n        // your code here\n    }\n}',
+    InputForm: LfuCacheInputForm,
+    StateView: LfuCacheStateView,
   },
 ];
 

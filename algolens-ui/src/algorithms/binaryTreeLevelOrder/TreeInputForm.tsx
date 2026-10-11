@@ -11,8 +11,11 @@ function parseLevelOrderArray(text: string): (number | null)[] {
     .map((token) => (token.toLowerCase() === 'null' ? null : Number(token)));
 }
 
-export function TreeInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_INPUT);
+export function TreeInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => {
+    const values = (initialInput as { values?: (number | null)[] })?.values;
+    return values ? values.map((v) => (v === null ? 'null' : String(v))).join(',') : DEFAULT_INPUT;
+  });
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

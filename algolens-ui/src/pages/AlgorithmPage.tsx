@@ -21,6 +21,11 @@ export function AlgorithmPage() {
   const [lastInput, setLastInput] = useState<unknown | null>(null);
   // Label of the example last run via a preset chip; null when the last run came from the form.
   const [activeExample, setActiveExample] = useState<string | null>(null);
+  // Remounts the InputForm with a specific example's values (via `key` + `initialInput`) only
+  // when an example chip is clicked — a plain form submit never touches these, so hand-edited
+  // field values are never clobbered by the act of running them.
+  const [formResetKey, setFormResetKey] = useState(0);
+  const [formInitialInput, setFormInitialInput] = useState<unknown>(undefined);
 
   // Step cap for large runs — default to 500 displayed steps, with an option to show the full run.
   const STEP_DISPLAY_CAP = 500;
@@ -31,6 +36,7 @@ export function AlgorithmPage() {
     setSourceCode(null);
     setLastInput(null);
     setActiveExample(null);
+    setFormInitialInput(undefined);
     getAlgorithmSource(algorithm.id)
       .then((response) => setSourceCode(response.source))
       .catch(() => setSourceCode(null));
@@ -104,7 +110,11 @@ export function AlgorithmPage() {
                 <button
                   key={example.label}
                   type="button"
-                  onClick={() => handleSubmit(example.input, example.label)}
+                  onClick={() => {
+                    setFormInitialInput(example.input);
+                    setFormResetKey((k) => k + 1);
+                    handleSubmit(example.input, example.label);
+                  }}
                   disabled={isLoading}
                   aria-pressed={activeExample === example.label}
                   className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-150 disabled:opacity-50 ${
@@ -124,7 +134,12 @@ export function AlgorithmPage() {
             )}
           </div>
         )}
-        <algorithm.InputForm onSubmit={(body) => handleSubmit(body)} isLoading={isLoading} />
+        <algorithm.InputForm
+          key={formResetKey}
+          onSubmit={(body) => handleSubmit(body)}
+          isLoading={isLoading}
+          initialInput={formInitialInput}
+        />
       </div>
 
       {error && (

@@ -18,8 +18,11 @@ function parseIntervals(text: string): number[][] {
     );
 }
 
-export function MeetingRoomsInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_INTERVALS);
+export function MeetingRoomsInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => {
+    const intervals = (initialInput as { intervals?: number[][] })?.intervals;
+    return intervals ? intervals.map((interval) => interval.join(',')).join('\n') : DEFAULT_INTERVALS;
+  });
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

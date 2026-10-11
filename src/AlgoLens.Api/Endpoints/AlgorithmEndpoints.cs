@@ -462,6 +462,66 @@ public static class AlgorithmEndpoints
                 values => new Dictionary<string, object?> { ["head"] = ListNode.FromArray(values) },
                 "Solve((ListNode?)Args[\"head\"])",
                 steps => ((SortedListToBstState)steps[^1].State).Root));
+
+        MapAlgorithm<LruCache, LruCacheRequest, LruCacheInput>(
+            app,
+            "/api/algorithms/lru-cache",
+            request => new LruCacheInput(
+                request.Capacity,
+                request.Operations.Select(o => new LruCacheOperation(o.Op, o.Key, o.Value)).ToList()),
+            judge: new JudgeConfig<LruCacheInput>(
+                input => new Dictionary<string, object?>
+                {
+                    ["capacity"] = input.Capacity,
+                    ["operations"] = input.Operations.ToList(),
+                },
+                // A design problem (LeetCode's `LRUCache` class): the user supplies the whole class,
+                // the judge constructs one instance and replays every operation against it in order,
+                // and only the sequence of "get" return values is compared — "put" has nothing to check.
+                "var __cache = new LRUCache((int)Args[\"capacity\"]);\n" +
+                "var __ops = (List<LruCacheOperation>)Args[\"operations\"];\n" +
+                "var __results = new List<int>();\n" +
+                "foreach (var __op in __ops)\n" +
+                "{\n" +
+                "    if (__op.Op == \"get\") { __results.Add(__cache.Get(__op.Key)); }\n" +
+                "    else { __cache.Put(__op.Key, __op.Value!.Value); }\n" +
+                "}\n" +
+                "__results",
+                steps => steps
+                    .Select(s => (LruCacheState)s.State)
+                    .Where(s => s.Operation == "get")
+                    .Select(s => s.Result ?? -1)
+                    .ToList()));
+
+        MapAlgorithm<LfuCache, LfuCacheRequest, LfuCacheInput>(
+            app,
+            "/api/algorithms/lfu-cache",
+            request => new LfuCacheInput(
+                request.Capacity,
+                request.Operations.Select(o => new LfuCacheOperation(o.Op, o.Key, o.Value)).ToList()),
+            judge: new JudgeConfig<LfuCacheInput>(
+                input => new Dictionary<string, object?>
+                {
+                    ["capacity"] = input.Capacity,
+                    ["operations"] = input.Operations.ToList(),
+                },
+                // Same shape as LRU Cache's judge: the user supplies the whole class, the judge
+                // constructs one instance and replays every operation against it in order, and only
+                // the sequence of "get" return values is compared — "put" has nothing to check.
+                "var __cache = new LFUCache((int)Args[\"capacity\"]);\n" +
+                "var __ops = (List<LfuCacheOperation>)Args[\"operations\"];\n" +
+                "var __results = new List<int>();\n" +
+                "foreach (var __op in __ops)\n" +
+                "{\n" +
+                "    if (__op.Op == \"get\") { __results.Add(__cache.Get(__op.Key)); }\n" +
+                "    else { __cache.Put(__op.Key, __op.Value!.Value); }\n" +
+                "}\n" +
+                "__results",
+                steps => steps
+                    .Select(s => (LfuCacheState)s.State)
+                    .Where(s => s.Operation == "get")
+                    .Select(s => s.Result ?? -1)
+                    .ToList()));
     }
 
     private static TreeNode? FindNode(TreeNode? root, int val)

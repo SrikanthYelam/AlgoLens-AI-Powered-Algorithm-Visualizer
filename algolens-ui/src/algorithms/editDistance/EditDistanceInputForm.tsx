@@ -6,9 +6,10 @@ const DEFAULT_WORD2 = 'ros';
 const MAX_LENGTH = 8;
 const VALID_CHARS = /^[a-z]*$/;
 
-export function EditDistanceInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [word1, setWord1] = useState(DEFAULT_WORD1);
-  const [word2, setWord2] = useState(DEFAULT_WORD2);
+export function EditDistanceInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { word1?: string; word2?: string } | undefined;
+  const [word1, setWord1] = useState(() => parsed?.word1 ?? DEFAULT_WORD1);
+  const [word2, setWord2] = useState(() => parsed?.word2 ?? DEFAULT_WORD2);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

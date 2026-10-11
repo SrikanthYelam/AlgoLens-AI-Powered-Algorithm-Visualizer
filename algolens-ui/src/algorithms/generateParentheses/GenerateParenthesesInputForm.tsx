@@ -4,8 +4,8 @@ import type { AlgorithmInputFormProps } from '../../types/algorithm';
 const DEFAULT_N = 3;
 const MAX_N = 5;
 
-export function GenerateParenthesesInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [n, setN] = useState(DEFAULT_N);
+export function GenerateParenthesesInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [n, setN] = useState((initialInput as { n?: number })?.n ?? DEFAULT_N);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

@@ -18,9 +18,14 @@ function parsePrerequisites(text: string): number[][] {
     );
 }
 
-export function CourseScheduleInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [numCoursesText, setNumCoursesText] = useState(DEFAULT_NUM_COURSES);
-  const [prerequisitesText, setPrerequisitesText] = useState(DEFAULT_PREREQUISITES);
+export function CourseScheduleInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const parsed = initialInput as { numCourses?: number; prerequisites?: number[][] } | undefined;
+  const [numCoursesText, setNumCoursesText] = useState(() =>
+    parsed?.numCourses !== undefined ? String(parsed.numCourses) : DEFAULT_NUM_COURSES,
+  );
+  const [prerequisitesText, setPrerequisitesText] = useState(() =>
+    parsed?.prerequisites ? parsed.prerequisites.map((pair) => pair.join(',')).join('\n') : DEFAULT_PREREQUISITES,
+  );
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

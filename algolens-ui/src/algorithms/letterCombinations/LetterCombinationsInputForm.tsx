@@ -5,8 +5,8 @@ const DEFAULT_DIGITS = '23';
 const MAX_DIGITS = 5;
 const VALID_DIGITS = /^[2-9]*$/;
 
-export function LetterCombinationsInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [digits, setDigits] = useState(DEFAULT_DIGITS);
+export function LetterCombinationsInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [digits, setDigits] = useState(() => (initialInput as { digits?: string })?.digits ?? DEFAULT_DIGITS);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

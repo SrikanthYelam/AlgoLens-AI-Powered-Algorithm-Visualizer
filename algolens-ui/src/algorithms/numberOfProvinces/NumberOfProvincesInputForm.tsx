@@ -17,8 +17,11 @@ function parseMatrix(text: string): number[][] {
     );
 }
 
-export function NumberOfProvincesInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_MATRIX);
+export function NumberOfProvincesInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => {
+    const isConnected = (initialInput as { isConnected?: number[][] })?.isConnected;
+    return isConnected ? isConnected.map((row) => row.join(',')).join('\n') : DEFAULT_MATRIX;
+  });
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

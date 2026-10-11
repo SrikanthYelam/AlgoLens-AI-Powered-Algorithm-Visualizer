@@ -244,6 +244,98 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: 'Bridge merges two islands', input: { rows: 3, cols: 3, positions: [[0, 0], [0, 1], [1, 2], [1, 1]] } },
     { label: 'Repeated position', input: { rows: 1, cols: 2, positions: [[0, 0], [0, 0], [0, 1]] } },
   ],
+  'lru-cache': [
+    {
+      label: 'Capacity 2 — classic example',
+      input: {
+        capacity: 2,
+        operations: [
+          { op: 'put', key: 1, value: 1 },
+          { op: 'put', key: 2, value: 2 },
+          { op: 'get', key: 1 },
+          { op: 'put', key: 3, value: 3 },
+          { op: 'get', key: 2 },
+          { op: 'put', key: 4, value: 4 },
+          { op: 'get', key: 1 },
+          { op: 'get', key: 3 },
+          { op: 'get', key: 4 },
+        ],
+      },
+    },
+    {
+      label: 'Capacity 1 — every put evicts the previous',
+      input: {
+        capacity: 1,
+        operations: [
+          { op: 'put', key: 1, value: 1 },
+          { op: 'get', key: 1 },
+          { op: 'put', key: 2, value: 2 },
+          { op: 'get', key: 1 },
+          { op: 'get', key: 2 },
+        ],
+      },
+    },
+    {
+      label: 'put on an existing key refreshes its recency',
+      input: {
+        capacity: 2,
+        operations: [
+          { op: 'put', key: 1, value: 1 },
+          { op: 'put', key: 2, value: 2 },
+          { op: 'put', key: 1, value: 10 },
+          { op: 'put', key: 3, value: 3 },
+          { op: 'get', key: 1 },
+          { op: 'get', key: 2 },
+          { op: 'get', key: 3 },
+        ],
+      },
+    },
+  ],
+  'lfu-cache': [
+    {
+      label: 'Capacity 2 — classic example',
+      input: {
+        capacity: 2,
+        operations: [
+          { op: 'put', key: 1, value: 1 },
+          { op: 'put', key: 2, value: 2 },
+          { op: 'get', key: 1 },
+          { op: 'put', key: 3, value: 3 },
+          { op: 'get', key: 2 },
+          { op: 'get', key: 3 },
+          { op: 'put', key: 4, value: 4 },
+          { op: 'get', key: 1 },
+          { op: 'get', key: 3 },
+          { op: 'get', key: 4 },
+        ],
+      },
+    },
+    {
+      label: 'Frequency wins over recency',
+      input: {
+        capacity: 2,
+        operations: [
+          { op: 'put', key: 1, value: 1 },
+          { op: 'put', key: 2, value: 2 },
+          { op: 'get', key: 1 },
+          { op: 'get', key: 1 },
+          { op: 'put', key: 3, value: 3 },
+          { op: 'get', key: 2 },
+          { op: 'get', key: 3 },
+        ],
+      },
+    },
+    {
+      label: 'Capacity 0 — every put is a no-op',
+      input: {
+        capacity: 0,
+        operations: [
+          { op: 'put', key: 1, value: 1 },
+          { op: 'get', key: 1 },
+        ],
+      },
+    },
+  ],
 };
 
 export function getExamples(id: string): AlgorithmExample[] {

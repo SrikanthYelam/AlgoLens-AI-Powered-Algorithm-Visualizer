@@ -12,8 +12,8 @@ function parseIntArray(text: string): number[] {
     .map(Number);
 }
 
-export function SortedListToBstInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_VALUES);
+export function SortedListToBstInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => (initialInput as { values?: number[] })?.values?.join(',') ?? DEFAULT_VALUES);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

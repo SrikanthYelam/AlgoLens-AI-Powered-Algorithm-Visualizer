@@ -17,8 +17,11 @@ function parseEdges(text: string): number[][] {
     );
 }
 
-export function RedundantConnectionInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_EDGES);
+export function RedundantConnectionInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => {
+    const edges = (initialInput as { edges?: number[][] })?.edges;
+    return edges ? edges.map((edge) => edge.join(',')).join('\n') : DEFAULT_EDGES;
+  });
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

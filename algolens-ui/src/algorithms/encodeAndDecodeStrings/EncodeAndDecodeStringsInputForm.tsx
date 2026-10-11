@@ -14,8 +14,8 @@ function parseStrings(text: string): string[] {
   return lines;
 }
 
-export function EncodeAndDecodeStringsInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_TEXT);
+export function EncodeAndDecodeStringsInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => (initialInput as { strs?: string[] })?.strs?.join('\n') ?? DEFAULT_TEXT);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

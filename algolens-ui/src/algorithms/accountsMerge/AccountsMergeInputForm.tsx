@@ -20,8 +20,11 @@ function parseAccounts(text: string): string[][] {
     );
 }
 
-export function AccountsMergeInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_ACCOUNTS);
+export function AccountsMergeInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => {
+    const accounts = (initialInput as { accounts?: string[][] })?.accounts;
+    return accounts ? accounts.map((account) => account.join(',')).join('\n') : DEFAULT_ACCOUNTS;
+  });
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

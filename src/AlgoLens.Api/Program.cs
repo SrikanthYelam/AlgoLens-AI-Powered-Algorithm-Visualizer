@@ -91,6 +91,8 @@ builder.Services.AddScoped<TrappingRainWater>();
 builder.Services.AddScoped<DecodeString>();
 builder.Services.AddScoped<EncodeAndDecodeStrings>();
 builder.Services.AddScoped<SortedListToBst>();
+builder.Services.AddScoped<LruCache>();
+builder.Services.AddScoped<LfuCache>();
 
 // Per-client (by IP) fixed-window rate limiting on the two endpoints that carry real cost: the
 // judge (in-process compilation + execution of arbitrary submitted C#, see

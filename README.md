@@ -54,6 +54,8 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Trapping Rain Water (converging two pointers with running maxima)
 * Decode String (a stack of saved frames for nested repeat counts)
 * Encode and Decode Strings (length-prefix encoding, decoded with a start pointer and a scan pointer)
+* LRU Cache (design — hash map + doubly linked list, O(1) get/put)
+* LFU Cache (design — hash map + one doubly linked list per frequency, O(1) amortized get/put)
 
 ### AI Explanations
 
@@ -168,7 +170,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 44
+* Additional algorithms beyond the current 46
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

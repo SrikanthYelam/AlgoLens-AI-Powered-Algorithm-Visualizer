@@ -4,8 +4,8 @@ import type { AlgorithmInputFormProps } from '../../types/algorithm';
 const DEFAULT_BOARD_SIZE = 4;
 const MAX_BOARD_SIZE = 9;
 
-export function NQueensInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [boardSize, setBoardSize] = useState(DEFAULT_BOARD_SIZE);
+export function NQueensInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [boardSize, setBoardSize] = useState((initialInput as { boardSize?: number })?.boardSize ?? DEFAULT_BOARD_SIZE);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {

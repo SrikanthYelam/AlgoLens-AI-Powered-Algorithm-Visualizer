@@ -51,8 +51,8 @@ function validate(s: string): string | null {
   return null;
 }
 
-export function DecodeStringInputForm({ onSubmit, isLoading }: AlgorithmInputFormProps) {
-  const [text, setText] = useState(DEFAULT_ENCODED);
+export function DecodeStringInputForm({ onSubmit, isLoading, initialInput }: AlgorithmInputFormProps) {
+  const [text, setText] = useState(() => (initialInput as { s?: string })?.s ?? DEFAULT_ENCODED);
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: FormEvent) {
