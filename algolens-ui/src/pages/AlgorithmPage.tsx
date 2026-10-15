@@ -5,6 +5,7 @@ import { getAlgorithm } from '../algorithms/registry';
 import { getCategoryStyle } from '../algorithms/categoryStyles';
 import { getAlgorithmSource, runAlgorithm, regenerateExplanations } from '../api/client';
 import { AlgorithmInfoPanel } from '../components/AlgorithmInfoPanel';
+import { AskQuestionPanel } from '../components/AskQuestionPanel';
 import { CodePanel } from '../components/CodePanel';
 import { StepPlayer } from '../components/StepPlayer';
 import type { Step } from '../types/algorithm';
@@ -179,6 +180,14 @@ export function AlgorithmPage() {
                 )
               : undefined
           }
+          renderAskPanel={(step) => (
+            <AskQuestionPanel
+              algorithmId={algorithm.id}
+              algorithmName={algorithm.name}
+              algorithmDescription={algorithm.description}
+              step={step}
+            />
+          )}
           regenerateExplanation={async (index) => {
             // Regenerate explanation for a single step — call API with only that step.
             const current = steps[index];

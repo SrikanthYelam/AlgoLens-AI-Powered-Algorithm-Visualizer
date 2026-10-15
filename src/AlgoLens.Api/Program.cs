@@ -35,6 +35,7 @@ var openAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? "miss
 // depends only on IChatClient, so switching AI providers means changing this one registration.
 builder.Services.AddSingleton<IChatClient>(new ChatClient(OpenAiModel, openAiApiKey).AsIChatClient());
 builder.Services.AddScoped<AiStepExplanationService>();
+builder.Services.AddScoped<IQuestionAnsweringService, AiQuestionAnsweringService>();
 
 // Bounded (SizeLimit-capped, not unlimited) in-memory cache of AI explanations, keyed by a
 // content hash of each step — see CachingStepExplanationService for why. Each cached string
@@ -54,6 +55,8 @@ builder.Services.AddScoped<LargestRectangleInHistogram>();
 builder.Services.AddScoped<NumberOfIslands>();
 builder.Services.AddScoped<CourseScheduleKahn>();
 builder.Services.AddScoped<CourseScheduleDfs>();
+builder.Services.AddScoped<ReconstructItinerary>();
+builder.Services.AddScoped<CheapestFlights>();
 builder.Services.AddScoped<Permutations>();
 builder.Services.AddScoped<Combinations>();
 builder.Services.AddScoped<Subsets>();
@@ -121,6 +124,15 @@ builder.Services.AddRateLimiter(options =>
             QueueLimit = 0,
         }));
 
+    options.AddPolicy(AlgorithmEndpoints.AskRateLimitPolicy, httpContext => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: ClientPartitionKey(httpContext),
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 20,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+        }));
+
     options.OnRejected = async (context, cancellationToken) =>
     {
         if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
@@ -158,5 +170,6 @@ app.MapGet("/", () => app.Environment.IsDevelopment()
 
 app.MapAlgorithmEndpoints();
 app.MapExplainEndpoint();
+app.MapAskEndpoint();
 
 app.Run();

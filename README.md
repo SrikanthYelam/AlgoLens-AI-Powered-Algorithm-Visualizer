@@ -17,6 +17,8 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Number of Islands (BFS flood fill over a grid)
 * Course Schedule (Kahn's Algorithm) — BFS topological sort over the prerequisite graph
 * Course Schedule (DFS Cycle Detection) — same problem, solved by detecting a back edge during DFS
+* Reconstruct Itinerary (Hierholzer's algorithm — Eulerian path via postorder DFS)
+* Cheapest Flights Within K Stops (Bellman-Ford relaxation limited to k + 1 rounds)
 * Permutations (backtracking)
 * Combinations (backtracking)
 * Subsets (backtracking)

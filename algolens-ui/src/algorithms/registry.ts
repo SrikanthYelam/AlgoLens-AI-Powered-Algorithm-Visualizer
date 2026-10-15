@@ -26,6 +26,10 @@ import { IslandsStateView } from './numberOfIslands/IslandsStateView';
 import { CourseScheduleInputForm } from './courseSchedule/CourseScheduleInputForm';
 import { CourseScheduleKahnStateView } from './courseSchedule/CourseScheduleKahnStateView';
 import { CourseScheduleDfsStateView } from './courseSchedule/CourseScheduleDfsStateView';
+import { ReconstructItineraryInputForm } from './reconstructItinerary/ReconstructItineraryInputForm';
+import { ReconstructItineraryStateView } from './reconstructItinerary/ReconstructItineraryStateView';
+import { CheapestFlightsInputForm } from './cheapestFlights/CheapestFlightsInputForm';
+import { CheapestFlightsStateView } from './cheapestFlights/CheapestFlightsStateView';
 import { PermutationsInputForm } from './permutations/PermutationsInputForm';
 import { CombinationsInputForm } from './combinations/CombinationsInputForm';
 import { SubsetsInputForm } from './subsets/SubsetsInputForm';
@@ -439,6 +443,54 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static bool Solve(int numCourses, int[][] prerequisites)',
     InputForm: CourseScheduleInputForm,
     StateView: CourseScheduleDfsStateView,
+  },
+  {
+    id: 'reconstruct-itinerary',
+    name: 'Reconstruct Itinerary',
+    description: 'Rebuild the lexicographically smallest valid flight itinerary that uses every ticket exactly once, starting from JFK.',
+    category: 'Graphs',
+    pattern: "Hierholzer's Algorithm (Eulerian Path via Postorder DFS)",
+    timeComplexity: 'O(E log E)',
+    spaceComplexity: 'O(E)',
+    complexityNotes: 'Sorting every airport\'s destination list dominates; the DFS itself visits each ticket (edge) exactly once, pushing it onto the stack and later popping it, so the traversal is O(E). The adjacency list, stack, and postorder result are all bounded by the number of tickets.',
+    hints: [
+      'Build a sorted adjacency list per airport — sorting makes the smallest next destination always the one tried first.',
+      "Do a DFS that always consumes the smallest remaining ticket from the current airport, removing it as you go so it can't be used twice.",
+      "Only pop an airport off the stack (and append it to the result) once it has no tickets left — don't pop it the moment you arrive.",
+      'The result builds in reverse; reverse it once at the very end to get the real itinerary. This popping order is what correctly avoids stranding tickets at a dead end, with no explicit backtracking over which ticket to pick.',
+    ],
+    relatedProblems: [
+      { name: 'Course Schedule (DFS Cycle Detection)', note: 'Another DFS over a directed graph, but detecting a cycle instead of building an Eulerian path.' },
+      { name: 'Valid Arrangement of Pairs', note: 'The same Eulerian-path idea, generalized to a start node that isn\'t fixed in advance.' },
+      { name: 'Word Chain / Word Ladder', note: 'Similar "traverse every edge/transition exactly once or find a path" flavor over a different graph shape.' },
+    ],
+    judgeSignature: 'public static IList<string> Solve(IList<IList<string>> tickets)',
+    InputForm: ReconstructItineraryInputForm,
+    StateView: ReconstructItineraryStateView,
+  },
+  {
+    id: 'cheapest-flights-within-k-stops',
+    name: 'Cheapest Flights Within K Stops',
+    description: 'Find the cheapest price from src to dst using at most k stops, via limited-round Bellman-Ford relaxation.',
+    category: 'Graphs',
+    pattern: 'Bellman-Ford (Limited-Edge Relaxation)',
+    timeComplexity: 'O(k · E)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Each of the k + 1 rounds relaxes every flight exactly once, so the whole run is O(k · E). Only the current and next price arrays are kept, both sized to the number of cities.',
+    hints: [
+      'At most k stops means at most k + 1 edges in the path — relax every flight k + 1 times, once per allowed edge.',
+      'Each round must read prices from the *previous* round only, never one already updated earlier in the same round, or a single round could chain together more edges than the stop limit allows.',
+      "Build each round's prices into a fresh array seeded from the previous round's, so a flight relaxed later in the same round can't accidentally use a price that round already improved.",
+      "Dijkstra's greedy shortest-path guarantee doesn't track edge count, so it can't enforce a stop limit the way this round-capped relaxation does.",
+    ],
+    relatedProblems: [
+      { name: 'Network Delay Time', note: 'Same single-source shortest-path shape, without the stop-count limit — Dijkstra fits there instead.' },
+      { name: 'Course Schedule (DFS Cycle Detection)', note: 'Another directed-graph problem in this app, but detecting a cycle instead of a cheapest path.' },
+      { name: 'Reconstruct Itinerary', note: 'Another graph-traversal problem over weighted/labeled edges, solved by a very different technique (Eulerian path, not relaxation).' },
+    ],
+    judgeSignature: 'public static int Solve(int n, int[][] flights, int src, int dst, int k)',
+    InputForm: CheapestFlightsInputForm,
+    StateView: CheapestFlightsStateView,
   },
   {
     id: 'permutations',

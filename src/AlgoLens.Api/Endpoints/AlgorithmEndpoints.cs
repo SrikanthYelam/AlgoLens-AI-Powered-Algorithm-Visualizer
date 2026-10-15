@@ -24,6 +24,14 @@ public static class AlgorithmEndpoints
     /// </summary>
     public const string ExplainRateLimitPolicy = "explain";
 
+    /// <summary>
+    /// Rate-limit policy for the free-form "ask a question about this step" endpoint — also a
+    /// direct, billed OpenAI call like <see cref="ExplainRateLimitPolicy"/>, but kept as its own
+    /// named policy (rather than reused) since it's a distinct, user-initiated endpoint with its
+    /// own limit.
+    /// </summary>
+    public const string AskRateLimitPolicy = "ask";
+
     public static void MapAlgorithmEndpoints(this IEndpointRouteBuilder app)
     {
         MapAlgorithm<BinaryTreeLevelOrderTraversal, TraversalRequest, TreeNode?>(
@@ -88,6 +96,36 @@ public static class AlgorithmEndpoints
                 input => new Dictionary<string, object?> { ["numCourses"] = input.NumCourses, ["prerequisites"] = input.Prerequisites },
                 "Solve((int)Args[\"numCourses\"], (int[][])Args[\"prerequisites\"])",
                 steps => ((CourseScheduleDfsState)steps[^1].State).CanFinish));
+
+        MapAlgorithm<ReconstructItinerary, ReconstructItineraryRequest, IReadOnlyList<IReadOnlyList<string>>>(
+            app,
+            "/api/algorithms/reconstruct-itinerary",
+            request => request.Tickets,
+            judge: new JudgeConfig<IReadOnlyList<IReadOnlyList<string>>>(
+                tickets => new Dictionary<string, object?>
+                {
+                    // Same IList<IList<string>> invariance gotcha Accounts Merge's judge hits —
+                    // rebuild as a List<IList<string>> whose element type genuinely is the interface.
+                    ["tickets"] = tickets.Select(t => (IList<string>)t.ToList()).ToList(),
+                },
+                "Solve((IList<IList<string>>)Args[\"tickets\"])",
+                steps => ((ReconstructItineraryState)steps[^1].State).Itinerary));
+
+        MapAlgorithm<CheapestFlights, CheapestFlightsRequest, CheapestFlightsInput>(
+            app,
+            "/api/algorithms/cheapest-flights-within-k-stops",
+            request => new CheapestFlightsInput(request.N, request.Flights, request.Src, request.Dst, request.K),
+            judge: new JudgeConfig<CheapestFlightsInput>(
+                input => new Dictionary<string, object?>
+                {
+                    ["n"] = input.N,
+                    ["flights"] = input.Flights,
+                    ["src"] = input.Src,
+                    ["dst"] = input.Dst,
+                    ["k"] = input.K,
+                },
+                "Solve((int)Args[\"n\"], (int[][])Args[\"flights\"], (int)Args[\"src\"], (int)Args[\"dst\"], (int)Args[\"k\"])",
+                steps => ((CheapestFlightsState)steps[^1].State).Answer));
 
         MapAlgorithm<Permutations, PermutationsRequest, IReadOnlyList<int>>(
             app,
@@ -567,6 +605,34 @@ public static class AlgorithmEndpoints
     }
 
     private sealed record ExplainRequest(IReadOnlyList<StepDto> Steps);
+
+    // Answers a free-form question about one step. Accepts AskQuestionRequest and returns
+    // AskQuestionResponse — see both for why the step is the only required context.
+    public static void MapAskEndpoint(this IEndpointRouteBuilder app)
+    {
+        app.MapPost("/api/algorithms/{algorithmId}/ask", async (
+            string algorithmId,
+            AskQuestionRequest request,
+            IQuestionAnsweringService qa,
+            CancellationToken cancellationToken) =>
+        {
+            var step = new AlgorithmStep(
+                request.Step.StepNumber,
+                request.Step.Action,
+                request.Step.State,
+                request.Step.Highlights,
+                request.Step.SourceLineStart,
+                request.Step.SourceLineEnd);
+
+            var answer = await qa.AskAsync(
+                algorithmId, request.AlgorithmName, request.AlgorithmDescription, step, request.Question, cancellationToken);
+
+            return Results.Ok(new AskQuestionResponse(answer));
+        })
+        .RequireRateLimiting(AskRateLimitPolicy)
+        .WithName("AskQuestion")
+        .WithOpenApi();
+    }
 
     /// <summary>
     /// Wires the "Try Your Own Solution" judge for one algorithm: <see cref="BuildArgs"/> turns the

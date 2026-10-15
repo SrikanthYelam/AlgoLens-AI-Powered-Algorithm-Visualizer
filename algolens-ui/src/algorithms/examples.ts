@@ -96,6 +96,42 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: 'Diamond', input: { numCourses: 4, prerequisites: [[1, 0], [2, 0], [3, 1], [3, 2]] } },
     { label: 'Cycle — impossible', input: { numCourses: 2, prerequisites: [[1, 0], [0, 1]] } },
   ],
+  'reconstruct-itinerary': [
+    {
+      label: 'Simple chain',
+      input: { tickets: [['MUC', 'LHR'], ['JFK', 'MUC'], ['SFO', 'SJC'], ['LHR', 'SFO']] },
+    },
+    {
+      label: 'Repeated airports',
+      input: {
+        tickets: [['JFK', 'SFO'], ['JFK', 'ATL'], ['SFO', 'ATL'], ['ATL', 'JFK'], ['ATL', 'SFO']],
+      },
+    },
+    {
+      label: 'Dead end — needs backtracking',
+      input: { tickets: [['JFK', 'KUL'], ['JFK', 'NRT'], ['NRT', 'JFK']] },
+    },
+  ],
+  'cheapest-flights-within-k-stops': [
+    {
+      label: '1 stop finds a cheaper route',
+      input: {
+        n: 4,
+        flights: [[0, 1, 100], [1, 2, 100], [2, 0, 100], [1, 3, 600], [2, 3, 200]],
+        src: 0,
+        dst: 3,
+        k: 1,
+      },
+    },
+    {
+      label: '0 stops forces the direct (pricier) flight',
+      input: { n: 3, flights: [[0, 1, 100], [1, 2, 100], [0, 2, 500]], src: 0, dst: 2, k: 0 },
+    },
+    {
+      label: 'Unreachable within the stop limit',
+      input: { n: 3, flights: [[0, 1, 100], [1, 2, 100]], src: 0, dst: 2, k: 0 },
+    },
+  ],
   permutations: [
     { label: '[1, 2, 3]', input: { nums: [1, 2, 3] } },
     { label: 'Single element', input: { nums: [1] } },

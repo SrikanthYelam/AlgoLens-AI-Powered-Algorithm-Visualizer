@@ -1,4 +1,4 @@
-import type { AlgorithmRunResponse, AlgorithmSourceResponse, SubmitSolutionResponse } from '../types/algorithm';
+import type { AlgorithmRunResponse, AlgorithmSourceResponse, Step, SubmitSolutionResponse } from '../types/algorithm';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5119';
 
@@ -54,6 +54,33 @@ export async function regenerateExplanations(
 
   const payload = (await response.json()) as { explanations: Array<string | null> };
   return payload.explanations ?? [];
+}
+
+/**
+ * Asks a free-form question about one step. `step` is the context ("the test case") the LLM
+ * answers from; `algorithmName`/`algorithmDescription` are optional framing the registry already
+ * has client-side ("the problem"). Returns null if no AI provider is configured or the call failed.
+ */
+export async function askQuestion(
+  algorithmId: string,
+  step: Step,
+  question: string,
+  algorithmName?: string,
+  algorithmDescription?: string,
+): Promise<string | null> {
+  const response = await fetch(`${API_BASE_URL}/api/algorithms/${algorithmId}/ask`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question, step, algorithmName, algorithmDescription }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => '');
+    throw new Error(`Ask request for ${algorithmId} failed (${response.status}): ${text}`);
+  }
+
+  const payload = (await response.json()) as { answer: string | null };
+  return payload.answer ?? null;
 }
 
 /**

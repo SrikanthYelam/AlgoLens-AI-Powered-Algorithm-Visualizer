@@ -9,13 +9,22 @@ interface StepPlayerProps {
   renderState: (step: Step) => ReactNode;
   /** Renders the algorithm's source code, highlighted for the given step. Optional. */
   renderCode?: (step: Step) => ReactNode;
+  /** Renders a free-form "ask a question about this step" panel below the code/state split. Optional. */
+  renderAskPanel?: (step: Step) => ReactNode;
   /** Optional callback to regenerate an explanation for a single step. Should return the new explanation or null. */
   regenerateExplanation?: (index: number) => Promise<string | null>;
   /** Optional callback invoked when an explanation is regenerated to update parent state. */
   onUpdateExplanation?: (index: number, explanation: string | null) => void;
 }
 
-export function StepPlayer({ steps, renderState, renderCode, regenerateExplanation, onUpdateExplanation }: StepPlayerProps) {
+export function StepPlayer({
+  steps,
+  renderState,
+  renderCode,
+  renderAskPanel,
+  regenerateExplanation,
+  onUpdateExplanation,
+}: StepPlayerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState<number>(() => {
@@ -257,6 +266,10 @@ export function StepPlayer({ steps, renderState, renderCode, regenerateExplanati
 
         {renderCode && <div>{renderCode(currentStep)}</div>}
       </div>
+
+      {/* No `key` here — same convention as the renderCode wrapper above — so this panel (and its
+          Q&A history) persists across step changes instead of remounting on every step. */}
+      {renderAskPanel && <div>{renderAskPanel(currentStep)}</div>}
     </div>
   );
 }
