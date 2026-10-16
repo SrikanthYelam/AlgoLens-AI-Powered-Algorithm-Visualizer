@@ -9,7 +9,7 @@ interface StepPlayerProps {
   renderState: (step: Step) => ReactNode;
   /** Renders the algorithm's source code, highlighted for the given step. Optional. */
   renderCode?: (step: Step) => ReactNode;
-  /** Renders a free-form "ask a question about this step" panel below the code/state split. Optional. */
+  /** Renders a free-form "ask a question about this step" panel, above the code/state split. Optional. */
   renderAskPanel?: (step: Step) => ReactNode;
   /** Optional callback to regenerate an explanation for a single step. Should return the new explanation or null. */
   regenerateExplanation?: (index: number) => Promise<string | null>;
@@ -214,62 +214,62 @@ export function StepPlayer({
         />
       </div>
 
-      <div className={renderCode ? 'grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start' : undefined}>
-        <div className="flex flex-col gap-4">
-          <div
-            key={currentStep.stepNumber}
-            className="step-fade rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+      {/* Full-width, above the state/code split — both the explanation and (if present) the ask
+          panel need to be visible without scrolling past the (often tall) visualization below. */}
+      <div
+        key={currentStep.stepNumber}
+        className="step-fade rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+      >
+        <div className="flex items-start justify-between gap-3">
+          {currentStep.explanation ? (
+            <p className="text-base leading-relaxed text-gray-900 dark:text-gray-100">{currentStep.explanation}</p>
+          ) : (
+            <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{currentStep.action}</p>
+          )}
+
+          <button
+            type="button"
+            onClick={async () => {
+              if (!regenerateExplanation || !onUpdateExplanation) return;
+              setIsRegenerating((s) => ({ ...s, [currentIndex]: true }));
+              try {
+                const text = await regenerateExplanation(currentIndex);
+                onUpdateExplanation(currentIndex, text ?? null);
+              } catch (e) {
+                // ignore — parent will surface errors if needed
+                onUpdateExplanation(currentIndex, null);
+              } finally {
+                setIsRegenerating((s) => ({ ...s, [currentIndex]: false }));
+              }
+            }}
+            disabled={!regenerateExplanation}
+            className="shrink-0 whitespace-nowrap rounded-md border border-gray-300 px-2 py-1 text-xs font-medium transition-colors duration-150 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent dark:border-gray-600 dark:hover:bg-gray-800"
+            aria-label="Regenerate explanation"
           >
-            <div className="flex items-start justify-between gap-3">
-              {currentStep.explanation ? (
-                <p className="text-base leading-relaxed text-gray-900 dark:text-gray-100">{currentStep.explanation}</p>
-              ) : (
-                <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{currentStep.action}</p>
-              )}
+            {isRegenerating[currentIndex] ? 'Regenerating…' : 'Regenerate explanation'}
+          </button>
+        </div>
 
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!regenerateExplanation || !onUpdateExplanation) return;
-                  setIsRegenerating((s) => ({ ...s, [currentIndex]: true }));
-                  try {
-                    const text = await regenerateExplanation(currentIndex);
-                    onUpdateExplanation(currentIndex, text ?? null);
-                  } catch (e) {
-                    // ignore — parent will surface errors if needed
-                    onUpdateExplanation(currentIndex, null);
-                  } finally {
-                    setIsRegenerating((s) => ({ ...s, [currentIndex]: false }));
-                  }
-                }}
-                disabled={!regenerateExplanation}
-                className="shrink-0 whitespace-nowrap rounded-md border border-gray-300 px-2 py-1 text-xs font-medium transition-colors duration-150 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent dark:border-gray-600 dark:hover:bg-gray-800"
-                aria-label="Regenerate explanation"
-              >
-                {isRegenerating[currentIndex] ? 'Regenerating…' : 'Regenerate explanation'}
-              </button>
-            </div>
+        {currentStep.explanation ? (
+          <p className="mt-2 font-mono text-xs text-gray-500 dark:text-gray-400">{currentStep.action}</p>
+        ) : (
+          <p className="mt-2 text-sm italic text-gray-500 dark:text-gray-400">
+            No AI explanation available for this step.
+          </p>
+        )}
+      </div>
 
-            {currentStep.explanation ? (
-              <p className="mt-2 font-mono text-xs text-gray-500 dark:text-gray-400">{currentStep.action}</p>
-            ) : (
-              <p className="mt-2 text-sm italic text-gray-500 dark:text-gray-400">
-                No AI explanation available for this step.
-              </p>
-            )}
-          </div>
+      {/* No `key` here — same convention as the renderCode wrapper below — so this panel (and its
+          Q&A history) persists across step changes instead of remounting on every step. */}
+      {renderAskPanel && <div>{renderAskPanel(currentStep)}</div>}
 
-          <div key={`state-${currentStep.stepNumber}`} className="step-fade">
-            {renderState(currentStep)}
-          </div>
+      <div className={renderCode ? 'grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start' : 'flex flex-col gap-4'}>
+        <div key={`state-${currentStep.stepNumber}`} className="step-fade">
+          {renderState(currentStep)}
         </div>
 
         {renderCode && <div>{renderCode(currentStep)}</div>}
       </div>
-
-      {/* No `key` here — same convention as the renderCode wrapper above — so this panel (and its
-          Q&A history) persists across step changes instead of remounting on every step. */}
-      {renderAskPanel && <div>{renderAskPanel(currentStep)}</div>}
     </div>
   );
 }

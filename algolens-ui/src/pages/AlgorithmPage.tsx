@@ -79,16 +79,17 @@ export function AlgorithmPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 sm:px-8">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-4 pb-8 sm:px-8">
       <div>
-        <Link
-          to="/"
-          className="group inline-flex items-center gap-1 text-sm font-medium text-indigo-600 dark:text-indigo-400"
-        >
-          <span className="transition-transform group-hover:-translate-x-0.5">←</span>
-          <span className="group-hover:underline">Back</span>
-        </Link>
-        <div className="mt-1 flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            to="/"
+            className="group inline-flex items-center gap-1 text-sm font-medium text-indigo-600 dark:text-indigo-400"
+          >
+            <span className="transition-transform group-hover:-translate-x-0.5">←</span>
+            <span className="group-hover:underline">Back</span>
+          </Link>
+          <span className="text-gray-300 dark:text-gray-600">/</span>
           <h1 className="font-heading text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-gray-100">
             {algorithm.name}
           </h1>

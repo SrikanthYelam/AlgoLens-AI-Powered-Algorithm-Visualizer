@@ -41,6 +41,10 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mode, setMode] = useState<'source' | 'try'>('source');
+  // Off by default: auto-scrolling this panel's own container to follow the highlighted line,
+  // even though it never touches window scroll, still reads as "the page moving" while stepping
+  // through — opt-in for anyone who wants the code to track the current line automatically.
+  const [followLine, setFollowLine] = useState(false);
   const canTryOwnSolution = algorithmId !== undefined && judgeSignature !== undefined;
 
   // Switching algorithms keeps this component mounted (same position in the tree across route
@@ -54,6 +58,9 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
   const displayEnd = mapLine(highlightEnd);
 
   useEffect(() => {
+    if (!followLine) {
+      return;
+    }
     // Both the light and dark instances render in the DOM (only one is visually shown, via the
     // `dark` class on <html>), so scroll whichever one is actually visible.
     const isDark = document.documentElement.classList.contains('dark');
@@ -81,7 +88,7 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
       return; // already visible — don't scroll at all
     }
     container.scrollTo({ top: container.scrollTop + offset, behavior: 'smooth' });
-  }, [displayStart, displayEnd]);
+  }, [displayStart, displayEnd, followLine]);
 
   async function copyToClipboard() {
     try {
@@ -128,6 +135,18 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
       <div className="flex items-center justify-end gap-2 mb-2">
         {mode === 'source' ? (
           <>
+            <button
+              type="button"
+              onClick={() => setFollowLine((f) => !f)}
+              aria-pressed={followLine}
+              className={`rounded-md border px-2 py-1 text-sm ${
+                followLine
+                  ? 'border-indigo-600 bg-indigo-600 text-white'
+                  : 'border-gray-300 bg-white dark:bg-gray-800'
+              }`}
+            >
+              Follow current line
+            </button>
             <button
               type="button"
               onClick={copyToClipboard}
