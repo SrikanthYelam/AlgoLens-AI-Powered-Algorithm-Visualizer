@@ -27,6 +27,11 @@ export function AlgorithmPage() {
   // field values are never clobbered by the act of running them.
   const [formResetKey, setFormResetKey] = useState(0);
   const [formInitialInput, setFormInitialInput] = useState<unknown>(undefined);
+  // Bumped once per successful run (not on in-place updates like a regenerated explanation) and
+  // used as StepPlayer's `key` — remounting it resets its current-step index back to 0 and clears
+  // the Ask-a-Question panel's transcript, both of which should start fresh on a new run rather
+  // than carrying over from whatever example/input ran before.
+  const [runKey, setRunKey] = useState(0);
 
   // Step cap for large runs — default to 500 displayed steps, with an option to show the full run.
   const STEP_DISPLAY_CAP = 500;
@@ -70,6 +75,7 @@ export function AlgorithmPage() {
       } else {
         setSteps(response.steps);
       }
+      setRunKey((k) => k + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to run algorithm.');
       setSteps(null);
@@ -165,6 +171,7 @@ export function AlgorithmPage() {
 
       {steps && (
         <StepPlayer
+          key={runKey}
           steps={steps}
           renderState={(step) => <algorithm.StateView step={step} />}
           renderCode={
