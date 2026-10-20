@@ -82,7 +82,7 @@ export function NumberOfWaysInputForm({ onSubmit, isLoading, initialInput }: Alg
         id="ways-roads"
         value={roadsText}
         onChange={(e) => setRoadsText(e.target.value)}
-        rows={6}
+        rows={4}
         className="rounded-md border border-gray-300 px-3 py-1.5 font-mono text-sm dark:border-gray-600 dark:bg-gray-800"
         placeholder={DEFAULT_ROADS}
       />

@@ -92,7 +92,7 @@ export function CheapestFlightsInputForm({ onSubmit, isLoading, initialInput }: 
         id="flights-list"
         value={flightsText}
         onChange={(e) => setFlightsText(e.target.value)}
-        rows={5}
+        rows={4}
         className="rounded-md border border-gray-300 px-3 py-1.5 font-mono text-sm dark:border-gray-600 dark:bg-gray-800"
         placeholder={DEFAULT_FLIGHTS}
       />
