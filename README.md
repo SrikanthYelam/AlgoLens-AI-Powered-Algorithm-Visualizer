@@ -19,6 +19,7 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 * Course Schedule (DFS Cycle Detection) — same problem, solved by detecting a back edge during DFS
 * Reconstruct Itinerary (Hierholzer's algorithm — Eulerian path via postorder DFS)
 * Cheapest Flights Within K Stops (Bellman-Ford relaxation limited to k + 1 rounds)
+* Number of Ways to Arrive at Destination (Dijkstra's algorithm with shortest-path counting)
 * Permutations (backtracking)
 * Combinations (backtracking)
 * Subsets (backtracking)
@@ -83,6 +84,7 @@ Three backend decisions exist specifically to demonstrate production-facing syst
 
 * `POST .../submit` ("Try Your Own Solution", the judge) — 10 requests/minute. This is the API's most expensive and least-trusted endpoint (it compiles and executes arbitrary submitted C# in-process — see Pending Enhancements below), so it gets the tightest cap.
 * `POST /api/algorithms/{id}/explain` (on-demand explanation regeneration) — 30 requests/minute: a direct, billed external call, but not arbitrary code execution.
+* `POST /api/algorithms/{id}/ask` (free-form "ask a question about this step") — 20 requests/minute: the same billed-external-call risk profile as `/explain`, kept as its own policy since it's a separate, user-initiated endpoint.
 
 Both use a fixed-window limiter with `QueueLimit: 0`, so an over-limit request is rejected immediately with `429 Too Many Requests`, a `Retry-After` header, and a JSON error body, instead of being queued and left hanging. The plain `/run` endpoints are deliberately left unlimited, since they only execute the app's own trusted, bounded algorithm code.
 
@@ -172,7 +174,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 46
+* Additional algorithms beyond the current 49
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

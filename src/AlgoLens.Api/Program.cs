@@ -57,6 +57,7 @@ builder.Services.AddScoped<CourseScheduleKahn>();
 builder.Services.AddScoped<CourseScheduleDfs>();
 builder.Services.AddScoped<ReconstructItinerary>();
 builder.Services.AddScoped<CheapestFlights>();
+builder.Services.AddScoped<NumberOfWays>();
 builder.Services.AddScoped<Permutations>();
 builder.Services.AddScoped<Combinations>();
 builder.Services.AddScoped<Subsets>();

@@ -30,6 +30,8 @@ import { ReconstructItineraryInputForm } from './reconstructItinerary/Reconstruc
 import { ReconstructItineraryStateView } from './reconstructItinerary/ReconstructItineraryStateView';
 import { CheapestFlightsInputForm } from './cheapestFlights/CheapestFlightsInputForm';
 import { CheapestFlightsStateView } from './cheapestFlights/CheapestFlightsStateView';
+import { NumberOfWaysInputForm } from './numberOfWays/NumberOfWaysInputForm';
+import { NumberOfWaysStateView } from './numberOfWays/NumberOfWaysStateView';
 import { PermutationsInputForm } from './permutations/PermutationsInputForm';
 import { CombinationsInputForm } from './combinations/CombinationsInputForm';
 import { SubsetsInputForm } from './subsets/SubsetsInputForm';
@@ -491,6 +493,30 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(int n, int[][] flights, int src, int dst, int k)',
     InputForm: CheapestFlightsInputForm,
     StateView: CheapestFlightsStateView,
+  },
+  {
+    id: 'number-of-ways-to-arrive-at-destination',
+    name: 'Number of Ways to Arrive at Destination',
+    description: 'Count the distinct shortest-time paths from intersection 0 to n − 1, via Dijkstra extended to also track path counts.',
+    category: 'Graphs',
+    pattern: "Dijkstra's Algorithm (Shortest-Path Counting)",
+    timeComplexity: 'O(E log V)',
+    spaceComplexity: 'O(V + E)',
+    complexityNotes: 'Each road is relaxed at most twice (once from each endpoint), and every relaxation that improves a distance pushes one entry onto the priority queue, so the whole run is the familiar O(E log V) Dijkstra bound. The adjacency list, distance array, and ways array are all sized to the number of intersections.',
+    hints: [
+      "Run Dijkstra's algorithm from intersection 0, but track a second array — the number of ways to reach each intersection in its current-best time — alongside the usual distance array.",
+      'When relaxing a road finds a strictly shorter time to a neighbor, that neighbor\'s way-count resets to the current intersection\'s way-count — every previously found path to it is now provably not shortest.',
+      "When a road ties the neighbor's current best time exactly, add the current intersection's way-count onto the neighbor's instead of resetting it — that's one more tied-for-shortest path.",
+      "Skip a priority-queue entry whose distance is already worse than that node's finalized distance — it's stale, and reprocessing it would double-count ways.",
+    ],
+    relatedProblems: [
+      { name: 'Network Delay Time', note: 'The same single-source Dijkstra shortest-path shape, without needing to count ties.' },
+      { name: 'Cheapest Flights Within K Stops', note: 'Another shortest-path problem in this app, solved by Bellman-Ford instead since it needs to bound the number of edges, not just the total weight.' },
+      { name: 'Course Schedule (DFS Cycle Detection)', note: 'A different graph traversal in this app, detecting a cycle rather than counting shortest paths.' },
+    ],
+    judgeSignature: 'public static int Solve(int n, int[][] roads)',
+    InputForm: NumberOfWaysInputForm,
+    StateView: NumberOfWaysStateView,
   },
   {
     id: 'permutations',

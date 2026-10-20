@@ -127,6 +127,15 @@ public static class AlgorithmEndpoints
                 "Solve((int)Args[\"n\"], (int[][])Args[\"flights\"], (int)Args[\"src\"], (int)Args[\"dst\"], (int)Args[\"k\"])",
                 steps => ((CheapestFlightsState)steps[^1].State).Answer));
 
+        MapAlgorithm<NumberOfWays, NumberOfWaysRequest, NumberOfWaysInput>(
+            app,
+            "/api/algorithms/number-of-ways-to-arrive-at-destination",
+            request => new NumberOfWaysInput(request.N, request.Roads),
+            judge: new JudgeConfig<NumberOfWaysInput>(
+                input => new Dictionary<string, object?> { ["n"] = input.N, ["roads"] = input.Roads },
+                "Solve((int)Args[\"n\"], (int[][])Args[\"roads\"])",
+                steps => ((NumberOfWaysState)steps[^1].State).Answer));
+
         MapAlgorithm<Permutations, PermutationsRequest, IReadOnlyList<int>>(
             app,
             "/api/algorithms/permutations",

@@ -132,6 +132,26 @@ export const examples: Record<string, AlgorithmExample[]> = {
       input: { n: 3, flights: [[0, 1, 100], [1, 2, 100]], src: 0, dst: 2, k: 0 },
     },
   ],
+  'number-of-ways-to-arrive-at-destination': [
+    {
+      label: 'Four tied-shortest paths',
+      input: {
+        n: 7,
+        roads: [
+          [0, 6, 7], [0, 1, 2], [1, 2, 3], [1, 3, 3], [6, 3, 3],
+          [3, 5, 1], [6, 5, 1], [2, 5, 1], [0, 4, 5], [4, 6, 2],
+        ],
+      },
+    },
+    {
+      label: 'Diamond — two equal-length paths',
+      input: { n: 4, roads: [[0, 1, 1], [0, 2, 1], [1, 3, 1], [2, 3, 1]] },
+    },
+    {
+      label: 'Single road',
+      input: { n: 2, roads: [[1, 0, 10]] },
+    },
+  ],
   permutations: [
     { label: '[1, 2, 3]', input: { nums: [1, 2, 3] } },
     { label: 'Single element', input: { nums: [1] } },
