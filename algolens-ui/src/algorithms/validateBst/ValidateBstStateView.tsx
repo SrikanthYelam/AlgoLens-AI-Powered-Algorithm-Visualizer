@@ -1,5 +1,6 @@
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 import { TreeDiagram } from '../../components/TreeDiagram';
+import { VizStack } from '../../components/viz';
 
 /** Mirrors AlgoLens.Core.Models.ValidateBstState (camelCase JSON). */
 interface ValidateBstState {
@@ -18,14 +19,14 @@ export function ValidateBstStateView({ step }: AlgorithmStateViewProps) {
     state.currentVal !== null ? { [state.currentVal]: `(${state.lowerLabel}, ${state.upperLabel})` } : {};
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
+    <VizStack>
       <TreeDiagram tree={state.tree} roles={roles} labels={labels} />
-      <p className="font-medium text-gray-700 dark:text-gray-300">
+      <p className="font-medium text-ink">
         Status so far:{' '}
-        <span className={state.isValidSoFar ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}>
-          {state.isValidSoFar ? 'valid' : 'invalid'}
+        <span className={state.isValidSoFar ? 'text-success' : 'font-semibold'}>
+          {state.isValidSoFar ? '✓ valid' : '✕ invalid'}
         </span>
       </p>
-    </div>
+    </VizStack>
   );
 }

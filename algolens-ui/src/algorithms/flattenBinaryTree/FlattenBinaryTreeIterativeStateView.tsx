@@ -1,5 +1,6 @@
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 import { TreeDiagram } from '../../components/TreeDiagram';
+import { VizStack } from '../../components/viz';
 
 /** Mirrors AlgoLens.Core.Models.FlattenBinaryTreeIterativeState (camelCase JSON). */
 interface FlattenBinaryTreeIterativeState {
@@ -20,16 +21,16 @@ export function FlattenBinaryTreeIterativeStateView({ step }: AlgorithmStateView
   }
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
+    <VizStack>
       <TreeDiagram tree={state.tree} roles={roles} />
       {state.currentValue !== null && (
-        <p className="font-medium text-gray-700 dark:text-gray-300">
+        <p className="font-medium text-ink">
           curr = {state.currentValue}
           {state.predecessorValue !== null && (
             <span> — rightmost node of its left subtree: {state.predecessorValue}</span>
           )}
         </p>
       )}
-    </div>
+    </VizStack>
   );
 }

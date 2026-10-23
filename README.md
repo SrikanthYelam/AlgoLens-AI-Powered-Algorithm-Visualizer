@@ -8,6 +8,28 @@ AlgoLens is a full-stack web application that visualizes classic LeetCode-style 
 
 **Frontend** (React + TypeScript + Vite, Tailwind CSS): a generic `StepPlayer` component (play/pause/prev/next/step-slider) drives through the steps returned by the API, rendering each algorithm's own visualization via a small per-algorithm `StateView` component. Every algorithm plugs into one central registry — adding a new one means adding one registry entry plus an `InputForm`/`StateView` pair, with no changes to the player, routing, or API client.
 
+### Screenshots
+
+The UI is a dark-only theme following [`algolens-ui/DESIGN.md`](algolens-ui/DESIGN.md) (Inter for text, JetBrains Mono for code and step values). Every visualizer state — current, comparing, in range, visited, result, discarded — is told apart by a border style, weight or glyph as well as color.
+
+**Home** — every algorithm, grouped by pattern:
+![Home page listing the algorithms grouped by pattern](docs/screenshots/home.png)
+
+**Decode Ways** — a 1D DP table: the cell being filled is solid, its source cell is dashed. Step controls, the AI explanation, the "ask a question" box and the live C# source sit around it:
+![Decode Ways visualizer showing the dp table mid-run](docs/screenshots/decode-ways.png)
+
+**Edit Distance** — a 2D DP table with the current cell highlighted:
+![Edit Distance visualizer showing the 2D DP table](docs/screenshots/edit-distance.png)
+
+**Course Schedule (Kahn's Algorithm)** — a graph problem, tracking in-degrees, the queue and the topological order:
+![Course Schedule visualizer showing in-degrees, queue and order](docs/screenshots/course-schedule.png)
+
+**LRU Cache** — a "design a class" problem, replaying get/put calls against the cache in recency order:
+![LRU Cache visualizer showing entries from most to least recently used](docs/screenshots/lru-cache.png)
+
+**Try Your Own Solution** — paste a C# solution, run it against the same input, and see an exact-match or matches-ignoring-order result, with the pattern, complexity and hints below:
+![Try Your Own Solution panel showing an exact match](docs/screenshots/try-your-own-solution.png)
+
 ### Algorithms currently implemented
 
 * Binary Tree Level Order Traversal (BFS)

@@ -1,5 +1,6 @@
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 import { TreeDiagram } from '../../components/TreeDiagram';
+import { VizStack } from '../../components/viz';
 
 /** Mirrors AlgoLens.Core.Models.FlattenBinaryTreeRecursiveState (camelCase JSON). */
 interface FlattenBinaryTreeRecursiveState {
@@ -20,14 +21,14 @@ export function FlattenBinaryTreeRecursiveStateView({ step }: AlgorithmStateView
   }
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
+    <VizStack>
       <TreeDiagram tree={state.tree} roles={roles} />
       {state.currentValue !== null && (
-        <p className="font-medium text-gray-700 dark:text-gray-300">
+        <p className="font-medium text-ink">
           Visiting {state.currentValue}
           {state.prevValue !== null && <span> — linked after {state.prevValue}</span>}
         </p>
       )}
-    </div>
+    </VizStack>
   );
 }

@@ -1,3 +1,4 @@
+import { Cell, CellRow, Empty, Legend, VizSection, VizStack } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
 /** Mirrors AlgoLens.Core.Models.DecodeWaysState (camelCase JSON). */
@@ -10,91 +11,60 @@ interface DecodeWaysState {
   contribution: number;
 }
 
-function DigitChip({ value, highlighted }: { value: string; highlighted: boolean }) {
-  return (
-    <span
-      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border font-mono text-sm transition-colors duration-200 ${
-        highlighted
-          ? 'border-indigo-500 bg-indigo-400 text-white'
-          : 'border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200'
-      }`}
-    >
-      {value}
-    </span>
-  );
-}
-
-function TableBox({ index, value, role }: { index: number; value: number; role: 'target' | 'source' | 'plain' }) {
-  const roleClasses =
-    role === 'target'
-      ? 'border-indigo-500 bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200'
-      : role === 'source'
-        ? 'border-emerald-400 bg-emerald-50 text-emerald-800 dark:border-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-200'
-        : 'border-gray-300 bg-gray-50 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200';
-
-  return (
-    <div className="flex flex-col items-center gap-0.5">
-      <span
-        className={`inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-2 font-mono text-sm transition-colors duration-200 ${roleClasses}`}
-      >
-        {value}
-      </span>
-      <span className="text-[10px] text-gray-400">dp[{index}]</span>
-    </div>
-  );
-}
-
 export function DecodeWaysStateView({ step }: AlgorithmStateViewProps) {
   const state = step.state as DecodeWaysState;
   const sourceIndex = state.isValid ? state.index - state.segment.length : null;
   const segmentStart = state.index - state.segment.length;
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">Input string</h3>
+    <VizStack>
+      <VizSection title="Input string">
         {state.s.length === 0 ? (
-          <span className="text-gray-400">empty</span>
+          <Empty>empty</Empty>
         ) : (
-          <div className="flex flex-wrap gap-1">
+          <CellRow gap="sm">
             {[...state.s].map((c, i) => (
-              <DigitChip key={i} value={c} highlighted={i >= segmentStart && i < state.index} />
+              <Cell key={i} value={c} size="sm" state={i >= segmentStart && i < state.index ? 'current' : 'plain'} />
             ))}
-          </div>
+          </CellRow>
         )}
-      </div>
+      </VizSection>
 
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">
-          dp table (dp[k] = ways to decode the first k characters)
-        </h3>
-        <div className="flex flex-wrap gap-1.5">
+      <VizSection
+        title={
+          <>
+            dp table (dp[k] = ways to decode the first k characters) · <Legend state="current">being filled</Legend>{' '}
+            <Legend state="comparing">source</Legend>
+          </>
+        }
+      >
+        <CellRow>
           {state.table.map((value, index) => (
-            <TableBox
+            <Cell
               key={index}
-              index={index}
               value={value}
-              role={index === state.index ? 'target' : index === sourceIndex ? 'source' : 'plain'}
+              index={`dp[${index}]`}
+              state={index === state.index ? 'current' : index === sourceIndex ? 'comparing' : 'plain'}
             />
           ))}
-        </div>
-      </div>
+        </CellRow>
+      </VizSection>
 
       {state.index > 0 && (
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-ink-muted">
           {state.isValid ? (
             <>
-              Segment <span className="font-mono font-semibold">'{state.segment}'</span> is a valid code: dp[
+              Segment <span className="font-mono font-semibold text-ink">'{state.segment}'</span> is a valid code: dp[
               {state.index}] += dp[{sourceIndex}] ({state.contribution}) → {state.table[state.index]}.
             </>
           ) : (
             <>
               No valid single or double-digit code ends here — dp[{state.index}] stays{' '}
-              <span className="font-mono font-semibold">0</span>.
+              <span className="font-mono font-semibold text-ink">0</span>.
             </>
           )}
         </p>
       )}
-    </div>
+    </VizStack>
   );
 }

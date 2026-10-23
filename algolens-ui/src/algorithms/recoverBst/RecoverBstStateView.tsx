@@ -1,5 +1,6 @@
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 import { TreeDiagram } from '../../components/TreeDiagram';
+import { VizStack } from '../../components/viz';
 
 /** Mirrors AlgoLens.Core.Models.RecoverBstState (camelCase JSON). */
 interface RecoverBstState {
@@ -25,9 +26,9 @@ export function RecoverBstStateView({ step }: AlgorithmStateViewProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
+    <VizStack>
       <TreeDiagram tree={state.tree} roles={roles} />
-      <p className="font-medium text-gray-700 dark:text-gray-300">
+      <p className="font-medium text-ink">
         {state.firstVal !== null ? (
           <>
             Misplaced so far: {state.firstVal}
@@ -37,6 +38,6 @@ export function RecoverBstStateView({ step }: AlgorithmStateViewProps) {
           'No violation found yet'
         )}
       </p>
-    </div>
+    </VizStack>
   );
 }

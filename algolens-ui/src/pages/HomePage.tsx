@@ -6,12 +6,12 @@ export function HomePage() {
   const categories = Array.from(new Set(algorithms.map((algorithm) => algorithm.category)));
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-10 px-4 py-8 sm:px-8">
+    <div className="mx-auto flex max-w-content flex-col gap-12 px-4 py-12 sm:px-8">
       <div>
-        <h1 className="font-heading text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-100">
+        <h1 className="text-headline font-semibold text-ink sm:text-display-md">
           Learn algorithms, one step at a time
         </h1>
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
+        <p className="mt-3 text-body-lg text-ink-muted">
           {algorithms.length} step-by-step visualizations across {categories.length} patterns, each explained by AI.
         </p>
       </div>
@@ -20,33 +20,23 @@ export function HomePage() {
         const style = getCategoryStyle(category);
 
         return (
-          <section key={category} className="flex flex-col gap-3">
-            <h2
-              className={`flex items-center gap-2 border-l-4 pl-3 text-xs font-semibold uppercase tracking-wide ${style.border} ${style.text}`}
-            >
+          <section key={category} className="flex flex-col gap-4">
+            <h2 className={`eyebrow flex items-center gap-2 border-b border-hairline pb-3 ${style.text}`}>
               {style.icon}
               {category}
             </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {algorithms
                 .filter((algorithm) => algorithm.category === category)
                 .map((algorithm) => (
                   <Link
                     key={algorithm.id}
                     to={`/algorithms/${algorithm.id}`}
-                    className="group flex flex-col rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-indigo-400 hover:shadow-md dark:border-gray-700 dark:bg-gray-800/50"
+                    className="panel group flex flex-col p-6 transition-colors duration-150 hover:border-hairline-strong hover:bg-surface-2"
                   >
-                    <h3 className="font-heading font-semibold text-gray-900 transition-colors group-hover:text-indigo-600 dark:text-gray-100 dark:group-hover:text-indigo-400">
-                      {algorithm.name}
-                    </h3>
-                    <p className="mt-1 line-clamp-3 text-sm text-gray-500 dark:text-gray-400">
-                      {algorithm.description}
-                    </p>
-                    <span
-                      className={`mt-3 w-fit rounded-full px-2 py-0.5 font-mono text-[11px] font-medium ${style.bg} ${style.text}`}
-                    >
-                      {algorithm.pattern}
-                    </span>
+                    <h3 className="text-body-lg font-medium text-ink">{algorithm.name}</h3>
+                    <p className="mt-1 line-clamp-3 text-body-sm text-ink-subtle">{algorithm.description}</p>
+                    <span className="badge mt-4 w-fit font-mono">{algorithm.pattern}</span>
                   </Link>
                 ))}
             </div>

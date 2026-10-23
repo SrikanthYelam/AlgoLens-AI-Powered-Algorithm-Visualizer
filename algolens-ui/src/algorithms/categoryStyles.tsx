@@ -2,13 +2,13 @@ import type { ReactNode } from 'react';
 
 interface CategoryStyle {
   icon: ReactNode;
-  /** Icon/accent text color. */
+  /** Icon/label text color. */
   text: string;
-  /** Light background tint, for badges and section washes. */
+  /** Badge background. */
   bg: string;
-  /** Border/left-accent color. */
+  /** Border color. */
   border: string;
-  /** Top-border-only accent color (pairs with a plain gray `border` on the other sides). */
+  /** Top-border-only color (pairs with a plain `border` on the other sides). */
   borderTop: string;
 }
 
@@ -111,81 +111,27 @@ function GraphIcon() {
   );
 }
 
-const CATEGORY_STYLES: Record<string, CategoryStyle> = {
-  Trees: {
-    icon: <TreeIcon />,
-    text: 'text-indigo-600 dark:text-indigo-400',
-    bg: 'bg-indigo-50 dark:bg-indigo-950/40',
-    border: 'border-indigo-500 dark:border-indigo-400',
-    borderTop: 'border-t-indigo-500 dark:border-t-indigo-400',
-  },
-  Graphs: {
-    icon: <GraphIcon />,
-    text: 'text-teal-600 dark:text-teal-400',
-    bg: 'bg-teal-50 dark:bg-teal-950/40',
-    border: 'border-teal-500 dark:border-teal-400',
-    borderTop: 'border-t-teal-500 dark:border-t-teal-400',
-  },
-  'Arrays & Stacks': {
-    icon: <StackIcon />,
-    text: 'text-sky-600 dark:text-sky-400',
-    bg: 'bg-sky-50 dark:bg-sky-950/40',
-    border: 'border-sky-500 dark:border-sky-400',
-    borderTop: 'border-t-sky-500 dark:border-t-sky-400',
-  },
-  Backtracking: {
-    icon: <BacktrackIcon />,
-    text: 'text-violet-600 dark:text-violet-400',
-    bg: 'bg-violet-50 dark:bg-violet-950/40',
-    border: 'border-violet-500 dark:border-violet-400',
-    borderTop: 'border-t-violet-500 dark:border-t-violet-400',
-  },
-  'Heaps & Greedy': {
-    icon: <GreedyIcon />,
-    text: 'text-amber-600 dark:text-amber-400',
-    bg: 'bg-amber-50 dark:bg-amber-950/40',
-    border: 'border-amber-500 dark:border-amber-400',
-    borderTop: 'border-t-amber-500 dark:border-t-amber-400',
-  },
-  'Dynamic Programming': {
-    icon: <DpIcon />,
-    text: 'text-emerald-600 dark:text-emerald-400',
-    bg: 'bg-emerald-50 dark:bg-emerald-950/40',
-    border: 'border-emerald-500 dark:border-emerald-400',
-    borderTop: 'border-t-emerald-500 dark:border-t-emerald-400',
-  },
-  'Union-Find': {
-    icon: <UnionFindIcon />,
-    text: 'text-rose-600 dark:text-rose-400',
-    bg: 'bg-rose-50 dark:bg-rose-950/40',
-    border: 'border-rose-500 dark:border-rose-400',
-    borderTop: 'border-t-rose-500 dark:border-t-rose-400',
-  },
-  'Two Pointers': {
-    icon: <TwoPointersIcon />,
-    text: 'text-fuchsia-600 dark:text-fuchsia-400',
-    bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/40',
-    border: 'border-fuchsia-500 dark:border-fuchsia-400',
-    borderTop: 'border-t-fuchsia-500 dark:border-t-fuchsia-400',
-  },
-  Design: {
-    icon: <CacheIcon />,
-    text: 'text-orange-600 dark:text-orange-400',
-    bg: 'bg-orange-50 dark:bg-orange-950/40',
-    border: 'border-orange-500 dark:border-orange-400',
-    borderTop: 'border-t-orange-500 dark:border-t-orange-400',
-  },
+/** DESIGN.md allows a single chromatic accent, so categories are told apart by icon and name, not color. */
+const NEUTRAL_STYLE = {
+  text: 'text-ink-subtle',
+  bg: 'bg-surface-2',
+  border: 'border-hairline-strong',
+  borderTop: 'border-t-hairline-strong',
 };
 
-const DEFAULT_STYLE: CategoryStyle = {
-  icon: null,
-  text: 'text-gray-600 dark:text-gray-400',
-  bg: 'bg-gray-50 dark:bg-gray-800/40',
-  border: 'border-gray-400 dark:border-gray-600',
-  borderTop: 'border-t-gray-400 dark:border-t-gray-600',
+const CATEGORY_ICONS: Record<string, ReactNode> = {
+  Trees: <TreeIcon />,
+  Graphs: <GraphIcon />,
+  'Arrays & Stacks': <StackIcon />,
+  Backtracking: <BacktrackIcon />,
+  'Heaps & Greedy': <GreedyIcon />,
+  'Dynamic Programming': <DpIcon />,
+  'Union-Find': <UnionFindIcon />,
+  'Two Pointers': <TwoPointersIcon />,
+  Design: <CacheIcon />,
 };
 
-/** Per-category accent color + icon, used on the home page and each algorithm's own header badge. */
+/** Per-category icon + neutral token classes, used on the home page and each algorithm's own header badge. */
 export function getCategoryStyle(category: string): CategoryStyle {
-  return CATEGORY_STYLES[category] ?? DEFAULT_STYLE;
+  return { icon: CATEGORY_ICONS[category] ?? null, ...NEUTRAL_STYLE };
 }

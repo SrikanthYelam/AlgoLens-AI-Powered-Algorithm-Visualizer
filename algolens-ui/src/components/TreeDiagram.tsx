@@ -9,7 +9,7 @@ type NodeRole = 'current' | 'path' | 'muted';
 interface TreeDiagramProps {
   /** LeetCode-style level-order array (trailing nulls trimmed), e.g. [3,9,20,null,null,15,7]. */
   tree: (number | null)[];
-  /** Per-value visual role: 'current' (indigo), 'path' (amber), 'muted' (faded). Unlisted values render plain. */
+  /** Per-value role: 'current' (solid lavender), 'path' (dashed lavender outline), 'muted' (dashed, faded). Unlisted values render plain. */
   roles?: Record<number, NodeRole>;
   /** Optional small subtitle rendered under a node, keyed by value (e.g. an allowed-range annotation). */
   labels?: Record<number, string>;
@@ -73,31 +73,36 @@ function layout(root: BuiltNode | null): Positioned[] {
   return positions;
 }
 
+// Roles differ by fill, outline style (solid vs dashed) and text weight, not by hue alone.
 function roleClasses(role: NodeRole | undefined) {
   switch (role) {
     case 'current':
       return {
-        fill: 'fill-indigo-400 dark:fill-indigo-500',
-        stroke: 'stroke-indigo-600 dark:stroke-indigo-300',
-        text: 'fill-white',
+        fill: 'fill-state-current-bg',
+        stroke: 'stroke-state-current-border',
+        text: 'fill-state-current-ink font-semibold',
+        dash: undefined,
       };
     case 'path':
       return {
-        fill: 'fill-amber-200 dark:fill-amber-900',
-        stroke: 'stroke-amber-500 dark:stroke-amber-400',
-        text: 'fill-amber-900 dark:fill-amber-100',
+        fill: 'fill-state-comparing-bg',
+        stroke: 'stroke-state-comparing-border',
+        text: 'fill-state-comparing-ink',
+        dash: '4 3',
       };
     case 'muted':
       return {
-        fill: 'fill-gray-100 dark:fill-gray-800',
-        stroke: 'stroke-gray-300 dark:stroke-gray-700',
-        text: 'fill-gray-400 dark:fill-gray-600',
+        fill: 'fill-state-discarded-bg',
+        stroke: 'stroke-state-discarded-border',
+        text: 'fill-state-discarded-ink',
+        dash: '4 3',
       };
     default:
       return {
-        fill: 'fill-gray-50 dark:fill-gray-900',
-        stroke: 'stroke-gray-300 dark:stroke-gray-600',
-        text: 'fill-gray-700 dark:fill-gray-200',
+        fill: 'fill-surface-2',
+        stroke: 'stroke-hairline-strong',
+        text: 'fill-ink',
+        dash: undefined,
       };
   }
 }
@@ -108,7 +113,7 @@ export function TreeDiagram({ tree, roles = {}, labels = {} }: TreeDiagramProps)
   const positions = layout(root);
 
   if (positions.length === 0) {
-    return <p className="text-sm text-gray-400 dark:text-gray-500">empty tree</p>;
+    return <p className="text-body-sm text-ink-subtle">empty tree</p>;
   }
 
   const positionByNode = new Map(positions.map((p) => [p.node, p]));
@@ -143,7 +148,7 @@ export function TreeDiagram({ tree, roles = {}, labels = {} }: TreeDiagramProps)
           y1={e.y1}
           x2={e.x2}
           y2={e.y2}
-          className="stroke-gray-300 dark:stroke-gray-600"
+          className="stroke-hairline-tertiary"
           strokeWidth={1.5}
         />
       ))}
@@ -158,13 +163,14 @@ export function TreeDiagram({ tree, roles = {}, labels = {} }: TreeDiagramProps)
               r={NODE_RADIUS}
               className={`${colors.fill} ${colors.stroke} transition-colors duration-200`}
               strokeWidth={1.5}
+              strokeDasharray={colors.dash}
             />
             <text
               x={px(x)}
               y={py(y)}
               textAnchor="middle"
               dominantBaseline="central"
-              className={`font-mono text-xs font-medium ${colors.text}`}
+              className={`font-mono text-caption font-medium ${colors.text}`}
             >
               {node.val}
             </text>
@@ -173,8 +179,7 @@ export function TreeDiagram({ tree, roles = {}, labels = {} }: TreeDiagramProps)
                 x={px(x)}
                 y={py(y) + NODE_RADIUS + 12}
                 textAnchor="middle"
-                className="fill-gray-500 dark:fill-gray-400"
-                style={{ fontSize: '10px' }}
+                className="fill-ink-subtle font-mono text-caption"
               >
                 {label}
               </text>

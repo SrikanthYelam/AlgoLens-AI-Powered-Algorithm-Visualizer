@@ -63,7 +63,7 @@ export function TrySolutionPanel({ algorithmId, judgeSignature, input }: TrySolu
 
   return (
     <div className="p-4">
-      <p className="text-sm text-gray-600 dark:text-gray-300">
+      <p className="text-body-sm text-ink-muted">
         Implement the method below and run it against the same input you last ran above.
       </p>
 
@@ -72,7 +72,7 @@ export function TrySolutionPanel({ algorithmId, judgeSignature, input }: TrySolu
         onChange={(e) => setCode(e.target.value)}
         spellCheck={false}
         rows={8}
-        className="mt-3 w-full rounded-md border border-gray-300 bg-gray-50 p-3 font-mono text-sm text-gray-800 focus:border-indigo-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+        className="input mt-3 bg-canvas p-3 font-mono text-code"
       />
 
       <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -80,25 +80,28 @@ export function TrySolutionPanel({ algorithmId, judgeSignature, input }: TrySolu
           type="button"
           onClick={handleRun}
           disabled={!canRun}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn btn-primary"
         >
           {isRunning ? 'Running…' : 'Run My Code'}
         </button>
         {input === null && (
-          <span className="text-sm text-gray-500 dark:text-gray-400">Run the algorithm above first.</span>
+          <span className="text-body-sm text-ink-subtle">Run the algorithm above first.</span>
         )}
       </div>
 
       {error && (
-        <p className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <p className="notice mt-3">
+          <span aria-hidden="true">✕ </span>
           {error}
         </p>
       )}
 
       {result && !result.compileSucceeded && (
-        <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
-          <p className="font-medium">Compile errors:</p>
-          <ul className="mt-1 list-inside list-disc space-y-1 font-mono text-xs">
+        <div className="notice mt-3">
+          <p className="font-medium">
+            <span aria-hidden="true">✕ </span>Compile errors:
+          </p>
+          <ul className="mt-1 list-inside list-disc space-y-1 font-mono text-caption">
             {result.compileErrors.map((e, i) => (
               <li key={i}>{e}</li>
             ))}
@@ -107,7 +110,8 @@ export function TrySolutionPanel({ algorithmId, judgeSignature, input }: TrySolu
       )}
 
       {result && result.compileSucceeded && !result.ranSuccessfully && (
-        <p className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 font-mono text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <p className="notice mt-3 font-mono">
+          <span aria-hidden="true">✕ </span>
           {result.runtimeError}
         </p>
       )}
@@ -116,42 +120,40 @@ export function TrySolutionPanel({ algorithmId, judgeSignature, input }: TrySolu
         <div className="mt-3">
           <div className="flex flex-wrap items-center gap-2">
             <span
-              className={`rounded-full px-3 py-1 text-sm font-medium ${
+              className={`badge border px-3 py-1 text-body-sm font-medium ${
                 exactMatch
-                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
+                  ? 'border-state-found-border bg-state-found-bg text-state-found-ink'
+                  : 'border-state-visited-border bg-state-visited-bg text-state-visited-ink'
               }`}
             >
+              <span aria-hidden="true">{exactMatch ? '✓' : '≠'}</span>
               {exactMatch ? 'Exact match' : 'Not an exact match'}
             </span>
             {!exactMatch && (
               <span
-                className={`rounded-full px-3 py-1 text-sm font-medium ${
+                className={`badge border px-3 py-1 text-body-sm font-medium ${
                   orderInsensitiveMatch
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                    ? 'border-state-found-border bg-state-found-bg text-state-found-ink'
+                    : 'border-dashed border-state-discarded-border bg-state-discarded-bg text-state-discarded-ink'
                 }`}
               >
+                <span aria-hidden="true">{orderInsensitiveMatch ? '≈' : '✕'}</span>
                 {orderInsensitiveMatch ? 'Matches ignoring order' : 'Does not match'}
               </span>
             )}
-            <span className="text-xs text-gray-500 dark:text-gray-400">{result.elapsedMilliseconds}ms</span>
+            <span className="font-mono text-caption text-ink-subtle">{result.elapsedMilliseconds}ms</span>
           </div>
 
           <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Your output
-              </p>
-              <pre className="mt-1 overflow-x-auto rounded-md border border-gray-200 bg-gray-50 p-2 font-mono text-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
+              <p className="eyebrow">Your output</p>
+              <pre className="mt-1 overflow-x-auto rounded-md border border-hairline bg-canvas p-2 font-mono text-caption text-ink">
                 {JSON.stringify(result.yourAnswer, null, 2)}
               </pre>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Expected output
-              </p>
-              <pre className="mt-1 overflow-x-auto rounded-md border border-gray-200 bg-gray-50 p-2 font-mono text-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
+              <p className="eyebrow">Expected output</p>
+              <pre className="mt-1 overflow-x-auto rounded-md border border-hairline bg-canvas p-2 font-mono text-caption text-ink">
                 {JSON.stringify(result.expectedAnswer, null, 2)}
               </pre>
             </div>
@@ -159,7 +161,7 @@ export function TrySolutionPanel({ algorithmId, judgeSignature, input }: TrySolu
         </div>
       )}
 
-      <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
+      <p className="mt-4 text-caption text-ink-subtle">
         Runs on the server with a soft timeout only — local development use for now, see README.
       </p>
     </div>

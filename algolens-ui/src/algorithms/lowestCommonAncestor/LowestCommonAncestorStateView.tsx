@@ -1,5 +1,6 @@
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 import { TreeDiagram } from '../../components/TreeDiagram';
+import { VizStack } from '../../components/viz';
 
 /** Mirrors AlgoLens.Core.Models.LowestCommonAncestorState (camelCase JSON). */
 interface LowestCommonAncestorState {
@@ -22,14 +23,14 @@ export function LowestCommonAncestorStateView({ step }: AlgorithmStateViewProps)
   }
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
+    <VizStack>
       <TreeDiagram tree={state.tree} roles={roles} />
-      <p className="font-medium text-gray-700 dark:text-gray-300">
+      <p className="font-medium text-ink">
         Targets: {state.p} and {state.q}
         {state.ancestor !== null && (
-          <span className="text-emerald-600 dark:text-emerald-400"> — ancestor: {state.ancestor}</span>
+          <span className="text-success"> — ✓ ancestor: {state.ancestor}</span>
         )}
       </p>
-    </div>
+    </VizStack>
   );
 }

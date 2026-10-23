@@ -1,3 +1,4 @@
+import { VizSection, VizStack } from '../../components/viz';
 import { WaterBars, type BarRole } from '../../components/WaterBars';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
@@ -15,9 +16,9 @@ interface TrappingRainWaterState {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-gray-50 px-2 py-1 font-mono text-xs dark:border-gray-600 dark:bg-gray-800">
-      <span className="text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="font-semibold text-gray-800 dark:text-gray-100">{value}</span>
+    <span className="inline-flex items-center gap-1.5 rounded-md border border-hairline-strong bg-surface-2 px-2 py-1 font-mono text-caption">
+      <span className="text-ink-subtle">{label}</span>
+      <span className="font-semibold text-ink">{value}</span>
     </span>
   );
 }
@@ -35,22 +36,16 @@ export function TrappingRainWaterStateView({ step }: AlgorithmStateViewProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">
-          Bars (
-          <span className="text-indigo-600 dark:text-indigo-400">left</span> /{' '}
-          <span className="text-rose-600 dark:text-rose-400">right</span> pointers,{' '}
-          <span className="text-amber-600 dark:text-amber-400">bar just processed</span>; blue is trapped water)
-        </h3>
+    <VizStack>
+      <VizSection title="Bars (L = left pointer, R = right pointer, ● = bar just processed; shaded blocks are trapped water)">
         <WaterBars heights={state.heights} water={state.water} roles={roles} />
-      </div>
+      </VizSection>
 
       <div className="flex flex-wrap gap-2">
         <Stat label="left max" value={state.leftMax} />
         <Stat label="right max" value={state.rightMax} />
         <Stat label="water trapped" value={state.total} />
       </div>
-    </div>
+    </VizStack>
   );
 }

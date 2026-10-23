@@ -1,3 +1,4 @@
+import { VizSection, VizStack } from '../../components/viz';
 import { WaterBars, type BarRole } from '../../components/WaterBars';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
@@ -34,29 +35,18 @@ export function ContainerWithMostWaterStateView({ step }: AlgorithmStateViewProp
   }
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">
-          Bars (
-          <span className="text-indigo-600 dark:text-indigo-400">left</span> /{' '}
-          <span className="text-rose-600 dark:text-rose-400">right</span> pointers
-          {!isDone && state.bestLeft >= 0 ? (
-            <>
-              , <span className="text-emerald-600 dark:text-emerald-400">best so far</span>
-            </>
-          ) : null}
-          )
-        </h3>
+    <VizStack>
+      <VizSection title={`Bars (L = left pointer, R = right pointer${!isDone && state.bestLeft >= 0 ? ', ✓ = best so far' : ''})`}>
         <WaterBars heights={state.heights} water={water} roles={roles} />
-      </div>
+      </VizSection>
 
       {hasContainer && (
-        <p className="font-mono text-gray-700 dark:text-gray-300">
+        <p className="font-mono text-ink-muted">
           {isDone ? 'Best container' : 'This container'}: width {state.right - state.left} × height {level} ={' '}
           <span className="font-semibold">{state.area}</span>
         </p>
       )}
-      <p className="font-medium text-gray-700 dark:text-gray-300">Max area so far: {state.maxArea}</p>
-    </div>
+      <p className="font-medium text-ink">Max area so far: {state.maxArea}</p>
+    </VizStack>
   );
 }

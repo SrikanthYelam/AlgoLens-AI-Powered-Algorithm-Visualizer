@@ -1,3 +1,4 @@
+import { Cell, CellRow, Empty, VizSection, VizStack } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
 /** Mirrors AlgoLens.Core.Models.RemoveInvalidParenthesesDfsState (camelCase JSON). */
@@ -9,64 +10,41 @@ interface RemoveInvalidParenthesesDfsState {
   results: string[];
 }
 
-function CharBox({ char }: { char: string }) {
-  return (
-    <span className="transition-colors duration-200 inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-gray-300 bg-gray-50 px-2 font-mono text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
-      {char}
-    </span>
-  );
-}
-
-function StringChip({ value }: { value: string }) {
-  return (
-    <span className="transition-colors duration-200 inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-gray-300 bg-gray-50 px-2 font-mono text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200">
-      {value.length === 0 ? '(empty)' : value}
-    </span>
-  );
-}
-
 export function RemoveInvalidParenthesesDfsStateView({ step }: AlgorithmStateViewProps) {
   const state = step.state as RemoveInvalidParenthesesDfsState;
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">
-          Path so far (scanned up to index {state.index})
-        </h3>
-        <div className="flex flex-wrap gap-1.5">
-          {state.path.length === 0 ? (
-            <span className="text-gray-400">empty</span>
-          ) : (
-            [...state.path].map((char, i) => <CharBox key={i} char={char} />)
-          )}
-        </div>
-      </div>
+    <VizStack>
+      <VizSection title={`Path so far (scanned up to index ${state.index})`}>
+        <CellRow>
+          {state.path.length === 0 ? <Empty>empty</Empty> : [...state.path].map((char, i) => <Cell key={i} value={char} />)}
+        </CellRow>
+      </VizSection>
 
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">Removal budget remaining</h3>
-        <div className="flex gap-4">
+      <VizSection title="Removal budget remaining">
+        <div className="flex gap-4 text-ink-muted">
           <span>
-            <span className="font-mono">(</span> to remove: <span className="font-semibold">{state.removeLeftBudget}</span>
+            <span className="font-mono text-ink">(</span> to remove:{' '}
+            <span className="font-semibold text-ink">{state.removeLeftBudget}</span>
           </span>
           <span>
-            <span className="font-mono">)</span> to remove: <span className="font-semibold">{state.removeRightBudget}</span>
+            <span className="font-mono text-ink">)</span> to remove:{' '}
+            <span className="font-semibold text-ink">{state.removeRightBudget}</span>
           </span>
         </div>
-      </div>
+      </VizSection>
 
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">
-          Results found ({state.results.length})
-        </h3>
-        <div className="flex flex-wrap gap-1.5">
+      <VizSection title={`Results found (${state.results.length})`}>
+        <CellRow>
           {state.results.length === 0 ? (
-            <span className="text-gray-400">none yet</span>
+            <Empty>none yet</Empty>
           ) : (
-            state.results.map((result, i) => <StringChip key={i} value={result} />)
+            state.results.map((result, i) => (
+              <Cell key={i} value={result.length === 0 ? '(empty)' : result} state="found" />
+            ))
           )}
-        </div>
-      </div>
-    </div>
+        </CellRow>
+      </VizSection>
+    </VizStack>
   );
 }

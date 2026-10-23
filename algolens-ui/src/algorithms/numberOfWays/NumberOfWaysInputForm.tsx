@@ -64,18 +64,18 @@ export function NumberOfWaysInputForm({ onSubmit, isLoading, initialInput }: Alg
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <label htmlFor="ways-n" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="ways-n" className="text-body-sm font-medium text-ink-muted">
         Number of intersections (n) — travel is always from 0 to n − 1
       </label>
       <input
         id="ways-n"
         value={nText}
         onChange={(e) => setNText(e.target.value)}
-        className="w-32 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="w-32 input"
         placeholder={DEFAULT_N}
       />
 
-      <label htmlFor="ways-roads" className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="ways-roads" className="mt-2 text-body-sm font-medium text-ink-muted">
         Roads (one per line, bidirectional: u,v,time)
       </label>
       <textarea
@@ -83,18 +83,23 @@ export function NumberOfWaysInputForm({ onSubmit, isLoading, initialInput }: Alg
         value={roadsText}
         onChange={(e) => setRoadsText(e.target.value)}
         rows={4}
-        className="rounded-md border border-gray-300 px-3 py-1.5 font-mono text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="input font-mono text-code"
         placeholder={DEFAULT_ROADS}
       />
 
       <button
         type="submit"
         disabled={isLoading}
-        className="self-start rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+        className="self-start btn btn-primary"
       >
         {isLoading ? 'Running…' : 'Run'}
       </button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="notice">
+          <span aria-hidden="true">✕ </span>
+          {error}
+        </p>
+      )}
     </form>
   );
 }

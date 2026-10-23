@@ -74,18 +74,18 @@ export function CheapestFlightsInputForm({ onSubmit, isLoading, initialInput }: 
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <label htmlFor="flights-n" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="flights-n" className="text-body-sm font-medium text-ink-muted">
         Number of cities (n)
       </label>
       <input
         id="flights-n"
         value={nText}
         onChange={(e) => setNText(e.target.value)}
-        className="w-32 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="w-32 input"
         placeholder={DEFAULT_N}
       />
 
-      <label htmlFor="flights-list" className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="flights-list" className="mt-2 text-body-sm font-medium text-ink-muted">
         Flights (one per line: from,to,price)
       </label>
       <textarea
@@ -93,56 +93,61 @@ export function CheapestFlightsInputForm({ onSubmit, isLoading, initialInput }: 
         value={flightsText}
         onChange={(e) => setFlightsText(e.target.value)}
         rows={4}
-        className="rounded-md border border-gray-300 px-3 py-1.5 font-mono text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="input font-mono text-code"
         placeholder={DEFAULT_FLIGHTS}
       />
 
       <div className="mt-2 flex gap-4">
         <div className="flex flex-col gap-1">
-          <label htmlFor="flights-src" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="flights-src" className="text-body-sm font-medium text-ink-muted">
             src
           </label>
           <input
             id="flights-src"
             value={srcText}
             onChange={(e) => setSrcText(e.target.value)}
-            className="w-20 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+            className="w-20 input"
             placeholder={DEFAULT_SRC}
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="flights-dst" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="flights-dst" className="text-body-sm font-medium text-ink-muted">
             dst
           </label>
           <input
             id="flights-dst"
             value={dstText}
             onChange={(e) => setDstText(e.target.value)}
-            className="w-20 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+            className="w-20 input"
             placeholder={DEFAULT_DST}
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="flights-k" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="flights-k" className="text-body-sm font-medium text-ink-muted">
             k (max stops)
           </label>
           <input
             id="flights-k"
             value={kText}
             onChange={(e) => setKText(e.target.value)}
-            className="w-20 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+            className="w-20 input"
             placeholder={DEFAULT_K}
           />
         </div>
         <button
           type="submit"
           disabled={isLoading}
-          className="self-end rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+          className="self-end btn btn-primary"
         >
           {isLoading ? 'Running…' : 'Run'}
         </button>
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="notice">
+          <span aria-hidden="true">✕ </span>
+          {error}
+        </p>
+      )}
     </form>
   );
 }

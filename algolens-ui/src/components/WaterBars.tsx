@@ -10,15 +10,23 @@ interface WaterBarsProps {
 
 const CHART_HEIGHT_PX = 160;
 
+// Each role pairs a fill/border style with a text marker under the bar, so roles never rely on color.
 const ROLE_CLASSES: Record<BarRole, string> = {
-  left: 'border-indigo-600 bg-indigo-500',
-  right: 'border-rose-600 bg-rose-500',
-  current: 'border-amber-600 bg-amber-500',
-  best: 'border-emerald-600 bg-emerald-500',
+  left: 'border-state-current-border bg-state-current-bg',
+  right: 'border-dashed border-state-comparing-border bg-state-comparing-bg',
+  current: 'border-ink bg-ink-muted',
+  best: 'border-state-found-border bg-state-found-bg',
+};
+
+const ROLE_MARKERS: Record<BarRole, string> = {
+  left: 'L',
+  right: 'R',
+  current: '●',
+  best: '✓',
 };
 
 /**
- * A bar chart with a translucent water block stacked on top of each bar. Shared by Container With
+ * A bar chart with a water block stacked on top of each bar. Shared by Container With
  * Most Water and Trapping Rain Water, which differ only in where the water goes.
  */
 export function WaterBars({ heights, water, roles = {} }: WaterBarsProps) {
@@ -36,21 +44,22 @@ export function WaterBars({ heights, water, roles = {} }: WaterBarsProps) {
             <div className="flex flex-col justify-end" style={{ height: CHART_HEIGHT_PX }}>
               {waterHeight > 0 && (
                 <div
-                  className="w-7 border border-b-0 border-sky-300 bg-sky-200/70 transition-all duration-200 dark:border-sky-700 dark:bg-sky-500/40"
+                  className="w-7 border border-b-0 border-accent-focus bg-viz-water transition-all duration-200"
                   style={{ height: scale(waterHeight) }}
                 />
               )}
               <div
-                className={`w-7 rounded-t-sm border transition-all duration-200 ${
-                  role
-                    ? ROLE_CLASSES[role]
-                    : 'border-gray-400 bg-gray-300 dark:border-gray-500 dark:bg-gray-600'
+                className={`w-7 rounded-t-xs border transition-all duration-200 ${
+                  role ? ROLE_CLASSES[role] : 'border-viz-bar-border bg-viz-bar'
                 }`}
                 style={{ height: Math.max(scale(height), height > 0 ? 2 : 0) }}
               />
             </div>
-            <span className="font-mono text-[11px] text-gray-700 dark:text-gray-300">{height}</span>
-            <span className="text-[10px] text-gray-400">{index}</span>
+            <span className="font-mono text-caption text-ink">{height}</span>
+            <span className="font-mono text-caption text-ink-subtle">{index}</span>
+            <span className="h-4 font-mono text-caption font-medium text-accent-hover">
+              {role ? ROLE_MARKERS[role] : ''}
+            </span>
           </div>
         );
       })}

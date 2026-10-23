@@ -34,7 +34,7 @@ export function HistogramInputForm({ onSubmit, isLoading, initialInput }: Algori
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <label htmlFor="hist-heights" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="hist-heights" className="text-body-sm font-medium text-ink-muted">
         Bar heights (comma-separated)
       </label>
       <div className="flex gap-2">
@@ -42,18 +42,23 @@ export function HistogramInputForm({ onSubmit, isLoading, initialInput }: Algori
           id="hist-heights"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+          className="flex-1 input"
           placeholder={DEFAULT_HEIGHTS}
         />
         <button
           type="submit"
           disabled={isLoading}
-          className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+          className="btn btn-primary"
         >
           {isLoading ? 'Running…' : 'Run'}
         </button>
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="notice">
+          <span aria-hidden="true">✕ </span>
+          {error}
+        </p>
+      )}
     </form>
   );
 }

@@ -74,7 +74,7 @@ export function LruCacheInputForm({ onSubmit, isLoading, initialInput }: Algorit
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <label htmlFor="lru-capacity" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="lru-capacity" className="text-body-sm font-medium text-ink-muted">
         Capacity (max {MAX_CAPACITY})
       </label>
       <input
@@ -84,9 +84,9 @@ export function LruCacheInputForm({ onSubmit, isLoading, initialInput }: Algorit
         max={MAX_CAPACITY}
         value={capacity}
         onChange={(e) => setCapacity(Number(e.target.value))}
-        className="w-24 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="w-24 input"
       />
-      <label htmlFor="lru-operations" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="lru-operations" className="text-body-sm font-medium text-ink-muted">
         Operations (one per line, "get key" or "put key value", max {MAX_OPERATIONS})
       </label>
       <textarea
@@ -94,17 +94,22 @@ export function LruCacheInputForm({ onSubmit, isLoading, initialInput }: Algorit
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={9}
-        className="rounded-md border border-gray-300 px-3 py-1.5 font-mono text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="input font-mono text-code"
         placeholder={DEFAULT_OPERATIONS}
       />
       <button
         type="submit"
         disabled={isLoading}
-        className="self-start rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+        className="self-start btn btn-primary"
       >
         {isLoading ? 'Running…' : 'Run'}
       </button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="notice">
+          <span aria-hidden="true">✕ </span>
+          {error}
+        </p>
+      )}
     </form>
   );
 }

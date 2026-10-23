@@ -44,18 +44,18 @@ export function KthSmallestInputForm({ onSubmit, isLoading, initialInput }: Algo
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <label htmlFor="kth-smallest-values" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="kth-smallest-values" className="text-body-sm font-medium text-ink-muted">
         BST level-order array (comma-separated; use "null" for missing nodes)
       </label>
       <input
         id="kth-smallest-values"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        className="rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="input"
         placeholder={DEFAULT_VALUES}
       />
 
-      <label htmlFor="kth-smallest-k" className="mt-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="kth-smallest-k" className="mt-1 text-body-sm font-medium text-ink-muted">
         k
       </label>
       <div className="flex gap-2">
@@ -63,18 +63,23 @@ export function KthSmallestInputForm({ onSubmit, isLoading, initialInput }: Algo
           id="kth-smallest-k"
           value={kText}
           onChange={(e) => setKText(e.target.value)}
-          className="w-24 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+          className="w-24 input"
           placeholder={DEFAULT_K}
         />
         <button
           type="submit"
           disabled={isLoading}
-          className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+          className="btn btn-primary"
         >
           {isLoading ? 'Running…' : 'Run'}
         </button>
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="notice">
+          <span aria-hidden="true">✕ </span>
+          {error}
+        </p>
+      )}
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import { Cell, CellRow, Empty, VizSection, VizStack, type VizState } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
 /** Mirrors AlgoLens.Core.Models.DecodeStringState (camelCase JSON). */
@@ -10,17 +11,11 @@ interface DecodeStringState {
   result: string;
 }
 
-function charClasses(char: string, isCurrent: boolean, isConsumed: boolean): string {
-  if (isCurrent) return 'border-indigo-500 bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200';
-  if (char === '[' || char === ']') {
-    return 'border-violet-300 bg-violet-50 text-violet-700 dark:border-violet-700 dark:bg-violet-950/40 dark:text-violet-200';
-  }
-  if (/\d/.test(char)) {
-    return 'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200';
-  }
-  return isConsumed
-    ? 'border-gray-300 bg-gray-100 text-gray-500 dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-400'
-    : 'border-gray-300 bg-gray-50 text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200';
+function charState(char: string, isCurrent: boolean, isConsumed: boolean): VizState {
+  if (isCurrent) return 'current';
+  if (char === '[' || char === ']') return 'comparing';
+  if (/\d/.test(char)) return 'range';
+  return isConsumed ? 'visited' : 'plain';
 }
 
 function Quoted({ text }: { text: string }) {
@@ -32,58 +27,59 @@ export function DecodeStringStateView({ step }: AlgorithmStateViewProps) {
   const isDone = step.action.startsWith('Done:');
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">Encoded string</h3>
-        <div className="flex flex-wrap gap-1">
+    <VizStack>
+      <VizSection title="Encoded string (dashed = bracket, tinted = digit)">
+        <CellRow gap="sm">
           {[...state.encoded].map((char, i) => (
-            <div key={i} className="flex flex-col items-center gap-0.5">
-              <span
-                className={`transition-colors duration-200 inline-flex h-8 min-w-8 items-center justify-center rounded-md border px-2 font-mono text-sm ${charClasses(char, i === state.index, i < state.index || isDone)}`}
-              >
-                {char}
-              </span>
-              <span className="text-[10px] text-gray-400">{i}</span>
-            </div>
+            <Cell
+              key={i}
+              value={char}
+              size="sm"
+              index={i}
+              state={charState(char, i === state.index, i < state.index || isDone)}
+            />
           ))}
-        </div>
-      </div>
+        </CellRow>
+      </VizSection>
 
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">
-          Stack (outermost → innermost open bracket)
-        </h3>
+      <VizSection title="Stack (outermost → innermost open bracket)">
         {state.stack.length === 0 ? (
-          <span className="text-gray-400">empty</span>
+          <Empty>empty</Empty>
         ) : (
-          <div className="flex flex-wrap gap-1.5">
+          <CellRow>
             {state.stack.map((frame, i) => (
-              <span
+              <Cell
                 key={i}
-                className="inline-flex items-center gap-1 rounded-md border border-violet-300 bg-violet-50 px-2 py-1 text-violet-800 dark:border-violet-700 dark:bg-violet-950/40 dark:text-violet-200"
-              >
-                <Quoted text={frame.prefix} /> <span>×{frame.repeat}</span>
-              </span>
+                state="range"
+                value={
+                  <span className="inline-flex items-center gap-1 py-1">
+                    <Quoted text={frame.prefix} /> <span>×{frame.repeat}</span>
+                  </span>
+                }
+              />
             ))}
-          </div>
+          </CellRow>
         )}
-      </div>
+      </VizSection>
 
       <div className="flex flex-col gap-1">
-        <p className="text-gray-700 dark:text-gray-300">
+        <p className="text-ink-muted">
           Current string: <Quoted text={state.current} />
         </p>
         {!isDone && state.number > 0 && (
-          <p className="text-gray-700 dark:text-gray-300">
-            Repeat count being read: <span className="font-mono font-semibold">{state.number}</span>
+          <p className="text-ink-muted">
+            Repeat count being read: <span className="font-mono font-semibold text-ink">{state.number}</span>
           </p>
         )}
         {isDone && (
-          <p className="font-medium text-emerald-700 dark:text-emerald-400">
+          <p className="font-medium text-ink">
+            <span aria-hidden="true" className="text-success">
+              ✓{' '}
+            </span>
             Decoded: <Quoted text={state.result} />
           </p>
         )}
       </div>
-    </div>
+    </VizStack>
   );
 }

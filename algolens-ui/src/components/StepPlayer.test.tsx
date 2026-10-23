@@ -91,8 +91,8 @@ describe('StepPlayer', () => {
 
     const explanation = screen.getByText('First explanation');
     const action = screen.getByText('Step zero');
-    expect(explanation).toHaveClass('text-base');
-    expect(action).toHaveClass('text-xs');
+    expect(explanation).toHaveClass('text-body');
+    expect(action).toHaveClass('text-caption');
   });
 
   it('renders the algorithm-specific state for the current step', () => {

@@ -104,11 +104,10 @@ export function StepPlayer({
   }, [lastIndex, togglePlay]);
 
   if (steps.length === 0 || !currentStep) {
-    return <p className="text-gray-500 dark:text-gray-400">No steps to show.</p>;
+    return <p className="text-ink-subtle">No steps to show.</p>;
   }
 
-  const navButtonClass =
-    'whitespace-nowrap rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium transition-colors duration-150 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent dark:border-gray-600 dark:hover:bg-gray-800';
+  const navButtonClass = 'btn btn-secondary btn-sm';
 
   return (
     <div className="flex flex-col gap-4">
@@ -116,7 +115,7 @@ export function StepPlayer({
           half the page width and wrap awkwardly once speed/loop are in the mix. They stay pinned
           to the top of the viewport while the (often tall) visualization scrolls underneath, so
           Prev/Next never scroll out of reach. */}
-      <div className="sticky top-0 z-10 -mb-2 flex flex-col gap-2 border-b border-gray-200 bg-white/95 py-2 backdrop-blur dark:border-gray-800 dark:bg-gray-900/95">
+      <div className="sticky top-0 z-10 -mb-2 flex flex-col gap-2 border-b border-hairline bg-canvas/95 py-2 backdrop-blur">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <div className="flex items-center gap-1.5">
             <button
@@ -140,7 +139,7 @@ export function StepPlayer({
             <button
               type="button"
               onClick={togglePlay}
-              className="whitespace-nowrap rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-indigo-500"
+              className="btn btn-primary btn-sm"
               aria-pressed={isPlaying}
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
@@ -166,22 +165,22 @@ export function StepPlayer({
             </button>
           </div>
 
-          <span className="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+          <span className="whitespace-nowrap font-mono text-code text-ink-muted">
             Step {currentIndex + 1} of {steps.length}
           </span>
 
-          <span className="hidden whitespace-nowrap text-xs text-gray-400 md:inline dark:text-gray-500">
-            <kbd className="rounded border border-gray-300 px-1 font-sans dark:border-gray-600">←</kbd>{' '}
-            <kbd className="rounded border border-gray-300 px-1 font-sans dark:border-gray-600">→</kbd> step ·{' '}
-            <kbd className="rounded border border-gray-300 px-1 font-sans dark:border-gray-600">Space</kbd> play
+          <span className="hidden whitespace-nowrap text-caption text-ink-subtle md:inline">
+            <kbd>←</kbd>{' '}
+            <kbd>→</kbd> step ·{' '}
+            <kbd>Space</kbd> play
           </span>
 
           <div className="ml-auto flex items-center gap-3">
-            <label className="text-sm text-gray-600 dark:text-gray-300">Speed</label>
+            <label className="text-body-sm text-ink-muted">Speed</label>
             <select
               value={String(speed)}
               onChange={(e) => setSpeed(Number(e.target.value))}
-              className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-800 dark:border-gray-600"
+              className="input w-auto px-2 py-1"
               aria-label="Playback speed"
             >
               <option value={0.25}>0.25x</option>
@@ -194,7 +193,7 @@ export function StepPlayer({
             <button
               type="button"
               onClick={() => setLoop((l) => !l)}
-              className={`whitespace-nowrap rounded-md px-2 py-1 text-sm font-medium transition-colors duration-150 ${loop ? 'bg-green-600 text-white hover:bg-green-500' : 'border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800'}`}
+              className={`btn btn-sm ${loop ? 'border-accent bg-surface-2 text-ink hover:bg-surface-3' : 'btn-secondary'}`}
               aria-pressed={loop}
               aria-label="Toggle loop"
             >
@@ -209,7 +208,7 @@ export function StepPlayer({
           max={lastIndex}
           value={currentIndex}
           onChange={(e) => setCurrentIndex(Number(e.target.value))}
-          className="w-full accent-indigo-600"
+          className="w-full accent-accent"
           aria-label="Step position"
         />
       </div>
@@ -218,13 +217,13 @@ export function StepPlayer({
           panel need to be visible without scrolling past the (often tall) visualization below. */}
       <div
         key={currentStep.stepNumber}
-        className="step-fade rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+        className="step-fade panel p-6"
       >
         <div className="flex items-start justify-between gap-3">
           {currentStep.explanation ? (
-            <p className="text-base leading-relaxed text-gray-900 dark:text-gray-100">{currentStep.explanation}</p>
+            <p className="text-body text-ink">{currentStep.explanation}</p>
           ) : (
-            <p className="font-mono text-sm text-gray-800 dark:text-gray-200">{currentStep.action}</p>
+            <p className="font-mono text-code text-ink">{currentStep.action}</p>
           )}
 
           <button
@@ -243,7 +242,7 @@ export function StepPlayer({
               }
             }}
             disabled={!regenerateExplanation}
-            className="shrink-0 whitespace-nowrap rounded-md border border-gray-300 px-2 py-1 text-xs font-medium transition-colors duration-150 hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-transparent dark:border-gray-600 dark:hover:bg-gray-800"
+            className="btn btn-secondary btn-sm shrink-0 text-caption"
             aria-label="Regenerate explanation"
           >
             {isRegenerating[currentIndex] ? 'Regenerating…' : 'Regenerate explanation'}
@@ -251,9 +250,9 @@ export function StepPlayer({
         </div>
 
         {currentStep.explanation ? (
-          <p className="mt-2 font-mono text-xs text-gray-500 dark:text-gray-400">{currentStep.action}</p>
+          <p className="mt-2 font-mono text-caption text-ink-subtle">{currentStep.action}</p>
         ) : (
-          <p className="mt-2 text-sm italic text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-body-sm italic text-ink-subtle">
             No AI explanation available for this step.
           </p>
         )}

@@ -1,3 +1,4 @@
+import { Cell, VizSection, VizStack, type VizState } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
 /** Mirrors AlgoLens.Core.Models.IslandsState (camelCase JSON). */
@@ -13,39 +14,30 @@ export function IslandsStateView({ step }: AlgorithmStateViewProps) {
   const state = step.state as IslandsState;
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">Grid</h3>
+    <VizStack>
+      <VizSection title="Grid (1 = land, 0 = water; ✓ = land already flood-filled)">
         <div className="inline-flex flex-col gap-1">
           {state.grid.map((row, r) => (
             <div key={r} className="flex gap-1">
               {row.map((cell, c) => {
                 const isCurrent = r === state.currentRow && c === state.currentCol;
                 const isVisitedLand = cell === 1 && state.visited[r]?.[c] === 1;
+                const cellState: VizState = isCurrent
+                  ? 'current'
+                  : isVisitedLand
+                    ? 'found'
+                    : cell === 1
+                      ? 'range'
+                      : 'plain';
 
-                return (
-                  <span
-                    key={c}
-                    className={`transition-colors duration-200 flex h-8 w-8 items-center justify-center rounded-sm border text-xs font-mono ${
-                      isCurrent
-                        ? 'border-indigo-500 bg-indigo-400 text-white'
-                        : isVisitedLand
-                          ? 'border-emerald-600 bg-emerald-500 text-white'
-                          : cell === 1
-                            ? 'border-emerald-300 bg-emerald-100 text-emerald-800 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200'
-                            : 'border-sky-200 bg-sky-50 text-sky-400 dark:border-sky-800 dark:bg-sky-950/40'
-                    }`}
-                  >
-                    {cell}
-                  </span>
-                );
+                return <Cell key={c} value={cell} state={cellState} size="sm" />;
               })}
             </div>
           ))}
         </div>
-      </div>
+      </VizSection>
 
-      <p className="font-medium text-gray-700 dark:text-gray-300">Islands found: {state.islandCount}</p>
-    </div>
+      <p className="font-medium text-ink">Islands found: {state.islandCount}</p>
+    </VizStack>
   );
 }

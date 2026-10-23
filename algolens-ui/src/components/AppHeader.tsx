@@ -1,17 +1,16 @@
 import { Link } from 'react-router-dom';
-import { ThemeToggle } from './ThemeToggle';
 
 export function AppHeader() {
   return (
-    <header className="border-b border-gray-200 dark:border-gray-800">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-8">
+    <header className="h-nav border-b border-hairline bg-canvas">
+      <div className="mx-auto flex h-full max-w-content items-center px-4 sm:px-8">
         <Link
           to="/"
-          className="font-heading text-lg font-bold tracking-tight text-gray-900 transition-colors hover:text-indigo-600 dark:text-gray-100 dark:hover:text-indigo-400"
+          className="flex items-center gap-2 text-card-title font-semibold tracking-tight text-ink transition-colors hover:text-accent-hover"
         >
+          <span aria-hidden="true" className="h-2.5 w-2.5 rounded-xs bg-accent" />
           AlgoLens
         </Link>
-        <ThemeToggle />
       </div>
     </header>
   );

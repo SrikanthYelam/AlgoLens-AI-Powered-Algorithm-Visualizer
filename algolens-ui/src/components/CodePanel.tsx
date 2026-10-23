@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import csharp from 'react-syntax-highlighter/dist/esm/languages/prism/csharp';
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { stripStepRecorderCalls } from './stripStepRecorderCalls';
 import { TrySolutionPanel } from './TrySolutionPanel';
 
@@ -18,19 +18,23 @@ interface CodePanelProps {
   input?: unknown;
 }
 
-function lineProps(
-  lineNumber: number,
-  highlightStart: number,
-  highlightEnd: number,
-  highlightColor: string,
-  highlightId: string,
-) {
+const HIGHLIGHT_ID = 'code-panel-highlight';
+
+// The one third-party palette left: oneDark's token colors. Its comment gray is below AA on the
+// dark surface, so comments (and their aliases) are lifted to the ink-subtle token.
+const mutedComment = { ...oneDark.comment, color: 'var(--color-ink-subtle)' };
+const CODE_THEME = { ...oneDark, comment: mutedComment, prolog: mutedComment, doctype: mutedComment, cdata: mutedComment };
+
+// The current step's lines get a lavender wash plus a solid left bar, so the highlight reads
+// without relying on the tint alone.
+function lineProps(lineNumber: number, highlightStart: number, highlightEnd: number) {
   const isHighlighted = lineNumber >= highlightStart && lineNumber <= highlightEnd;
   return {
-    id: isHighlighted ? highlightId : undefined,
+    id: isHighlighted ? HIGHLIGHT_ID : undefined,
     style: {
       display: 'block',
-      backgroundColor: isHighlighted ? highlightColor : 'transparent',
+      backgroundColor: isHighlighted ? 'color-mix(in srgb, var(--color-accent) 28%, transparent)' : 'transparent',
+      boxShadow: isHighlighted ? 'inset 2px 0 0 var(--color-accent-hover)' : undefined,
       transition: 'background-color 200ms ease',
     },
   };
@@ -61,12 +65,8 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
     if (!followLine) {
       return;
     }
-    // Both the light and dark instances render in the DOM (only one is visually shown, via the
-    // `dark` class on <html>), so scroll whichever one is actually visible.
-    const isDark = document.documentElement.classList.contains('dark');
-    const id = isDark ? 'code-panel-highlight-dark' : 'code-panel-highlight-light';
     const container = containerRef.current;
-    const target = container?.querySelector(`#${id}`);
+    const target = container?.querySelector(`#${HIGHLIGHT_ID}`);
     if (!container || !target) {
       return;
     }
@@ -98,66 +98,45 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
     }
   }
 
-  const lightHighlight = 'rgba(99, 102, 241, 0.18)';
-  const darkHighlight = 'rgba(99, 102, 241, 0.6)'; // stronger contrast in dark mode
-
   const inner = (
-    <div>
-      <div className="bg-white dark:hidden">
-        <SyntaxHighlighter
-          language="csharp"
-          style={oneLight}
-          showLineNumbers
-          wrapLines
-          lineProps={(n) => lineProps(n, displayStart, displayEnd, lightHighlight, 'code-panel-highlight-light')}
-          customStyle={{ margin: 0, background: 'transparent' }}
-        >
-          {displaySource}
-        </SyntaxHighlighter>
-      </div>
-      <div className="hidden dark:block dark:bg-gray-900">
-        <SyntaxHighlighter
-          language="csharp"
-          style={oneDark}
-          showLineNumbers
-          wrapLines
-          lineProps={(n) => lineProps(n, displayStart, displayEnd, darkHighlight, 'code-panel-highlight-dark')}
-          customStyle={{ margin: 0, background: 'transparent' }}
-        >
-          {displaySource}
-        </SyntaxHighlighter>
-      </div>
+    <div className="bg-surface-1">
+      <SyntaxHighlighter
+        language="csharp"
+        style={CODE_THEME}
+        showLineNumbers
+        wrapLines
+        lineProps={(n) => lineProps(n, displayStart, displayEnd)}
+        customStyle={{ margin: 0, background: 'transparent' }}
+      >
+        {displaySource}
+      </SyntaxHighlighter>
     </div>
   );
 
   return (
     <div>
-      <div className="flex items-center justify-end gap-2 mb-2">
+      <div className="mb-2 flex items-center justify-end gap-2">
         {mode === 'source' ? (
           <>
             <button
               type="button"
               onClick={() => setFollowLine((f) => !f)}
               aria-pressed={followLine}
-              className={`rounded-md border px-2 py-1 text-sm ${
-                followLine
-                  ? 'border-indigo-600 bg-indigo-600 text-white'
-                  : 'border-gray-300 bg-white dark:bg-gray-800'
-              }`}
+              className={`btn btn-sm ${followLine ? 'border-accent bg-surface-2 text-ink hover:bg-surface-3' : 'btn-secondary'}`}
             >
               Follow current line
             </button>
             <button
               type="button"
               onClick={copyToClipboard}
-              className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-800"
+              className="btn btn-secondary btn-sm"
             >
               Copy
             </button>
             <button
               type="button"
               onClick={() => setIsFullscreen(true)}
-              className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-800"
+              className="btn btn-secondary btn-sm"
             >
               Fullscreen
             </button>
@@ -165,7 +144,7 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
               <button
                 type="button"
                 onClick={() => setMode('try')}
-                className="rounded-md bg-indigo-600 px-2 py-1 text-sm font-medium text-white hover:bg-indigo-500"
+                className="btn btn-primary btn-sm"
               >
                 Try your own solution
               </button>
@@ -175,7 +154,7 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
           <button
             type="button"
             onClick={() => setMode('source')}
-            className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-800"
+            className="btn btn-secondary btn-sm"
           >
             ← View source
           </button>
@@ -184,7 +163,7 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
 
       <div
         ref={containerRef}
-        className="max-h-[32rem] overflow-auto rounded-lg border border-gray-200 text-sm dark:border-gray-700"
+        className="max-h-128 overflow-auto rounded-lg border border-hairline bg-surface-1 text-code"
       >
         {mode === 'source' ? (
           inner
@@ -194,21 +173,21 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
       </div>
 
       {isFullscreen && mode === 'source' && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-900">
-          <div className="p-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
-            <div className="text-sm font-medium">Source</div>
+        <div className="fixed inset-0 z-50 flex flex-col bg-canvas">
+          <div className="flex items-center justify-between border-b border-hairline p-3">
+            <div className="text-body-sm font-medium text-ink">Source</div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={copyToClipboard}
-                className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-800"
+                className="btn btn-secondary btn-sm"
               >
                 Copy
               </button>
               <button
                 type="button"
                 onClick={() => setIsFullscreen(false)}
-                className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-800"
+                className="btn btn-secondary btn-sm"
               >
                 Close
               </button>

@@ -1,5 +1,6 @@
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 import { TreeDiagram } from '../../components/TreeDiagram';
+import { Empty, VizSection, VizStack } from '../../components/viz';
 
 /** Mirrors AlgoLens.Core.Models.FindDuplicateSubtreesState (camelCase JSON). */
 interface FindDuplicateSubtreesState {
@@ -18,33 +19,29 @@ export function FindDuplicateSubtreesStateView({ step }: AlgorithmStateViewProps
   }
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">Tree</h3>
+    <VizStack>
+      <VizSection title="Tree">
         <TreeDiagram tree={state.tree} roles={roles} />
         {state.currentValue !== null && (
-          <p className="mt-1 font-mono text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 font-mono text-caption text-ink-subtle">
             serialize({state.currentValue}) = "{state.serialization}"
           </p>
         )}
-      </div>
+      </VizSection>
 
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">
-          Duplicate subtrees found ({state.duplicates.length})
-        </h3>
+      <VizSection title={`Duplicate subtrees found (${state.duplicates.length})`}>
         {state.duplicates.length === 0 ? (
-          <span className="text-gray-400">none yet</span>
+          <Empty>none yet</Empty>
         ) : (
           <div className="flex flex-wrap gap-4">
             {state.duplicates.map((subtree, i) => (
-              <div key={i} className="w-28 rounded-md border border-gray-200 p-2 dark:border-gray-700">
+              <div key={i} className="w-28 rounded-md border border-state-found-border bg-state-found-bg p-2">
                 <TreeDiagram tree={subtree} />
               </div>
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </VizSection>
+    </VizStack>
   );
 }

@@ -51,51 +51,56 @@ export function LowestCommonAncestorInputForm({ onSubmit, isLoading, initialInpu
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <label htmlFor="lca-values" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="lca-values" className="text-body-sm font-medium text-ink-muted">
         Tree level-order array (comma-separated; use "null" for missing nodes)
       </label>
       <input
         id="lca-values"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        className="rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="input"
         placeholder={DEFAULT_VALUES}
       />
 
       <div className="mt-1 flex gap-2">
         <div className="flex flex-col gap-1">
-          <label htmlFor="lca-p" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="lca-p" className="text-body-sm font-medium text-ink-muted">
             p
           </label>
           <input
             id="lca-p"
             value={pText}
             onChange={(e) => setPText(e.target.value)}
-            className="w-20 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+            className="w-20 input"
             placeholder={DEFAULT_P}
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="lca-q" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="lca-q" className="text-body-sm font-medium text-ink-muted">
             q
           </label>
           <input
             id="lca-q"
             value={qText}
             onChange={(e) => setQText(e.target.value)}
-            className="w-20 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+            className="w-20 input"
             placeholder={DEFAULT_Q}
           />
         </div>
         <button
           type="submit"
           disabled={isLoading}
-          className="self-end rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+          className="self-end btn btn-primary"
         >
           {isLoading ? 'Running…' : 'Run'}
         </button>
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="notice">
+          <span aria-hidden="true">✕ </span>
+          {error}
+        </p>
+      )}
     </form>
   );
 }

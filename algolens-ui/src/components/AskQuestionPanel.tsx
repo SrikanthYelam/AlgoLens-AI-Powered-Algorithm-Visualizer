@@ -57,20 +57,20 @@ export function AskQuestionPanel({ algorithmId, algorithmName, algorithmDescript
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Ask a question about this step</h3>
+    <div className="panel p-6">
+      <h3 className="eyebrow">Ask a question about this step</h3>
       <form onSubmit={handleSubmit} className="mt-2 flex gap-2">
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder={`e.g. "Why did this happen?" or "What would change if the input were different?"`}
-          className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+          className="input flex-1"
           aria-label="Your question"
         />
         <button
           type="submit"
           disabled={isAsking || !question.trim()}
-          className="shrink-0 whitespace-nowrap rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+          className="btn btn-primary shrink-0"
         >
           {isAsking ? 'Asking…' : 'Ask'}
         </button>
@@ -79,22 +79,25 @@ export function AskQuestionPanel({ algorithmId, algorithmName, algorithmDescript
       {entries.length > 0 && (
         <div className="mt-3 flex flex-col gap-3">
           {entries.map((entry) => (
-            <div key={entry.id} className="border-t border-gray-100 pt-3 first:border-t-0 first:pt-0 dark:border-gray-800">
-              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+            <div key={entry.id} className="border-t border-hairline pt-3 first:border-t-0 first:pt-0">
+              <p className="text-body-sm font-medium text-ink">
                 {entry.question}
-                <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
+                <span className="ml-2 font-mono text-caption font-normal text-ink-subtle">
                   — step {entry.stepNumber + 1}
                 </span>
               </p>
               {entry.status === 'pending' && (
-                <p className="mt-1 text-sm italic text-gray-400 dark:text-gray-500">Thinking…</p>
+                <p className="mt-1 text-body-sm italic text-ink-subtle">Thinking…</p>
               )}
-              {entry.status === 'error' && <p className="mt-1 text-sm text-red-600">{entry.error}</p>}
+              {entry.status === 'error' && <p className="notice mt-1">
+                  <span aria-hidden="true">✕ </span>
+                  {entry.error}
+                </p>}
               {entry.status === 'answered' &&
                 (entry.answer !== null ? (
-                  <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">{entry.answer}</p>
+                  <p className="mt-1 whitespace-pre-wrap text-body-sm text-ink-muted">{entry.answer}</p>
                 ) : (
-                  <p className="mt-1 text-sm italic text-gray-400 dark:text-gray-500">
+                  <p className="mt-1 text-body-sm italic text-ink-subtle">
                     No AI answer available for this question.
                   </p>
                 ))}

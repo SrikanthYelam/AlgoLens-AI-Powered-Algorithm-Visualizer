@@ -1,3 +1,4 @@
+import { VizSection, VizStack } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
 /** Mirrors AlgoLens.Core.Models.NQueensState (camelCase JSON). */
@@ -12,9 +13,8 @@ export function NQueensStateView({ step }: AlgorithmStateViewProps) {
   const highlighted = new Set(step.highlights);
 
   return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div>
-        <h3 className="mb-1 font-semibold text-gray-700 dark:text-gray-300">Board</h3>
+    <VizStack>
+      <VizSection title="Board (dashed square = position being tried)">
         <div className="inline-flex flex-col gap-1">
           {Array.from({ length: state.boardSize }, (_, row) => (
             <div key={row} className="flex gap-1">
@@ -25,12 +25,12 @@ export function NQueensStateView({ step }: AlgorithmStateViewProps) {
                 return (
                   <span
                     key={col}
-                    className={`transition-colors duration-200 flex h-9 w-9 items-center justify-center rounded-sm border text-lg ${
+                    className={`flex h-9 w-9 items-center justify-center rounded-xs border text-body-lg transition-colors duration-200 ${
                       isCurrent
-                        ? 'border-indigo-500 bg-indigo-200 dark:bg-indigo-900/50'
+                        ? 'border-dashed border-state-comparing-border bg-state-comparing-bg text-ink'
                         : (row + col) % 2 === 0
-                          ? 'border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800'
-                          : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900'
+                          ? 'border-hairline bg-surface-3 text-ink'
+                          : 'border-hairline bg-surface-1 text-ink'
                     }`}
                   >
                     {hasQueen ? '♛' : ''}
@@ -40,9 +40,9 @@ export function NQueensStateView({ step }: AlgorithmStateViewProps) {
             </div>
           ))}
         </div>
-      </div>
+      </VizSection>
 
-      <p className="font-medium text-gray-700 dark:text-gray-300">Solutions found: {state.solutions.length}</p>
-    </div>
+      <p className="font-medium text-ink">Solutions found: {state.solutions.length}</p>
+    </VizStack>
   );
 }

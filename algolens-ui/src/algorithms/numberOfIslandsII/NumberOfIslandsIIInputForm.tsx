@@ -69,7 +69,7 @@ export function NumberOfIslandsIIInputForm({ onSubmit, isLoading, initialInput }
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <div className="flex gap-4">
         <div className="flex flex-col gap-1">
-          <label htmlFor="islands2-rows" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="islands2-rows" className="text-body-sm font-medium text-ink-muted">
             Rows (m)
           </label>
           <input
@@ -79,11 +79,11 @@ export function NumberOfIslandsIIInputForm({ onSubmit, isLoading, initialInput }
             max={MAX_DIMENSION}
             value={rows}
             onChange={(e) => setRows(Number(e.target.value))}
-            className="w-24 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+            className="w-24 input"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="islands2-cols" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="islands2-cols" className="text-body-sm font-medium text-ink-muted">
             Columns (n)
           </label>
           <input
@@ -93,11 +93,11 @@ export function NumberOfIslandsIIInputForm({ onSubmit, isLoading, initialInput }
             max={MAX_DIMENSION}
             value={cols}
             onChange={(e) => setCols(Number(e.target.value))}
-            className="w-24 rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-800"
+            className="w-24 input"
           />
         </div>
       </div>
-      <label htmlFor="islands2-positions" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="islands2-positions" className="text-body-sm font-medium text-ink-muted">
         Land positions (one per line, "row,col", in the order they are added)
       </label>
       <textarea
@@ -105,17 +105,22 @@ export function NumberOfIslandsIIInputForm({ onSubmit, isLoading, initialInput }
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={4}
-        className="rounded-md border border-gray-300 px-3 py-1.5 font-mono text-sm dark:border-gray-600 dark:bg-gray-800"
+        className="input font-mono text-code"
         placeholder={DEFAULT_POSITIONS}
       />
       <button
         type="submit"
         disabled={isLoading}
-        className="self-start rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+        className="self-start btn btn-primary"
       >
         {isLoading ? 'Running…' : 'Run'}
       </button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="notice">
+          <span aria-hidden="true">✕ </span>
+          {error}
+        </p>
+      )}
     </form>
   );
 }

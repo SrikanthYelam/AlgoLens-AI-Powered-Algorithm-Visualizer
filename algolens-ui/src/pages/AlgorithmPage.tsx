@@ -56,8 +56,8 @@ export function AlgorithmPage() {
   if (!algorithm) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-8">
-        <p className="text-gray-700 dark:text-gray-300">Unknown algorithm: {id}</p>
-        <Link to="/" className="text-indigo-600 hover:underline dark:text-indigo-400">
+        <p className="text-ink-muted">Unknown algorithm: {id}</p>
+        <Link to="/" className="text-accent-hover hover:underline">
           ← Back home
         </Link>
       </div>
@@ -92,34 +92,32 @@ export function AlgorithmPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pt-4 pb-8 sm:px-8">
+    <div className="mx-auto flex max-w-content flex-col gap-6 px-4 pt-6 pb-12 sm:px-8">
       <div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
             to="/"
-            className="group inline-flex items-center gap-1 text-sm font-medium text-indigo-600 dark:text-indigo-400"
+            className="group inline-flex items-center gap-1 text-body-sm font-medium text-accent-hover"
           >
             <span className="transition-transform group-hover:-translate-x-0.5">←</span>
             <span className="group-hover:underline">Back</span>
           </Link>
-          <span className="text-gray-300 dark:text-gray-600">/</span>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-gray-100">
+          <span className="text-ink-tertiary" aria-hidden="true">/</span>
+          <h1 className="text-headline font-semibold text-ink">
             {algorithm.name}
           </h1>
-          <span
-            className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${style.bg} ${style.text}`}
-          >
+          <span className={`badge ${style.text}`}>
             {style.icon}
             {algorithm.category}
           </span>
         </div>
-        <p className="mt-1 text-gray-500 dark:text-gray-400">{algorithm.description}</p>
+        <p className="mt-2 text-body text-ink-muted">{algorithm.description}</p>
       </div>
 
-      <div className={`rounded-lg border border-gray-200 border-t-4 p-4 dark:border-gray-700 ${style.borderTop}`}>
+      <div className="panel p-6">
         {isInputCollapsed && lastInput !== null ? (
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="truncate font-mono text-xs text-gray-500 dark:text-gray-400" title={JSON.stringify(lastInput)}>
+            <p className="truncate font-mono text-caption text-ink-subtle" title={JSON.stringify(lastInput)}>
               {activeExample ? `${activeExample} — ` : ''}Input: {JSON.stringify(lastInput)}
             </p>
             <button
@@ -129,7 +127,7 @@ export function AlgorithmPage() {
                 setFormResetKey((k) => k + 1);
                 setIsInputCollapsed(false);
               }}
-              className="shrink-0 rounded-md border border-gray-300 px-3 py-1 text-xs font-medium transition-colors duration-150 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+              className="btn btn-secondary btn-sm shrink-0"
             >
               Edit input
             </button>
@@ -137,9 +135,9 @@ export function AlgorithmPage() {
         ) : (
           <>
             {examples.length > 0 && (
-              <div className="mb-4 flex flex-col gap-2 border-b border-gray-200 pb-4 dark:border-gray-700">
+              <div className="mb-4 flex flex-col gap-2 border-b border-hairline pb-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Try an example:</span>
+                  <span className="text-body-sm font-medium text-ink-muted">Try an example:</span>
                   {examples.map((example) => (
                     <button
                       key={example.label}
@@ -151,18 +149,14 @@ export function AlgorithmPage() {
                       }}
                       disabled={isLoading}
                       aria-pressed={activeExample === example.label}
-                      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-150 disabled:opacity-50 ${
-                        activeExample === example.label
-                          ? 'border-indigo-600 bg-indigo-600 text-white'
-                          : 'border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800'
-                      }`}
+                      className="pill"
                     >
                       {example.label}
                     </button>
                   ))}
                 </div>
                 {activeExample && (
-                  <p className="truncate font-mono text-xs text-gray-500 dark:text-gray-400" title={JSON.stringify(lastInput)}>
+                  <p className="truncate font-mono text-caption text-ink-subtle" title={JSON.stringify(lastInput)}>
                     Input: {JSON.stringify(lastInput)}
                   </p>
                 )}
@@ -179,18 +173,19 @@ export function AlgorithmPage() {
       </div>
 
       {error && (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <p className="notice">
+          <span aria-hidden="true">✕ </span>
           {error}
         </p>
       )}
 
       {fullSteps && fullSteps.length > STEP_DISPLAY_CAP && (
-        <div className="rounded-md border-l-4 border-yellow-400 bg-yellow-50 p-3 text-sm dark:bg-yellow-900/30">
+        <div className="notice flex flex-wrap items-center gap-3 border-l-4 border-l-accent">
           The run produced a large number of steps ({fullSteps.length}). Showing the first {STEP_DISPLAY_CAP} steps for performance.
           <button
             type="button"
             onClick={() => setSteps(fullSteps)}
-            className="ml-3 rounded-md bg-indigo-600 px-2 py-1 text-white text-sm hover:bg-indigo-500"
+            className="btn btn-primary btn-sm"
           >
             Show full run
           </button>
