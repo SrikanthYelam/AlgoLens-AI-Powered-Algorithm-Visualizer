@@ -13,7 +13,7 @@ import type { ReactNode } from 'react';
  */
 export type VizState = 'plain' | 'current' | 'comparing' | 'range' | 'visited' | 'found' | 'discarded';
 
-const STATE_CLASSES: Record<VizState, string> = {
+export const STATE_CLASSES: Record<VizState, string> = {
   plain: 'border-hairline-strong bg-surface-2 text-ink',
   current: 'border-state-current-border bg-state-current-bg text-state-current-ink font-semibold',
   comparing: 'border-dashed border-state-comparing-border bg-state-comparing-bg text-state-comparing-ink',
@@ -31,6 +31,33 @@ export const STATE_LABELS: Record<Exclude<VizState, 'plain'>, string> = {
   found: 'result',
   discarded: 'discarded',
 };
+
+/** A small arrow on a cell's edge pointing toward another cell (a DP source pointing at the cell it feeds). */
+export interface CellBadge {
+  /** Direction toward the target cell as [rowSign, colSign], each -1, 0 or 1. */
+  dir: [number, number];
+  /** The source that decided the value (filled) versus one that was only considered (outlined). */
+  strong?: boolean;
+  /** Overrides the arrow glyph. */
+  label?: string;
+}
+
+const ARROWS: Record<string, string> = {
+  '0,1': '→',
+  '0,-1': '←',
+  '1,0': '↓',
+  '-1,0': '↑',
+  '1,1': '↘',
+  '1,-1': '↙',
+  '-1,1': '↗',
+  '-1,-1': '↖',
+};
+
+function badgePosition([dr, dc]: [number, number]): string {
+  const v = dr > 0 ? 'bottom-0 translate-y-1/2' : dr < 0 ? 'top-0 -translate-y-1/2' : 'top-1/2 -translate-y-1/2';
+  const h = dc > 0 ? 'right-0 translate-x-1/2' : dc < 0 ? 'left-0 -translate-x-1/2' : 'left-1/2 -translate-x-1/2';
+  return `${v} ${h}`;
+}
 
 interface CellProps {
   value: ReactNode;
@@ -50,10 +77,12 @@ interface CellProps {
   /** Cell outside the region an algorithm ever computes: faded out. */
   unused?: boolean;
   title?: string;
+  /** Arrow on the cell's edge pointing toward the cell it feeds. */
+  badge?: CellBadge;
 }
 
 /** One boxed value. The only place a cell's box, radius, mono type and state styling are defined. */
-export function Cell({ value, state = 'plain', size = 'md', index, pointer, ring, wide, header, unused, title }: CellProps) {
+export function Cell({ value, state = 'plain', size = 'md', index, pointer, ring, wide, header, unused, title, badge }: CellProps) {
   const dims = size === 'sm' ? 'h-8 min-w-8 text-caption' : wide ? 'h-9 min-w-16 text-code' : 'h-9 min-w-9 text-code';
   const look = header
     ? 'border-transparent bg-transparent text-ink-subtle'
@@ -69,6 +98,18 @@ export function Cell({ value, state = 'plain', size = 'md', index, pointer, ring
       }`}
     >
       {value}
+      {badge && (
+        <span
+          aria-hidden="true"
+          className={`absolute z-10 flex h-4 min-w-4 items-center justify-center rounded-pill border px-0.5 text-caption leading-none font-semibold ${badgePosition(badge.dir)} ${
+            badge.strong
+              ? 'border-accent-hover bg-accent text-on-accent'
+              : 'border-hairline-strong bg-surface-3 text-ink-muted'
+          }`}
+        >
+          {badge.label ?? ARROWS[badge.dir.join(',')]}
+        </span>
+      )}
       {state === 'found' && !header && !unused && (
         <span
           aria-hidden="true"
@@ -88,7 +129,14 @@ export function Cell({ value, state = 'plain', size = 'md', index, pointer, ring
       {box}
       {index !== undefined && <span className="font-mono text-caption text-ink-subtle">{index}</span>}
       {pointer !== undefined && (
-        <span className="h-4 font-mono text-caption font-medium text-accent-hover">{pointer ?? ''}</span>
+        <span className="flex h-7 flex-col items-center font-mono text-caption leading-none font-medium text-accent-hover">
+          {pointer ? (
+            <>
+              <span aria-hidden="true">▲</span>
+              <span>{pointer}</span>
+            </>
+          ) : null}
+        </span>
       )}
     </div>
   );
@@ -133,6 +181,7 @@ export interface DpTableCell {
   state?: VizState;
   /** Outside the region the algorithm ever computes (e.g. the lower triangle). */
   unused?: boolean;
+  badge?: CellBadge;
 }
 
 /** A 2D DP table: column headers across the top, row headers down the side, one Cell per entry. */
@@ -146,7 +195,7 @@ export function DpTable({
   rows: DpTableCell[][];
 }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto p-2">
       <div className="inline-flex flex-col gap-1">
         <div className="flex gap-1">
           <Cell value="" size="sm" header />
@@ -158,7 +207,7 @@ export function DpTable({
           <div key={r} className="flex gap-1">
             <Cell value={rowHeaders[r]} size="sm" header />
             {row.map((cell, c) => (
-              <Cell key={c} value={cell.value} state={cell.state} unused={cell.unused} size="sm" />
+              <Cell key={c} value={cell.value} state={cell.state} unused={cell.unused} badge={cell.badge} size="sm" />
             ))}
           </div>
         ))}
@@ -207,4 +256,22 @@ export function EntryCell({ entryKey, value, state = 'plain' }: { entryKey: Reac
       <span className="text-caption opacity-80">v={value}</span>
     </div>
   );
+}
+
+export interface DpSource {
+  at: [number, number];
+  strong?: boolean;
+}
+
+/**
+ * Marks the cells a DP entry was computed from: each source is dashed ("comparing") and carries an
+ * arrow badge pointing at the target. Returns what to overlay on cell (r, c), or undefined.
+ */
+export function markSources(target: [number, number], sources: DpSource[]) {
+  const marks = new Map<string, { state: VizState; badge: CellBadge }>();
+  for (const { at, strong } of sources) {
+    const dir: [number, number] = [Math.sign(target[0] - at[0]), Math.sign(target[1] - at[1])];
+    marks.set(`${at[0]},${at[1]}`, { state: 'comparing', badge: { dir, strong } });
+  }
+  return (r: number, c: number) => marks.get(`${r},${c}`);
 }

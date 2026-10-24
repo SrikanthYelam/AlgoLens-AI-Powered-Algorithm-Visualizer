@@ -230,6 +230,22 @@ body {
   outline-offset: 2px;
 }
 
+/* Data-structure motion: a pushed/enqueued item drops in, a popped one lingers struck-through. */
+@keyframes item-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.item-enter {
+  animation: item-enter 260ms ease-out;
+}
+
 @keyframes step-fade-in {
   from {
     opacity: 0;
@@ -246,7 +262,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .step-fade {
+  .step-fade,
+  .item-enter {
     animation: none;
   }
 }

@@ -45,6 +45,7 @@ export function DecodeWaysStateView({ step }: AlgorithmStateViewProps) {
               value={value}
               index={`dp[${index}]`}
               state={index === state.index ? 'current' : index === sourceIndex ? 'comparing' : 'plain'}
+              badge={index === sourceIndex ? { dir: [0, 1], strong: true } : undefined}
             />
           ))}
         </CellRow>

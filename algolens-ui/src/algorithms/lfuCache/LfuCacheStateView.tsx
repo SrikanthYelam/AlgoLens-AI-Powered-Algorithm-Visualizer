@@ -1,5 +1,7 @@
+import { HashTable, LinkedListRow } from '../../components/structures';
 import { EntryCell, Empty, VizSection, VizStack } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
+import { previousStepOf } from '../../utils/history';
 
 /** Mirrors AlgoLens.Core.Models.LfuCacheState (camelCase JSON). */
 interface LfuCacheEntry {
@@ -34,37 +36,76 @@ function groupByFreq(order: LfuCacheEntry[]): Array<{ freq: number; entries: Lfu
   return groups;
 }
 
-export function LfuCacheStateView({ step }: AlgorithmStateViewProps) {
+export function LfuCacheStateView({ step, history }: AlgorithmStateViewProps) {
   const state = step.state as LfuCacheState;
+  const prev = previousStepOf(history)?.state as LfuCacheState | undefined;
+  const prevOrder = prev?.order ?? [];
 
   if (state.operation === '') {
     return <p className="text-body-sm text-ink-subtle">{step.action}</p>;
   }
 
+  const evicted = state.evictedKey === null ? undefined : prevOrder.find((entry) => entry.key === state.evictedKey);
   const groups = groupByFreq(state.order);
+  // The evicted entry's frequency list may now be empty, but it should still show what left it.
+  if (evicted && !groups.some((group) => group.freq === evicted.freq)) {
+    groups.push({ freq: evicted.freq, entries: [] });
+    groups.sort((a, b) => a.freq - b.freq);
+  }
+
+  // The touched entry moves from its old frequency list to the next one.
+  const caption = (entry: LfuCacheEntry) => {
+    if (entry.key !== state.key) return '';
+    const before = prevOrder.find((e) => e.key === entry.key);
+    return before ? `↑ freq ${before.freq} → ${entry.freq}` : '↓ new, freq 1';
+  };
+
+  const rows = [
+    ...state.order
+      .slice()
+      .sort((a, b) => a.key - b.key)
+      .map((entry) => ({
+        key: entry.key,
+        target: `node v=${entry.value} · freq ${entry.freq}`,
+        state: entry.key === state.key ? ('current' as const) : ('plain' as const),
+      })),
+    ...(evicted ? [{ key: evicted.key, target: `node v=${evicted.value} · freq ${evicted.freq}`, state: 'discarded' as const }] : []),
+  ];
 
   return (
     <VizStack>
-      <VizSection title={`Cache (capacity ${state.capacity}), grouped by frequency — most-recently-used → least-recently-used within each`}>
+      <VizSection title={`One linked list per frequency (capacity ${state.capacity}) — within a list, HEAD side is most recently used`}>
         {groups.length === 0 ? (
           <Empty>empty</Empty>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             {groups.map((group) => (
-              <div key={group.freq} className="flex items-center gap-2">
-                <span className="w-20 shrink-0 font-mono text-caption text-ink-subtle">
+              <div key={group.freq} className="flex flex-wrap items-center gap-3">
+                <span className="w-44 shrink-0 font-mono text-caption text-ink-subtle">
                   freq {group.freq}
-                  {group.freq === state.minFreq ? ' (min)' : ''}
+                  {group.freq === state.minFreq ? ' · min ◂ evicts here' : ''}
                 </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {group.entries.map((entry) => (
-                    <EntryCell key={entry.key} entryKey={entry.key} value={entry.value} state={entry.key === state.key ? 'current' : 'plain'} />
+                <LinkedListRow
+                  items={group.entries.map((entry) => (
+                    <div key={entry.key} className="flex flex-col items-center gap-0.5">
+                      <EntryCell entryKey={entry.key} value={entry.value} state={entry.key === state.key ? 'current' : 'plain'} />
+                      <span className="h-4 font-mono text-caption leading-none text-accent-hover">{caption(entry)}</span>
+                    </div>
                   ))}
-                </div>
+                  ghost={
+                    evicted && evicted.freq === group.freq ? (
+                      <EntryCell entryKey={evicted.key} value={evicted.value} state="discarded" />
+                    ) : undefined
+                  }
+                />
               </div>
             ))}
           </div>
         )}
+      </VizSection>
+
+      <VizSection title="Hash map (key → node, which remembers its own frequency)">
+        <HashTable rows={rows} />
       </VizSection>
 
       <p className="text-ink-muted">

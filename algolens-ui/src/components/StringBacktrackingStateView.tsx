@@ -1,5 +1,6 @@
 import type { AlgorithmStateViewProps } from '../types/algorithm';
-import { Cell, CellRow, Empty, VizSection, VizStack } from './viz';
+import { RecursionTree } from './RecursionTree';
+import { Cell, CellRow, Empty, Legend, VizSection, VizStack } from './viz';
 
 /**
  * Mirrors AlgoLens.Core.Models.StringBacktrackingState (camelCase JSON). Shared by
@@ -11,12 +12,26 @@ interface StringBacktrackingState {
   solutions: string[];
 }
 
-export function StringBacktrackingStateView({ step }: AlgorithmStateViewProps) {
+export function StringBacktrackingStateView({ step, history }: AlgorithmStateViewProps) {
   const state = step.state as StringBacktrackingState;
   const highlighted = new Set(step.highlights);
 
   return (
     <VizStack>
+      {history && (
+        <VizSection
+          title={
+            <>
+              Recursion tree — each node is one choice · <Legend state="current">now</Legend>{' '}
+              <Legend state="range">current path</Legend> <Legend state="found">solution</Legend>{' '}
+              <Legend state="visited">backtracked</Legend>
+            </>
+          }
+        >
+          <RecursionTree history={history} />
+        </VizSection>
+      )}
+
       <VizSection title="Current path">
         <CellRow>
           {state.path.length === 0 ? (

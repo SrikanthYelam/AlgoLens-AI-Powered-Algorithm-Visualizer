@@ -1,6 +1,6 @@
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 import { TreeDiagram } from '../../components/TreeDiagram';
-import { VizStack } from '../../components/viz';
+import { Cell, CellRow, VizSection, VizStack } from '../../components/viz';
 
 /** Mirrors AlgoLens.Core.Models.RecoverBstState (camelCase JSON). */
 interface RecoverBstState {
@@ -11,7 +11,7 @@ interface RecoverBstState {
   secondVal: number | null;
 }
 
-export function RecoverBstStateView({ step }: AlgorithmStateViewProps) {
+export function RecoverBstStateView({ step, history = [] }: AlgorithmStateViewProps) {
   const state = step.state as RecoverBstState;
 
   const roles: Record<number, 'current' | 'path' | 'muted'> = {};
@@ -25,9 +25,33 @@ export function RecoverBstStateView({ step }: AlgorithmStateViewProps) {
     roles[state.currentVal] = 'current';
   }
 
+  // The inorder sequence seen so far: in a valid BST it only ever rises, so every drop marks a swapped node.
+  const sequence: number[] = [];
+  for (const h of history) {
+    const value = (h.state as RecoverBstState).currentVal;
+    if (value !== null && sequence[sequence.length - 1] !== value) sequence.push(value);
+  }
+
   return (
     <VizStack>
       <TreeDiagram tree={state.tree} roles={roles} />
+
+      <VizSection title="Inorder sequence so far — should only increase; a drop is a swapped node">
+        <CellRow>
+          {sequence.map((value, i) => {
+            const dips = i > 0 && value < sequence[i - 1];
+            return (
+              <Cell
+                key={i}
+                size="sm"
+                value={value}
+                state={i === sequence.length - 1 && state.currentVal !== null ? 'current' : dips ? 'comparing' : 'plain'}
+                pointer={dips ? 'drop' : ''}
+              />
+            );
+          })}
+        </CellRow>
+      </VizSection>
       <p className="font-medium text-ink">
         {state.firstVal !== null ? (
           <>

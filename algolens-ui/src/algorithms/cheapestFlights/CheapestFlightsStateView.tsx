@@ -1,4 +1,5 @@
-import { Cell, CellRow, VizSection, VizStack, Verdict } from '../../components/viz';
+import { GraphDiagram, type GraphEdge } from '../../components/graphs';
+import { Cell, CellRow, Legend, VizSection, VizStack, Verdict } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
 /** Mirrors AlgoLens.Core.Models.CheapestFlightsState (camelCase JSON). */
@@ -28,14 +29,43 @@ function DistRow({ dist, highlightCity }: { dist: (number | null)[]; highlightCi
   );
 }
 
-export function CheapestFlightsStateView({ step }: AlgorithmStateViewProps) {
+export function CheapestFlightsStateView({ step, input }: AlgorithmStateViewProps) {
   const state = step.state as CheapestFlightsState;
   const isDone = step.action.startsWith('Done:');
   const isStart = state.round === -1;
   const reachable = state.answer !== null && state.answer >= 0;
+  const request = input as { flights?: number[][]; src?: number; dst?: number } | undefined;
+  const inRound = !isStart && !isDone;
+
+  const edges: GraphEdge[] = (request?.flights ?? []).map(([from, to, price]) => ({
+    from,
+    to,
+    label: `$${price}`,
+    state: inRound && from === state.from && to === state.to ? (state.updated ? 'active' : 'discarded') : 'plain',
+  }));
+  const tag = (city: number) => (city === request?.src ? ' src' : city === request?.dst ? ' dst' : '');
 
   return (
     <VizStack>
+      <VizSection
+        title={
+          <>
+            Flight map · <Legend state="comparing">flight taken from</Legend> <Legend state="current">flight lands at</Legend> ·
+            bright edge = improves the price, dashed = no improvement
+          </>
+        }
+      >
+        <GraphDiagram
+          directed
+          edges={edges}
+          nodes={state.dist.map((price, city) => ({
+            id: city,
+            sub: `${price === null ? '∞' : `$${price}`}${tag(city)}`,
+            state: inRound && city === state.to ? 'current' : inRound && city === state.from ? 'comparing' : 'plain',
+          }))}
+        />
+      </VizSection>
+
       <VizSection title={isStart || isDone ? 'Prices per city' : `Prices before round ${state.round}`}>
         <DistRow dist={state.dist} highlightCity={state.from} />
       </VizSection>

@@ -37,7 +37,12 @@ export function ContainerWithMostWaterStateView({ step }: AlgorithmStateViewProp
   return (
     <VizStack>
       <VizSection title={`Bars (L = left pointer, R = right pointer${!isDone && state.bestLeft >= 0 ? ', ✓ = best so far' : ''})`}>
-        <WaterBars heights={state.heights} water={water} roles={roles} />
+        <WaterBars
+          heights={state.heights}
+          water={water}
+          roles={roles}
+          levels={hasContainer && level > 0 ? [{ value: level, label: 'water level (shorter wall)', side: 'right' }] : []}
+        />
       </VizSection>
 
       {hasContainer && (

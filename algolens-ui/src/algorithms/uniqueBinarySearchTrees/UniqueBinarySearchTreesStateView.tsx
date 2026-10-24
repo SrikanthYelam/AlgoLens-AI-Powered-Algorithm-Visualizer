@@ -38,6 +38,7 @@ export function UniqueBinarySearchTreesStateView({ step }: AlgorithmStateViewPro
                     ? 'comparing'
                     : 'plain'
               }
+              badge={index === leftIndex || index === rightIndex ? { dir: [0, 1], strong: true, label: '×' } : undefined}
             />
           ))}
         </CellRow>

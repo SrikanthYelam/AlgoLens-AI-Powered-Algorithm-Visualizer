@@ -1,11 +1,21 @@
 export type BarRole = 'left' | 'right' | 'current' | 'best';
 
+export interface BarLevel {
+  /** Height, in the same units as the bars. */
+  value: number;
+  label: string;
+  /** Which end of the chart the label sits at (keeps two close levels from overlapping). */
+  side?: 'left' | 'right';
+}
+
 interface WaterBarsProps {
   heights: number[];
   /** Water sitting on top of each bar, in the same units as `heights` (0 = none). */
   water: number[];
   /** Highlight role per bar index; later roles in the union win over the plain style. */
   roles?: Record<number, BarRole>;
+  /** Dashed horizontal reference lines across the chart (running maxima, water level). */
+  levels?: BarLevel[];
 }
 
 const CHART_HEIGHT_PX = 160;
@@ -29,12 +39,29 @@ const ROLE_MARKERS: Record<BarRole, string> = {
  * A bar chart with a water block stacked on top of each bar. Shared by Container With
  * Most Water and Trapping Rain Water, which differ only in where the water goes.
  */
-export function WaterBars({ heights, water, roles = {} }: WaterBarsProps) {
+export function WaterBars({ heights, water, roles = {}, levels = [] }: WaterBarsProps) {
   const max = Math.max(1, ...heights);
   const scale = (value: number) => (value / max) * CHART_HEIGHT_PX;
 
   return (
-    <div className="flex items-end gap-1 overflow-x-auto pb-1">
+    <div className="relative flex items-end gap-1 overflow-x-auto pb-1">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0" style={{ height: CHART_HEIGHT_PX }}>
+        {levels.map((level) => (
+          <div
+            key={level.label}
+            className="absolute inset-x-0 border-t border-dashed border-accent-hover"
+            style={{ bottom: scale(level.value) }}
+          >
+            <span
+              className={`absolute -top-4 whitespace-nowrap bg-canvas px-1 font-mono text-caption text-accent-hover ${
+                level.side === 'right' ? 'right-0' : 'left-0'
+              }`}
+            >
+              {level.label} = {level.value}
+            </span>
+          </div>
+        ))}
+      </div>
       {heights.map((height, index) => {
         const role = roles[index];
         const waterHeight = water[index] ?? 0;
@@ -57,8 +84,13 @@ export function WaterBars({ heights, water, roles = {} }: WaterBarsProps) {
             </div>
             <span className="font-mono text-caption text-ink">{height}</span>
             <span className="font-mono text-caption text-ink-subtle">{index}</span>
-            <span className="h-4 font-mono text-caption font-medium text-accent-hover">
-              {role ? ROLE_MARKERS[role] : ''}
+            <span className="flex h-7 flex-col items-center font-mono text-caption leading-none font-medium text-accent-hover">
+              {role ? (
+                <>
+                  <span aria-hidden="true">▲</span>
+                  <span>{ROLE_MARKERS[role]}</span>
+                </>
+              ) : null}
             </span>
           </div>
         );

@@ -1,4 +1,5 @@
-import { Cell, CellRow, VizSection, VizStack, Verdict } from '../../components/viz';
+import { GraphDiagram, type GraphEdge } from '../../components/graphs';
+import { Cell, CellRow, Legend, VizSection, VizStack, Verdict } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
 /** Mirrors AlgoLens.Core.Models.NumberOfWaysState (camelCase JSON). */
@@ -19,12 +20,44 @@ const OUTCOME_LABEL: Record<string, string> = {
   longer: 'no improvement',
 };
 
-export function NumberOfWaysStateView({ step }: AlgorithmStateViewProps) {
+export function NumberOfWaysStateView({ step, input }: AlgorithmStateViewProps) {
   const state = step.state as NumberOfWaysState;
   const isDone = step.action.startsWith('Done:');
+  const roads = (input as { roads?: number[][] } | undefined)?.roads ?? [];
+  const relaxing = !isDone && state.outcome !== null;
+
+  const edges: GraphEdge[] = roads.map(([u, v, time]) => ({
+    from: u,
+    to: v,
+    label: String(time),
+    state:
+      relaxing && ((u === state.node && v === state.neighbor) || (v === state.node && u === state.neighbor))
+        ? state.outcome === 'longer'
+          ? 'discarded'
+          : 'active'
+        : 'plain',
+  }));
 
   return (
     <VizStack>
+      <VizSection
+        title={
+          <>
+            Road map (number on a road = minutes) · <Legend state="current">intersection being expanded</Legend>{' '}
+            <Legend state="comparing">neighbor being relaxed</Legend> · under a node: shortest time, ways to get there
+          </>
+        }
+      >
+        <GraphDiagram
+          edges={edges}
+          nodes={state.dist.map((time, city) => ({
+            id: city,
+            sub: `${time === null ? '∞' : time} · ×${state.ways[city]}`,
+            state: relaxing && city === state.node ? 'current' : relaxing && city === state.neighbor ? 'comparing' : 'plain',
+          }))}
+        />
+      </VizSection>
+
       <VizSection title="Shortest known time per intersection">
         <CellRow>
           {state.dist.map((time, city) => (

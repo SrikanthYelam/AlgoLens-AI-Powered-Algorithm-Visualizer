@@ -1,3 +1,4 @@
+import { GraphDiagram, type GraphEdge } from '../../components/graphs';
 import { Cell, CellRow, Empty, Legend, VizSection, VizStack, Verdict } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
@@ -11,32 +12,42 @@ interface CourseScheduleKahnState {
   canFinish: boolean;
 }
 
-export function CourseScheduleKahnStateView({ step }: AlgorithmStateViewProps) {
+export function CourseScheduleKahnStateView({ step, input }: AlgorithmStateViewProps) {
   const state = step.state as CourseScheduleKahnState;
   const taken = new Set(state.order);
+  const queued = new Set(state.queue);
   const isDone = step.action.startsWith('Done:');
+  const prerequisites = (input as { prerequisites?: number[][] } | undefined)?.prerequisites ?? [];
+
+  // [course, prerequisite]: the arrow runs prerequisite → course; edges leaving the current course are being relaxed.
+  const edges: GraphEdge[] = prerequisites.map(([course, pre]) => ({
+    from: pre,
+    to: course,
+    state: pre === state.currentCourse ? 'active' : taken.has(pre) ? 'dim' : 'plain',
+  }));
 
   return (
     <VizStack>
       <VizSection
         title={
           <>
-            Courses (in-degree) · <Legend state="current">current</Legend> <Legend state="visited">already ordered</Legend>
+            Prerequisite graph (arrow = must come first) · <Legend state="current">current</Legend>{' '}
+            <Legend state="comparing">in queue</Legend> <Legend state="visited">ordered</Legend> · number under a node = unmet prerequisites
           </>
         }
       >
-        <CellRow>
-          {state.inDegree.map((degree, course) => (
-            <Cell
-              key={course}
-              value={`${course}:${degree}`}
-              state={course === state.currentCourse ? 'current' : taken.has(course) ? 'visited' : 'plain'}
-            />
-          ))}
-        </CellRow>
+        <GraphDiagram
+          directed
+          edges={edges}
+          nodes={state.inDegree.map((degree, course) => ({
+            id: course,
+            sub: `in ${degree}`,
+            state: course === state.currentCourse ? 'current' : taken.has(course) ? 'visited' : queued.has(course) ? 'comparing' : 'plain',
+          }))}
+        />
       </VizSection>
 
-      <VizSection title="Queue">
+      <VizSection title="Queue (courses with no unmet prerequisites)">
         <CellRow>
           {state.queue.length === 0 ? (
             <Empty>empty</Empty>

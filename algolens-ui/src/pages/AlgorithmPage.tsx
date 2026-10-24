@@ -196,7 +196,7 @@ export function AlgorithmPage() {
         <StepPlayer
           key={runKey}
           steps={steps}
-          renderState={(step) => <algorithm.StateView step={step} />}
+          renderState={(step, history) => <algorithm.StateView step={step} history={history} input={lastInput} />}
           renderCode={
             sourceCode
               ? (step) => (

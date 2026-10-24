@@ -140,7 +140,7 @@ export function TreeDiagram({ tree, roles = {}, labels = {} }: TreeDiagramProps)
   }
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full">
+    <svg viewBox={`0 0 ${width} ${height}`} className="mx-auto h-auto max-h-72 w-full">
       {edges.map((e) => (
         <line
           key={e.key}

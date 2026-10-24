@@ -6,7 +6,7 @@ const PLAYBACK_INTERVAL_MS = 900; // base interval at 1x speed
 interface StepPlayerProps {
   steps: Step[];
   /** Renders the algorithm-specific `state` snapshot for the given step. */
-  renderState: (step: Step) => ReactNode;
+  renderState: (step: Step, history: Step[]) => ReactNode;
   /** Renders the algorithm's source code, highlighted for the given step. Optional. */
   renderCode?: (step: Step) => ReactNode;
   /** Renders a free-form "ask a question about this step" panel, above the code/state split. Optional. */
@@ -213,62 +213,65 @@ export function StepPlayer({
         />
       </div>
 
-      {/* Full-width, above the state/code split — both the explanation and (if present) the ask
-          panel need to be visible without scrolling past the (often tall) visualization below. */}
-      <div
-        key={currentStep.stepNumber}
-        className="step-fade panel p-6"
-      >
-        <div className="flex items-start justify-between gap-3">
-          {currentStep.explanation ? (
-            <p className="text-body text-ink">{currentStep.explanation}</p>
-          ) : (
-            <p className="font-mono text-code text-ink">{currentStep.action}</p>
-          )}
-
-          <button
-            type="button"
-            onClick={async () => {
-              if (!regenerateExplanation || !onUpdateExplanation) return;
-              setIsRegenerating((s) => ({ ...s, [currentIndex]: true }));
-              try {
-                const text = await regenerateExplanation(currentIndex);
-                onUpdateExplanation(currentIndex, text ?? null);
-              } catch (e) {
-                // ignore — parent will surface errors if needed
-                onUpdateExplanation(currentIndex, null);
-              } finally {
-                setIsRegenerating((s) => ({ ...s, [currentIndex]: false }));
-              }
-            }}
-            disabled={!regenerateExplanation}
-            className="btn btn-secondary btn-sm shrink-0 text-caption"
-            aria-label="Regenerate explanation"
+      {/* Explanation sits right above the visualization so the text and the picture it describes
+          stay together and the visual starts just under the controls; the code panel stays
+          pinned beside them while the left column scrolls. */}
+      <div className={renderCode ? 'grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start' : 'flex flex-col gap-4'}>
+        <div className="flex flex-col gap-4">
+          <div
+            key={currentStep.stepNumber}
+            className="step-fade panel p-6"
           >
-            {isRegenerating[currentIndex] ? 'Regenerating…' : 'Regenerate explanation'}
-          </button>
+            <div className="flex items-start justify-between gap-3">
+              {currentStep.explanation ? (
+                <p className="text-body text-ink">{currentStep.explanation}</p>
+              ) : (
+                <p className="font-mono text-code text-ink">{currentStep.action}</p>
+              )}
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!regenerateExplanation || !onUpdateExplanation) return;
+                  setIsRegenerating((s) => ({ ...s, [currentIndex]: true }));
+                  try {
+                    const text = await regenerateExplanation(currentIndex);
+                    onUpdateExplanation(currentIndex, text ?? null);
+                  } catch (e) {
+                    // ignore — parent will surface errors if needed
+                    onUpdateExplanation(currentIndex, null);
+                  } finally {
+                    setIsRegenerating((s) => ({ ...s, [currentIndex]: false }));
+                  }
+                }}
+                disabled={!regenerateExplanation}
+                className="btn btn-secondary btn-sm shrink-0 text-caption"
+                aria-label="Regenerate explanation"
+              >
+                {isRegenerating[currentIndex] ? 'Regenerating…' : 'Regenerate explanation'}
+              </button>
+            </div>
+
+            {currentStep.explanation ? (
+              <p className="mt-2 font-mono text-caption text-ink-subtle">{currentStep.action}</p>
+            ) : (
+              <p className="mt-2 text-body-sm italic text-ink-subtle">
+                No AI explanation available for this step.
+              </p>
+            )}
+          </div>
+
+          <div key={`state-${currentStep.stepNumber}`} className="step-fade">
+            {renderState(currentStep, steps.slice(0, currentIndex + 1))}
+          </div>
         </div>
 
-        {currentStep.explanation ? (
-          <p className="mt-2 font-mono text-caption text-ink-subtle">{currentStep.action}</p>
-        ) : (
-          <p className="mt-2 text-body-sm italic text-ink-subtle">
-            No AI explanation available for this step.
-          </p>
-        )}
+        {renderCode && <div className="md:sticky md:top-28">{renderCode(currentStep)}</div>}
       </div>
 
-      {/* No `key` here — same convention as the renderCode wrapper below — so this panel (and its
+      {/* No `key` here — same convention as the renderCode wrapper above — so this panel (and its
           Q&A history) persists across step changes instead of remounting on every step. */}
       {renderAskPanel && <div>{renderAskPanel(currentStep)}</div>}
-
-      <div className={renderCode ? 'grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start' : 'flex flex-col gap-4'}>
-        <div key={`state-${currentStep.stepNumber}`} className="step-fade">
-          {renderState(currentStep)}
-        </div>
-
-        {renderCode && <div>{renderCode(currentStep)}</div>}
-      </div>
     </div>
   );
 }

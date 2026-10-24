@@ -47,4 +47,8 @@ export interface AlgorithmInputFormProps {
 /** Props every algorithm's per-step state view component must accept. */
 export interface AlgorithmStateViewProps {
   step: Step;
+  /** Steps 0..current inclusive, so a view can diff against the previous step (what was pushed, popped, moved). */
+  history?: Step[];
+  /** The input of the run being shown, for views that draw it (e.g. a graph's edges). */
+  input?: unknown;
 }

@@ -1,5 +1,5 @@
 import { VizSection, VizStack } from '../../components/viz';
-import { WaterBars, type BarRole } from '../../components/WaterBars';
+import { WaterBars, type BarLevel, type BarRole } from '../../components/WaterBars';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
 
 /** Mirrors AlgoLens.Core.Models.TrappingRainWaterState (camelCase JSON). */
@@ -38,7 +38,19 @@ export function TrappingRainWaterStateView({ step }: AlgorithmStateViewProps) {
   return (
     <VizStack>
       <VizSection title="Bars (L = left pointer, R = right pointer, ● = bar just processed; shaded blocks are trapped water)">
-        <WaterBars heights={state.heights} water={state.water} roles={roles} />
+        <WaterBars
+          heights={state.heights}
+          water={state.water}
+          roles={roles}
+          levels={
+            isDone
+              ? []
+              : ([
+                  { value: state.leftMax, label: 'leftMax', side: 'left' },
+                  { value: state.rightMax, label: 'rightMax', side: 'right' },
+                ] as BarLevel[]).filter((level) => level.value > 0)
+          }
+        />
       </VizSection>
 
       <div className="flex flex-wrap gap-2">

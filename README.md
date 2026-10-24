@@ -21,10 +21,10 @@ The UI is a dark-only theme following [`algolens-ui/DESIGN.md`](algolens-ui/DESI
 **Edit Distance** — a 2D DP table with the current cell highlighted:
 ![Edit Distance visualizer showing the 2D DP table](docs/screenshots/edit-distance.png)
 
-**Course Schedule (Kahn's Algorithm)** — a graph problem, tracking in-degrees, the queue and the topological order:
+**Course Schedule (Kahn's Algorithm)** — a graph problem, drawn as the actual prerequisite graph with each course's in-degree, the queue and the topological order:
 ![Course Schedule visualizer showing in-degrees, queue and order](docs/screenshots/course-schedule.png)
 
-**LRU Cache** — a "design a class" problem, replaying get/put calls against the cache in recency order:
+**LRU Cache** — a "design a class" problem, drawn as the real doubly linked list (HEAD ⇄ nodes ⇄ TAIL) plus its hash map, with moved-to-front and evicted entries called out per step:
 ![LRU Cache visualizer showing entries from most to least recently used](docs/screenshots/lru-cache.png)
 
 **Try Your Own Solution** — paste a C# solution, run it against the same input, and see an exact-match or matches-ignoring-order result, with the pattern, complexity and hints below:

@@ -1,5 +1,7 @@
-import { EntryCell, Empty, VizSection, VizStack } from '../../components/viz';
+import { HashTable, LinkedListRow } from '../../components/structures';
+import { EntryCell, VizSection, VizStack } from '../../components/viz';
 import type { AlgorithmStateViewProps } from '../../types/algorithm';
+import { previousStepOf } from '../../utils/history';
 
 /** Mirrors AlgoLens.Core.Models.LruCacheState (camelCase JSON). */
 interface LruCacheEntry {
@@ -18,25 +20,58 @@ interface LruCacheState {
   evictedKey: number | null;
 }
 
-export function LruCacheStateView({ step }: AlgorithmStateViewProps) {
+export function LruCacheStateView({ step, history }: AlgorithmStateViewProps) {
   const state = step.state as LruCacheState;
+  const prev = previousStepOf(history)?.state as LruCacheState | undefined;
+  const prevOrder = prev?.order ?? [];
 
   if (state.operation === '') {
     return <p className="text-body-sm text-ink-subtle">{step.action}</p>;
   }
 
+  const evicted = state.evictedKey === null ? undefined : prevOrder.find((entry) => entry.key === state.evictedKey);
+
+  // What happened to the touched entry, read off its position in the previous step.
+  const caption = (entry: LruCacheEntry) => {
+    if (entry.key !== state.key) return '';
+    const before = prevOrder.findIndex((e) => e.key === entry.key);
+    if (before === -1) return '↓ new at front';
+    return before > 0 ? '↑ moved to front' : '';
+  };
+
+  const nodes = state.order.map((entry, i) => (
+    <div key={entry.key} className="flex flex-col items-center gap-0.5">
+      <EntryCell entryKey={entry.key} value={entry.value} state={entry.key === state.key ? 'current' : 'plain'} />
+      <span className="h-4 font-mono text-caption leading-none text-accent-hover">{caption(entry)}</span>
+      <span className="font-mono text-caption text-ink-subtle">
+        {i === 0 ? 'MRU' : i === state.order.length - 1 ? 'LRU' : ''}
+      </span>
+    </div>
+  ));
+
+  const rows = [
+    ...state.order
+      .slice()
+      .sort((a, b) => a.key - b.key)
+      .map((entry) => ({
+        key: entry.key,
+        target: `node v=${entry.value}`,
+        state: entry.key === state.key ? ('current' as const) : ('plain' as const),
+      })),
+    ...(evicted ? [{ key: evicted.key, target: `node v=${evicted.value}`, state: 'discarded' as const }] : []),
+  ];
+
   return (
     <VizStack>
-      <VizSection title={`Cache (capacity ${state.capacity}), most-recently-used → least-recently-used`}>
-        {state.order.length === 0 ? (
-          <Empty>empty</Empty>
-        ) : (
-          <div className="flex flex-wrap gap-1.5">
-            {state.order.map((entry) => (
-              <EntryCell key={entry.key} entryKey={entry.key} value={entry.value} state={entry.key === state.key ? 'current' : 'plain'} />
-            ))}
-          </div>
-        )}
+      <VizSection title={`Doubly linked list (capacity ${state.capacity}) — HEAD side is most recently used`}>
+        <LinkedListRow
+          items={nodes}
+          ghost={evicted && <EntryCell entryKey={evicted.key} value={evicted.value} state="discarded" />}
+        />
+      </VizSection>
+
+      <VizSection title="Hash map (O(1) lookup straight to the node)">
+        <HashTable rows={rows} />
       </VizSection>
 
       <p className="text-ink-muted">
