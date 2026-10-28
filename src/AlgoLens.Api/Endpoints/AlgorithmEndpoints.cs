@@ -693,7 +693,11 @@ public static class AlgorithmEndpoints
         .WithName($"{typeof(TAlgorithm).Name}Source")
         .WithOpenApi();
 
-        if (judge is not null)
+        // /submit runs arbitrary user C# in-process (no sandbox), so outside Development it's
+        // off unless ENABLE_SUBMIT=true.
+        var submitEnabled = app.ServiceProvider.GetRequiredService<IHostEnvironment>().IsDevelopment()
+            || Environment.GetEnvironmentVariable("ENABLE_SUBMIT") == "true";
+        if (judge is not null && submitEnabled)
         {
             app.MapPost($"{route}/submit", async (
                 SubmitSolutionRequest<TRequest> request,

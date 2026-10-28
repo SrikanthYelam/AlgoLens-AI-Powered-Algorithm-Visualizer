@@ -2,6 +2,7 @@ using System.Threading.RateLimiting;
 using AlgoLens.Api.Endpoints;
 using AlgoLens.Api.Services;
 using AlgoLens.Core.Algorithms;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,6 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Azure Container Apps' ingress IPs aren't fixed, so trust the forwarded header from any proxy.
+// Default ForwardLimit (1) reads only the last hop, so a client can't spoof its way out of a rate limit.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 const string FrontendCorsPolicy = "Frontend";
 // Allow frontend origins to be configured via DEV_FRONTEND_ORIGINS (comma-separated) in development.
@@ -151,6 +161,10 @@ static string ClientPartitionKey(HttpContext httpContext) =>
     httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
 var app = builder.Build();
+
+// Must run first so RemoteIpAddress (the rate limiters' partition key) is the real client,
+// not the hosting platform's ingress proxy.
+app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {

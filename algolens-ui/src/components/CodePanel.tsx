@@ -49,7 +49,9 @@ export function CodePanel({ source, highlightStart, highlightEnd, algorithmId, j
   // even though it never touches window scroll, still reads as "the page moving" while stepping
   // through — opt-in for anyone who wants the code to track the current line automatically.
   const [followLine, setFollowLine] = useState(false);
-  const canTryOwnSolution = algorithmId !== undefined && judgeSignature !== undefined;
+  // Mirrors the API, where /submit is only mapped in Development or with ENABLE_SUBMIT=true.
+  const submitEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_SUBMIT === 'true';
+  const canTryOwnSolution = submitEnabled && algorithmId !== undefined && judgeSignature !== undefined;
 
   // Switching algorithms keeps this component mounted (same position in the tree across route
   // param changes), so drop back to the source view rather than leaving a stale editor showing.
