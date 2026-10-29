@@ -256,6 +256,15 @@ public static class AlgorithmEndpoints
                     return table.Count == 0 ? 0 : table[0][0];
                 }));
 
+        MapAlgorithm<LongestIncreasingSubsequenceBinarySearch, LongestIncreasingSubsequenceRequest, IReadOnlyList<int>>(
+            app,
+            "/api/algorithms/longest-increasing-subsequence-binary-search",
+            request => request.Nums,
+            judge: new JudgeConfig<IReadOnlyList<int>>(
+                nums => new Dictionary<string, object?> { ["nums"] = nums.ToArray() },
+                "Solve((int[])Args[\"nums\"])",
+                steps => ((LongestIncreasingSubsequenceBinarySearchState)steps[^1].State).Tails.Count));
+
         MapAlgorithm<EditDistance, EditDistanceRequest, EditDistanceInput>(
             app,
             "/api/algorithms/edit-distance",

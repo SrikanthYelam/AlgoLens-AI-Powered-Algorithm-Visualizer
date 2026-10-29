@@ -80,6 +80,7 @@ builder.Services.AddScoped<RemoveInvalidParenthesesDfs>();
 builder.Services.AddScoped<LongestCommonSubsequence>();
 builder.Services.AddScoped<LongestPalindromicSubsequence>();
 builder.Services.AddScoped<LongestIncreasingSubsequence>();
+builder.Services.AddScoped<LongestIncreasingSubsequenceBinarySearch>();
 builder.Services.AddScoped<EditDistance>();
 builder.Services.AddScoped<LongestPalindromicSubstring>();
 builder.Services.AddScoped<UniqueBinarySearchTrees>();

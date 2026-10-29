@@ -50,6 +50,7 @@ import { LongestPalindromicSubsequenceInputForm } from './longestPalindromicSubs
 import { LongestPalindromicSubsequenceStateView } from './longestPalindromicSubsequence/LongestPalindromicSubsequenceStateView';
 import { LongestIncreasingSubsequenceInputForm } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceInputForm';
 import { LongestIncreasingSubsequenceStateView } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceStateView';
+import { LongestIncreasingSubsequenceBinarySearchStateView } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceBinarySearchStateView';
 import { EditDistanceInputForm } from './editDistance/EditDistanceInputForm';
 import { EditDistanceStateView } from './editDistance/EditDistanceStateView';
 import { LongestPalindromicSubstringInputForm } from './longestPalindromicSubstring/LongestPalindromicSubstringInputForm';
@@ -816,6 +817,31 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(int[] nums)',
     InputForm: LongestIncreasingSubsequenceInputForm,
     StateView: LongestIncreasingSubsequenceStateView,
+  },
+  {
+    id: 'longest-increasing-subsequence-binary-search',
+    name: 'Longest Increasing Subsequence (Binary Search)',
+    description: 'Find the length of the longest strictly increasing subsequence in O(n log n) by keeping a sorted "tails" array and binary-searching it.',
+    category: 'Dynamic Programming',
+    pattern: 'Binary Search on a Greedy Tails Array (Patience Sorting)',
+    timeComplexity: 'O(n log n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Each of the n numbers does one binary search over a tails array of at most n entries, costing O(log n), so the total is O(n log n). The tails array is the only extra storage, so space is O(n) — versus the O(n²) time and space of the 2D DP version.',
+    hints: [
+      'Instead of tracking every subsequence, track only the best last element for each length: tails[k] is the smallest value that can end an increasing subsequence of length k + 1.',
+      'tails is always sorted, so for each number you can binary-search it rather than scan.',
+      'Find the first tail that is >= the number. If there is none, the number extends the longest subsequence — append it.',
+      'Otherwise replace that tail with the number: a smaller tail for the same length can only make later extensions easier. The final length of tails is the answer (tails itself is not necessarily a real subsequence).',
+    ],
+    relatedProblems: [
+      { name: 'Longest Increasing Subsequence (2D DP)', note: 'The O(n²) version of the same problem, in this app: same answer, but it keeps a table over (index, previous index) instead of one sorted array.' },
+      { name: 'Russian Doll Envelopes', note: 'Sort by width (descending on ties), then run exactly this tails-array LIS on the heights.' },
+      { name: 'Number of Longest Increasing Subsequence', note: 'Needs how many ways reach each length, which the tails array discards — it falls back to the DP formulation.' },
+      { name: 'Increasing Triplet Subsequence', note: 'This algorithm capped at length 3: only two tails ever matter.' },
+    ],
+    judgeSignature: 'public static int Solve(int[] nums)',
+    InputForm: LongestIncreasingSubsequenceInputForm,
+    StateView: LongestIncreasingSubsequenceBinarySearchStateView,
   },
   {
     id: 'edit-distance',

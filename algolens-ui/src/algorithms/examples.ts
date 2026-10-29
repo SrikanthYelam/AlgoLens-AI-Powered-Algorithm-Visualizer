@@ -203,6 +203,11 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: 'Classic', input: { nums: [10, 9, 2, 5, 3, 7, 101, 18] } },
     { label: 'All equal — length 1', input: { nums: [7, 7, 7, 7] } },
   ],
+  'longest-increasing-subsequence-binary-search': [
+    { label: 'Classic — tails get replaced', input: { nums: [10, 9, 2, 5, 3, 7, 101, 18] } },
+    { label: 'Strictly increasing — only appends', input: { nums: [1, 2, 3, 4, 5] } },
+    { label: 'All equal — length 1', input: { nums: [7, 7, 7, 7] } },
+  ],
   'edit-distance': [
     { label: '"horse" → "ros"', input: { word1: 'horse', word2: 'ros' } },
     { label: '"kitten" → "sitting"', input: { word1: 'kitten', word2: 'sitting' } },
