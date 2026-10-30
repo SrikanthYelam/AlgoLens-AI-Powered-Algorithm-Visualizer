@@ -52,7 +52,9 @@ The UI is a dark-only theme following [`algolens-ui/DESIGN.md`](algolens-ui/DESI
 * Remove Invalid Parentheses (BFS) — minimal-removal search, level by level
 * Remove Invalid Parentheses (DFS/Backtracking) — same problem, solved with a precomputed removal budget
 * Longest Common Subsequence (2D dynamic programming, with traceback to recover the actual subsequence)
+* Longest Common Subsequence (Space-Optimized) (same DP rolled into a single 1D array; length only)
 * Longest Palindromic Subsequence (interval dynamic programming)
+* Longest Palindromic Subsequence (Space-Optimized) (same interval DP rolled into a single 1D array)
 * Longest Increasing Subsequence (2D dynamic programming over index + previous-index)
 * Longest Increasing Subsequence (Binary Search) (O(n log n) sorted tails array, patience sorting)
 * Edit Distance (2D dynamic programming over two sequences)
@@ -186,7 +188,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
 * .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
-* Additional algorithms beyond the current 50
+* Additional algorithms beyond the current 52
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

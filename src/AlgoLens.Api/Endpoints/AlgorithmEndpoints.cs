@@ -230,6 +230,19 @@ public static class AlgorithmEndpoints
                     return table.Count == 0 ? 0 : table[^1][^1];
                 }));
 
+        MapAlgorithm<LongestCommonSubsequenceSpaceOptimized, LongestCommonSubsequenceRequest, LongestCommonSubsequenceInput>(
+            app,
+            "/api/algorithms/longest-common-subsequence-space-optimized",
+            request => new LongestCommonSubsequenceInput(request.Text1, request.Text2),
+            judge: new JudgeConfig<LongestCommonSubsequenceInput>(
+                input => new Dictionary<string, object?> { ["text1"] = input.Text1, ["text2"] = input.Text2 },
+                "Solve((string)Args[\"text1\"], (string)Args[\"text2\"])",
+                steps =>
+                {
+                    var dp = ((LongestCommonSubsequenceSpaceOptimizedState)steps[^1].State).Dp;
+                    return dp.Count == 0 ? 0 : dp[^1];
+                }));
+
         MapAlgorithm<LongestPalindromicSubsequence, LongestPalindromicSubsequenceRequest, string>(
             app,
             "/api/algorithms/longest-palindromic-subsequence",
@@ -241,6 +254,19 @@ public static class AlgorithmEndpoints
                 {
                     var table = ((LongestPalindromicSubsequenceState)steps[^1].State).Table;
                     return table.Count == 0 ? 0 : table[0][^1];
+                }));
+
+        MapAlgorithm<LongestPalindromicSubsequenceSpaceOptimized, LongestPalindromicSubsequenceRequest, string>(
+            app,
+            "/api/algorithms/longest-palindromic-subsequence-space-optimized",
+            request => request.S,
+            judge: new JudgeConfig<string>(
+                s => new Dictionary<string, object?> { ["s"] = s },
+                "Solve((string)Args[\"s\"])",
+                steps =>
+                {
+                    var dp = ((LongestPalindromicSubsequenceSpaceOptimizedState)steps[^1].State).Dp;
+                    return dp.Count == 0 ? 0 : dp[^1];
                 }));
 
         MapAlgorithm<LongestIncreasingSubsequence, LongestIncreasingSubsequenceRequest, IReadOnlyList<int>>(

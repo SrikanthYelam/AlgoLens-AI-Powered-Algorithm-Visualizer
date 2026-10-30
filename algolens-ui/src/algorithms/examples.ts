@@ -195,9 +195,19 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: '"abcde" vs "ace"', input: { text1: 'abcde', text2: 'ace' } },
     { label: 'Nothing in common', input: { text1: 'abc', text2: 'def' } },
   ],
+  'longest-common-subsequence-space-optimized': [
+    { label: '"abcde" vs "ace"', input: { text1: 'abcde', text2: 'ace' } },
+    { label: '"abab" vs "ab" — matches use the saved diagonal', input: { text1: 'abab', text2: 'ab' } },
+    { label: 'Nothing in common', input: { text1: 'abc', text2: 'def' } },
+  ],
   'longest-palindromic-subsequence': [
     { label: '"bbbab"', input: { s: 'bbbab' } },
     { label: '"cbbd"', input: { s: 'cbbd' } },
+  ],
+  'longest-palindromic-subsequence-space-optimized': [
+    { label: '"bbbab" — matches use the saved diagonal', input: { s: 'bbbab' } },
+    { label: '"cbbd" — mismatches only', input: { s: 'cbbd' } },
+    { label: '"a" — no fill loop', input: { s: 'a' } },
   ],
   'longest-increasing-subsequence': [
     { label: 'Classic', input: { nums: [10, 9, 2, 5, 3, 7, 101, 18] } },

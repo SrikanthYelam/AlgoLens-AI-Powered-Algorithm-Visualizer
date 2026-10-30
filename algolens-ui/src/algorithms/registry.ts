@@ -46,8 +46,10 @@ import { RemoveInvalidParenthesesBfsStateView } from './removeInvalidParentheses
 import { RemoveInvalidParenthesesDfsStateView } from './removeInvalidParentheses/RemoveInvalidParenthesesDfsStateView';
 import { LongestCommonSubsequenceInputForm } from './longestCommonSubsequence/LongestCommonSubsequenceInputForm';
 import { LongestCommonSubsequenceStateView } from './longestCommonSubsequence/LongestCommonSubsequenceStateView';
+import { LongestCommonSubsequenceSpaceOptimizedStateView } from './longestCommonSubsequence/LongestCommonSubsequenceSpaceOptimizedStateView';
 import { LongestPalindromicSubsequenceInputForm } from './longestPalindromicSubsequence/LongestPalindromicSubsequenceInputForm';
 import { LongestPalindromicSubsequenceStateView } from './longestPalindromicSubsequence/LongestPalindromicSubsequenceStateView';
+import { LongestPalindromicSubsequenceSpaceOptimizedStateView } from './longestPalindromicSubsequence/LongestPalindromicSubsequenceSpaceOptimizedStateView';
 import { LongestIncreasingSubsequenceInputForm } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceInputForm';
 import { LongestIncreasingSubsequenceStateView } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceStateView';
 import { LongestIncreasingSubsequenceBinarySearchStateView } from './longestIncreasingSubsequence/LongestIncreasingSubsequenceBinarySearchStateView';
@@ -769,6 +771,31 @@ export const algorithms: AlgorithmDefinition[] = [
     StateView: LongestCommonSubsequenceStateView,
   },
   {
+    id: 'longest-common-subsequence-space-optimized',
+    name: 'Longest Common Subsequence (Space-Optimized)',
+    description: 'Find the length of the longest subsequence common to two strings with the same bottom-up DP, but rolled into a single 1D array.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — Space Optimization (Rolling 1D Array)',
+    timeComplexity: 'O(m · n)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Every (i, j) pair is still computed once in O(1), so time stays O(m · n). But row i only reads row i-1 and its own earlier columns, so one array of n+1 entries (plus a scalar) replaces the (m+1)×(n+1) table, dropping space from O(m · n) to O(n). The trade-off: with the table gone there is nothing to trace back through, so only the length — not the subsequence itself — is recovered.',
+    hints: [
+      'Look at what dp[i][j] actually reads: dp[i-1][j-1], dp[i-1][j] and dp[i][j-1]. Only the previous row and the current row matter — older rows are never touched again.',
+      'Keep one array where dp[j] means "dp[i-1][j]" until you overwrite it with "dp[i][j]". Start it as all zeros: that is row 0 of the 2D table.',
+      'Fill each row left to right, as before. dp[j] (not yet overwritten) is the cell above and dp[j-1] (just overwritten) is the cell to the left — both are right where you need them.',
+      'The diagonal dp[i-1][j-1] is the tricky one: the previous column already overwrote it. Save the old dp[j] in a variable before each overwrite and use it as the next column\'s diagonal (start each row with 0). The answer is dp[n].',
+    ],
+    relatedProblems: [
+      { name: 'Longest Common Subsequence (2D DP)', note: 'The O(m · n)-space version of the same problem in this app — same fill order and answer, with the full table kept so it can also trace back the subsequence.' },
+      { name: 'Longest Palindromic Subsequence (Space-Optimized)', note: 'The same rolling-array-plus-saved-diagonal trick, applied to an interval DP.' },
+      { name: 'Edit Distance', note: 'Another 2D DP whose rows only depend on the previous row, so it rolls into one array the same way.' },
+      { name: 'Delete Operation for Two Strings', note: 'The answer is m + n minus twice this problem\'s result.' },
+    ],
+    judgeSignature: 'public static int Solve(string text1, string text2)',
+    InputForm: LongestCommonSubsequenceInputForm,
+    StateView: LongestCommonSubsequenceSpaceOptimizedStateView,
+  },
+  {
     id: 'longest-palindromic-subsequence',
     name: 'Longest Palindromic Subsequence',
     description: 'Find the length of the longest subsequence of a string that reads the same forwards and backwards, using interval dynamic programming.',
@@ -792,6 +819,31 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static int Solve(string s)',
     InputForm: LongestPalindromicSubsequenceInputForm,
     StateView: LongestPalindromicSubsequenceStateView,
+  },
+  {
+    id: 'longest-palindromic-subsequence-space-optimized',
+    name: 'Longest Palindromic Subsequence (Space-Optimized)',
+    description: 'Find the length of the longest palindromic subsequence with the same bottom-up interval DP, but rolled into a single 1D array.',
+    category: 'Dynamic Programming',
+    pattern: 'Dynamic Programming — Space Optimization (Rolling 1D Array)',
+    timeComplexity: 'O(n²)',
+    spaceComplexity: 'O(n)',
+    complexityNotes: 'Every (i, j) pair is still computed once in O(1), so time stays O(n²). But row i only reads row i+1 and its own earlier columns, so a single array of n entries (plus one scalar) replaces the n×n table, dropping space from O(n²) to O(n).',
+    hints: [
+      'Look at what dp[i][j] actually reads: dp[i+1][j-1], dp[i+1][j] and dp[i][j-1]. Only row i+1 and the current row matter — older rows are never touched again.',
+      'Keep one array where dp[j] means "dp[i+1][j]" until you overwrite it with "dp[i][j]". Start it as all 1s: the diagonal base case, which is already correct for dp[i] when row i begins.',
+      'Fill each row left to right, as before. dp[j] (not yet overwritten) is the cell below and dp[j-1] (just overwritten) is the cell to the left — both are right where you need them.',
+      'The diagonal dp[i+1][j-1] is the tricky one: the previous column already overwrote it. Save the old dp[j] in a variable before each overwrite and use it as the next column\'s diagonal (start each row with 0). The answer is dp[n-1].',
+    ],
+    relatedProblems: [
+      { name: 'Longest Palindromic Subsequence (2D DP)', note: 'The O(n²)-space version of the same problem in this app — same fill order and answer, with the full table kept.' },
+      { name: 'Longest Common Subsequence', note: 'LPS of s is the LCS of s and its reverse, and LCS rolls into a 1D array the same way.' },
+      { name: 'Edit Distance', note: 'Another 2D DP whose rows only depend on the previous row, so the same diagonal-saving trick applies.' },
+      { name: 'Minimum Insertion Steps to Make a String Palindrome', note: 'Answer is n minus this problem\'s result.' },
+    ],
+    judgeSignature: 'public static int Solve(string s)',
+    InputForm: LongestPalindromicSubsequenceInputForm,
+    StateView: LongestPalindromicSubsequenceSpaceOptimizedStateView,
   },
   {
     id: 'longest-increasing-subsequence',
