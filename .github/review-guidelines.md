@@ -26,3 +26,6 @@ Project-specific rules for the AI reviewer, in addition to its built-in checks. 
 - **One clear finding beats several vague ones.** If the same underlying problem would otherwise
   surface as multiple findings, report it once with the most useful suggested fix, not once per
   symptom.
+- **Don't report `Info`-severity findings at all.** They add noise without value — skip anything
+  that wouldn't rise to at least `Low` severity, including purely affirming comments like "no
+  action needed, this is good practice."
