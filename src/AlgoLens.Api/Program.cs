@@ -106,6 +106,7 @@ builder.Services.AddScoped<MoveZeroes>();
 builder.Services.AddScoped<ContainerWithMostWater>();
 builder.Services.AddScoped<TrappingRainWater>();
 builder.Services.AddScoped<DecodeString>();
+builder.Services.AddScoped<RemoveDuplicateLetters>();
 builder.Services.AddScoped<EncodeAndDecodeStrings>();
 builder.Services.AddScoped<SortedListToBst>();
 builder.Services.AddScoped<LruCache>();

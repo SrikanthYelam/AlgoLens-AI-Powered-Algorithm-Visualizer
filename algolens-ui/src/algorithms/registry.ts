@@ -14,6 +14,8 @@ import { StringCompressionInputForm } from './stringCompression/StringCompressio
 import { StringCompressionStateView } from './stringCompression/StringCompressionStateView';
 import { DecodeStringInputForm } from './decodeString/DecodeStringInputForm';
 import { DecodeStringStateView } from './decodeString/DecodeStringStateView';
+import { RemoveDuplicateLettersInputForm } from './removeDuplicateLetters/RemoveDuplicateLettersInputForm';
+import { RemoveDuplicateLettersStateView } from './removeDuplicateLetters/RemoveDuplicateLettersStateView';
 import { MoveZeroesInputForm } from './moveZeroes/MoveZeroesInputForm';
 import { MoveZeroesStateView } from './moveZeroes/MoveZeroesStateView';
 import { ContainerInputForm, TrappingRainWaterInputForm } from './waterContainers/HeightsInputForms';
@@ -248,6 +250,31 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static string Solve(string s)',
     InputForm: DecodeStringInputForm,
     StateView: DecodeStringStateView,
+  },
+  {
+    id: 'remove-duplicate-letters',
+    name: 'Remove Duplicate Letters',
+    description: 'Remove duplicate letters so each appears once, keeping relative order, choosing the lexicographically smallest result — using a greedy monotonic stack.',
+    category: 'Arrays & Stacks',
+    pattern: 'Monotonic Stack (Greedy)',
+    timeComplexity: 'O(n)',
+    spaceComplexity: 'O(1)',
+    complexityNotes: 'Each character is pushed and popped from the stack at most once across the whole scan, so despite the nested-looking while loop the total work is linear. The stack and the remaining-count map both hold at most one entry per distinct letter — at most 26 for lowercase English letters — so the extra space is effectively constant.',
+    hints: [
+      'Among every string that uses each letter exactly once and keeps their relative order, you want the lexicographically smallest one — think about building it greedily, left to right.',
+      "Keep a stack of the result built so far, and track how many more times each letter still appears later in the string.",
+      "If the top of the stack is bigger than the current letter, and the top will still show up again later, it's safe to pop it now — you'll get another chance to place it.",
+      "If the current letter is already in the stack, skip it outright: its earlier, already-optimal placement can't be improved by a later repeat.",
+    ],
+    relatedProblems: [
+      { name: 'Largest Rectangle in Histogram', note: 'Another monotonic stack in this app, popping while the top no longer helps — over bar heights instead of letters.' },
+      { name: 'Smallest Subsequence of Distinct Characters', note: 'The exact same problem under a different LeetCode number.' },
+      { name: 'Decode String', note: 'A different stack problem in this app — nested frames instead of a monotonic ordering.' },
+      { name: 'Next Greater Element I', note: 'The monotonic stack pattern in its simplest, non-greedy form.' },
+    ],
+    judgeSignature: 'public static string Solve(string s)',
+    InputForm: RemoveDuplicateLettersInputForm,
+    StateView: RemoveDuplicateLettersStateView,
   },
   {
     id: 'string-compression',

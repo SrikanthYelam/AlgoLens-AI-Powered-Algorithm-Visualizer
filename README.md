@@ -81,6 +81,7 @@ The UI is a dark-only theme following [`algolens-ui/DESIGN.md`](algolens-ui/DESI
 * Container With Most Water (converging two pointers)
 * Trapping Rain Water (converging two pointers with running maxima)
 * Decode String (a stack of saved frames for nested repeat counts)
+* Remove Duplicate Letters (greedy monotonic stack)
 * Encode and Decode Strings (length-prefix encoding, decoded with a start pointer and a scan pointer)
 * LRU Cache (design — hash map + doubly linked list, O(1) get/put)
 * LFU Cache (design — hash map + one doubly linked list per frequency, O(1) amortized get/put)
@@ -187,7 +188,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * Real sandboxing for user-submitted code in "Try Your Own Solution" (currently in-process Roslyn scripting with a soft timeout — a tight infinite loop still consumes a thread until process restart, and there's no process/container isolation or resource limits — not safe beyond local, trusted use; needs a separate killable process or a container with CPU/memory limits before any public deployment)
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
-* Additional algorithms beyond the current 52
+* Additional algorithms beyond the current 53
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 

@@ -35,6 +35,11 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: 'No repeats — nothing shrinks', input: { chars: 'abc' } },
     { label: 'Single character', input: { chars: 'a' } },
   ],
+  'remove-duplicate-letters': [
+    { label: '"bcabc" → "abc"', input: { s: 'bcabc' } },
+    { label: '"cbacdcbc" → "acdb"', input: { s: 'cbacdcbc' } },
+    { label: 'All one letter', input: { s: 'aaaa' } },
+  ],
   'decode-string': [
     { label: '"3[a]2[bc]"', input: { s: '3[a]2[bc]' } },
     { label: 'Nested — "3[a2[c]]"', input: { s: '3[a2[c]]' } },

@@ -524,6 +524,15 @@ public static class AlgorithmEndpoints
                 "Solve((string)Args[\"s\"])",
                 steps => ((DecodeStringState)steps[^1].State).Result));
 
+        MapAlgorithm<RemoveDuplicateLetters, RemoveDuplicateLettersRequest, string>(
+            app,
+            "/api/algorithms/remove-duplicate-letters",
+            request => request.S,
+            judge: new JudgeConfig<string>(
+                s => new Dictionary<string, object?> { ["s"] = s },
+                "Solve((string)Args[\"s\"])",
+                steps => ((RemoveDuplicateLettersState)steps[^1].State).Result));
+
         MapAlgorithm<EncodeAndDecodeStrings, EncodeAndDecodeStringsRequest, IReadOnlyList<string>>(
             app,
             "/api/algorithms/encode-and-decode-strings",
