@@ -32,6 +32,9 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out this repository
+        uses: actions/checkout@v4
+
       - name: Check out SemanticReview
         uses: actions/checkout@v4
         with:
@@ -71,7 +74,8 @@ jobs:
           GH_REVIEW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           payload=$(jq -n --arg url "$PR_URL" --arg token "$GH_REVIEW_TOKEN" \
-            '{gitUrl: $url, postToGitHub: true, gitHubToken: $token}')
+            --rawfile guidelines .github/review-guidelines.md \
+            '{gitUrl: $url, postToGitHub: true, gitHubToken: $token, guidelines: $guidelines}')
 
           response=$(curl -sf http://localhost:5099/api/reviews \
             -X POST -H "Content-Type: application/json" -d "$payload")
