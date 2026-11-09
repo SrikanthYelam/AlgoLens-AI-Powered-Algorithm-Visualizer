@@ -4,7 +4,7 @@
 
 AlgoLens is a full-stack web application that visualizes classic LeetCode-style algorithms step-by-step and uses OpenAI to generate a plain-English explanation for what's happening at each step.
 
-**Backend** (ASP.NET Core Web API, .NET 8): each algorithm is a pure function (`IAlgorithmVisualizer<TInput>`) that captures its own execution as an ordered sequence of steps — an `AlgorithmStep` carries a short mechanical action description, an algorithm-specific state snapshot (e.g. a queue, a stack, a grid, a backtracking path), and the elements touched that step. A single generic endpoint-mapping helper wires each algorithm to its own route. A shared `IStepExplanationService` sends the whole step sequence to an AI provider once per request — using structured JSON output so the response reliably parses into one explanation per step — and degrades gracefully (returns `null` explanations rather than failing the request) if no API key is configured. The AI call itself goes through `Microsoft.Extensions.AI`'s provider-agnostic `IChatClient` abstraction rather than a hardcoded OpenAI SDK call, so switching providers is a one-line DI change (see System Design Decisions below), not a rewrite.
+**Backend** (ASP.NET Core Web API, .NET 10): each algorithm is a pure function (`IAlgorithmVisualizer<TInput>`) that captures its own execution as an ordered sequence of steps — an `AlgorithmStep` carries a short mechanical action description, an algorithm-specific state snapshot (e.g. a queue, a stack, a grid, a backtracking path), and the elements touched that step. A single generic endpoint-mapping helper wires each algorithm to its own route. A shared `IStepExplanationService` sends the whole step sequence to an AI provider once per request — using structured JSON output so the response reliably parses into one explanation per step — and degrades gracefully (returns `null` explanations rather than failing the request) if no API key is configured. The AI call itself goes through `Microsoft.Extensions.AI`'s provider-agnostic `IChatClient` abstraction rather than a hardcoded OpenAI SDK call, so switching providers is a one-line DI change (see System Design Decisions below), not a rewrite.
 
 **Frontend** (React + TypeScript + Vite, Tailwind CSS): a generic `StepPlayer` component (play/pause/prev/next/step-slider) drives through the steps returned by the API, rendering each algorithm's own visualization via a small per-algorithm `StateView` component. Every algorithm plugs into one central registry — adding a new one means adding one registry entry plus an `InputForm`/`StateView` pair, with no changes to the player, routing, or API client.
 
@@ -117,7 +117,7 @@ Both use a fixed-window limiter with `QueueLimit: 0`, so an over-limit request i
 
 ### Backend
 
-* ASP.NET Core Web API (.NET 8; minimal APIs, no controllers)
+* ASP.NET Core Web API (.NET 10; minimal APIs, no controllers)
 * xUnit + FluentAssertions
 * `Microsoft.Extensions.AI` (provider-agnostic `IChatClient` abstraction) with the `Microsoft.Extensions.AI.OpenAI` adapter and the official `OpenAI` NuGet package as the current backing provider
 * `Microsoft.CodeAnalysis.CSharp.Scripting` (Roslyn) for running user-submitted solutions in "Try Your Own Solution"
@@ -143,7 +143,7 @@ Both use a fixed-window limiter with `QueueLimit: 0`, so an over-limit request i
 
 ## Running Locally
 
-Prerequisites: the .NET 8 SDK and Node.js. Optionally set `OPENAI_API_KEY` to get AI step explanations — everything else works without it.
+Prerequisites: the .NET 10 SDK and Node.js. Optionally set `OPENAI_API_KEY` to get AI step explanations — everything else works without it.
 
 From the repo root, install once, then start the API and the UI together:
 
@@ -187,7 +187,6 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * Real sandboxing for user-submitted code in "Try Your Own Solution" (currently in-process Roslyn scripting with a soft timeout — a tight infinite loop still consumes a thread until process restart, and there's no process/container isolation or resource limits — not safe beyond local, trusted use; needs a separate killable process or a container with CPU/memory limits before any public deployment)
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
-* .NET 9 upgrade once the SDK is available in the dev environment (currently targeting .NET 8)
 * Additional algorithms beyond the current 52
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above

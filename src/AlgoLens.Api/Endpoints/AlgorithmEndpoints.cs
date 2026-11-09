@@ -644,8 +644,7 @@ public static class AlgorithmEndpoints
             return Results.Ok(new { explanations = texts });
         })
         .RequireRateLimiting(ExplainRateLimitPolicy)
-        .WithName("ExplainSteps")
-        .WithOpenApi();
+        .WithName("ExplainSteps");
     }
 
     private sealed record ExplainRequest(IReadOnlyList<StepDto> Steps);
@@ -674,8 +673,7 @@ public static class AlgorithmEndpoints
             return Results.Ok(new AskQuestionResponse(answer));
         })
         .RequireRateLimiting(AskRateLimitPolicy)
-        .WithName("AskQuestion")
-        .WithOpenApi();
+        .WithName("AskQuestion");
     }
 
     /// <summary>
@@ -720,13 +718,11 @@ public static class AlgorithmEndpoints
 
             return Results.Ok(new TraversalResponse(algorithm.Id, stepDtos));
         })
-        .WithName(typeof(TAlgorithm).Name)
-        .WithOpenApi();
+        .WithName(typeof(TAlgorithm).Name);
 
         app.MapGet($"{route}/source", () =>
             Results.Ok(new AlgorithmSourceResponse("csharp", AlgorithmSource.Get(typeof(TAlgorithm)))))
-        .WithName($"{typeof(TAlgorithm).Name}Source")
-        .WithOpenApi();
+        .WithName($"{typeof(TAlgorithm).Name}Source");
 
         // /submit runs arbitrary user C# in-process (no sandbox), so outside Development it's
         // off unless ENABLE_SUBMIT=true.
@@ -761,8 +757,7 @@ public static class AlgorithmEndpoints
                     result.ElapsedMilliseconds));
             })
             .RequireRateLimiting(JudgeRateLimitPolicy)
-            .WithName($"{typeof(TAlgorithm).Name}Submit")
-            .WithOpenApi();
+            .WithName($"{typeof(TAlgorithm).Name}Submit");
         }
     }
 }
