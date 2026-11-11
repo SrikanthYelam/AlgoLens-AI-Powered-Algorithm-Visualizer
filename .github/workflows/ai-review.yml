@@ -1,0 +1,87 @@
+name: AI Code Review
+
+# Checks out SemanticReview (https://github.com/SrikanthYelam/SemanticReview) alongside this repo,
+# builds and runs its review API inside the job, then has it review (and post inline comments on)
+# the pull request that triggered the run. No hosted instance required — this is "option 2" from
+# that project's own README ("Using this to review a different repository": cross-repo checkout,
+# build from source inside the consuming repo's own job).
+#
+# Deliberately NOT a required status check (see ci.yml) — a flaky/slow AI call should never block
+# a merge. It's informational: findings are posted as a GitHub review on the PR.
+#
+# Needs the OPENAI_API_KEY repo secret set (Settings > Secrets and variables > Actions) or this
+# job still runs but produces no AI findings (SemanticReview degrades gracefully without a key —
+# Roslyn/static findings for C# files are unaffected either way).
+#
+# Limitation: on pull requests from forks, GitHub only grants GITHUB_TOKEN read access, so the
+# "post to GitHub" call below will fail with 403 regardless of the `permissions` block below — the
+# workflow still runs and logs findings, it just can't post inline comments for fork PRs.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v4
+
+      - name: Check out SemanticReview
+        uses: actions/checkout@v4
+        with:
+          repository: SrikanthYelam/SemanticReview
+          path: semantic-review
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build the review API
+        working-directory: semantic-review
+        run: dotnet build --configuration Release
+
+      - name: Start the review API and wait for it to be ready
+        working-directory: semantic-review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ASPNETCORE_URLS: http://localhost:5099
+        run: |
+          dotnet run --no-build --no-launch-profile --configuration Release --project src/AI.CodeReview.Api &
+
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null http://localhost:5099/api/reviews -X POST -H "Content-Type: application/json" -d '{}'; then
+              echo "API is up"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "API did not start in time" >&2
+          exit 1
+
+      - name: Review this pull request and post findings
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_REVIEW_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          payload=$(jq -n --arg url "$PR_URL" --arg token "$GH_REVIEW_TOKEN" \
+            --rawfile guidelines .github/review-guidelines.md \
+            '{gitUrl: $url, postToGitHub: true, gitHubToken: $token, guidelines: $guidelines}')
+
+          response=$(curl -sf http://localhost:5099/api/reviews \
+            -X POST -H "Content-Type: application/json" -d "$payload")
+
+          echo "$response" | jq .
+
+          if [ "$(echo "$response" | jq -r '.gitHubPublish.posted')" != "true" ]; then
+            echo "::warning::Could not post the review to GitHub: $(echo "$response" | jq -r '.gitHubPublish.error')"
+          fi
