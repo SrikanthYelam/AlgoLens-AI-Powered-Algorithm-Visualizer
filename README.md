@@ -173,6 +173,8 @@ This builds and runs both services: the API on http://localhost:5119 and the UI 
 >
 > This avoids CORS failures when the frontend auto-selects another free port.
 
+> Don't commit directly to `main`. If `main` is checked out, create a feature branch first (e.g. `feature/<short-description>` or `fix/<short-description>`) and commit there instead.
+
 ## Long-Term Vision
 
 Evolve AlgoLens into an AI-powered interview preparation platform that can:
