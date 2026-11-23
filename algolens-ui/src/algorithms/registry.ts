@@ -86,6 +86,7 @@ import { AccountsMergeInputForm } from './accountsMerge/AccountsMergeInputForm';
 import { AccountsMergeStateView } from './accountsMerge/AccountsMergeStateView';
 import { NumberOfIslandsIIInputForm } from './numberOfIslandsII/NumberOfIslandsIIInputForm';
 import { NumberOfIslandsIIStateView } from './numberOfIslandsII/NumberOfIslandsIIStateView';
+import { MaxAreaOfIslandUnionFindStateView } from './maxAreaOfIslandUnionFind/MaxAreaOfIslandUnionFindStateView';
 import { SortedListToBstInputForm } from './sortedListToBst/SortedListToBstInputForm';
 import { SortedListToBstStateView } from './sortedListToBst/SortedListToBstStateView';
 import { LruCacheInputForm } from './lruCache/LruCacheInputForm';
@@ -1386,6 +1387,30 @@ export const algorithms: AlgorithmDefinition[] = [
     judgeSignature: 'public static IList<int> Solve(int m, int n, int[][] positions)',
     InputForm: NumberOfIslandsIIInputForm,
     StateView: NumberOfIslandsIIStateView,
+  },
+  {
+    id: 'max-area-of-island-union-find',
+    name: 'Max Area of Island (Union-Find)',
+    description: 'Find the area of the largest island in a grid by unioning adjacent land cells with Union-Find, tracking each island\'s size at its root.',
+    category: 'Union-Find',
+    pattern: 'Union-Find (Union by Size)',
+    timeComplexity: 'O(m · n · α(m·n))',
+    spaceComplexity: 'O(m · n)',
+    complexityNotes: 'Each cell is scanned once and does at most two Find/Union pairs (up and left neighbors), each nearly O(1) amortized with path compression and union by size. The parent and size arrays each hold one entry per cell.',
+    hints: [
+      'An island\'s area is just the size of a connected component — Union-Find can track component sizes directly.',
+      'Keep a size array next to the parent array; only the entry at a root is meaningful.',
+      'Scanning row by row, a land cell only needs to be unioned with its up and left neighbors — the down and right ones will reach back to it when they are scanned.',
+      'When two different roots merge, attach the smaller under the larger and add the sizes; the answer is the largest size any root ever reaches.',
+    ],
+    relatedProblems: [
+      { name: 'Number of Islands', note: 'Counts the components instead of measuring the largest — usually solved with the same grid via flood fill.' },
+      { name: 'Number of Islands II', note: 'The same grid Union-Find, but land arrives one position at a time and the island count is reported after each.' },
+      { name: 'Making A Large Island', note: 'Builds on component sizes: flip one water cell and sum the distinct neighboring islands\' sizes.' },
+    ],
+    judgeSignature: 'public static int Solve(int[][] grid)',
+    InputForm: IslandsInputForm,
+    StateView: MaxAreaOfIslandUnionFindStateView,
   },
   {
     id: 'lru-cache',

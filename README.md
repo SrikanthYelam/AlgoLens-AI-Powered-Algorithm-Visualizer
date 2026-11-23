@@ -76,6 +76,7 @@ The UI is a dark-only theme following [`algolens-ui/DESIGN.md`](algolens-ui/DESI
 * Redundant Connection (Union-Find, detecting the edge that closes a cycle)
 * Accounts Merge (Union-Find over email strings instead of plain indices)
 * Number of Islands II (Union-Find on a grid, tracking the island count as land is added one cell at a time)
+* Max Area of Island (Union-Find with union by size, tracking each island's area at its root)
 * String Compression (in-place read/write two pointers, run-length encoding an array)
 * Move Zeroes (in-place read/write two pointers, swapping non-zeros forward)
 * Container With Most Water (converging two pointers)
@@ -190,7 +191,7 @@ Evolve AlgoLens into an AI-powered interview preparation platform that can:
 * Real sandboxing for user-submitted code in "Try Your Own Solution" (currently in-process Roslyn scripting with a soft timeout — a tight infinite loop still consumes a thread until process restart, and there's no process/container isolation or resource limits — not safe beyond local, trusted use; needs a separate killable process or a container with CPU/memory limits before any public deployment)
 * CI/CD pipeline (GitHub Actions) — not yet set up
 * Deployment/hosting for both the API and the frontend
-* Additional algorithms beyond the current 53
+* Additional algorithms beyond the current 54
 * Visual/UX polish and richer step animations
 * The user-submitted-code analysis and interactive-tutor features from the long-term vision above
 
