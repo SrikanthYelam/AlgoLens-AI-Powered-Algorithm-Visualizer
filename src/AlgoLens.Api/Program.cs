@@ -101,6 +101,7 @@ builder.Services.AddScoped<NumberOfProvinces>();
 builder.Services.AddScoped<RedundantConnection>();
 builder.Services.AddScoped<AccountsMerge>();
 builder.Services.AddScoped<NumberOfIslandsII>();
+builder.Services.AddScoped<MaxAreaOfIslandUnionFind>();
 builder.Services.AddScoped<StringCompression>();
 builder.Services.AddScoped<MoveZeroes>();
 builder.Services.AddScoped<ContainerWithMostWater>();

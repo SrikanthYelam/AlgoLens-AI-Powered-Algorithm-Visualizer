@@ -474,6 +474,15 @@ public static class AlgorithmEndpoints
                 "Solve((int)Args[\"m\"], (int)Args[\"n\"], (int[][])Args[\"positions\"])",
                 steps => ((NumberOfIslandsIIState)steps[^1].State).Counts));
 
+        MapAlgorithm<MaxAreaOfIslandUnionFind, IslandsRequest, int[][]>(
+            app,
+            "/api/algorithms/max-area-of-island-union-find",
+            request => request.Grid,
+            judge: new JudgeConfig<int[][]>(
+                grid => new Dictionary<string, object?> { ["grid"] = grid },
+                "Solve((int[][])Args[\"grid\"])",
+                steps => ((MaxAreaOfIslandUnionFindState)steps[^1].State).MaxArea));
+
         MapAlgorithm<StringCompression, StringCompressionRequest, char[]>(
             app,
             "/api/algorithms/string-compression",

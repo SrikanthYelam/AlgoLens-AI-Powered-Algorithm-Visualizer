@@ -320,6 +320,25 @@ export const examples: Record<string, AlgorithmExample[]> = {
     { label: 'Bridge merges two islands', input: { rows: 3, cols: 3, positions: [[0, 0], [0, 1], [1, 2], [1, 1]] } },
     { label: 'Repeated position', input: { rows: 1, cols: 2, positions: [[0, 0], [0, 0], [0, 1]] } },
   ],
+  'max-area-of-island-union-find': [
+    {
+      label: 'LeetCode example (area 6)',
+      input: {
+        grid: [
+          [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+          [0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+          [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+        ],
+      },
+    },
+    { label: 'U shape — arms merge at the bottom', input: { grid: [[1, 0, 1], [1, 0, 1], [1, 1, 1]] } },
+    { label: 'All water', input: { grid: [[0, 0, 0, 0, 0, 0, 0, 0]] } },
+  ],
   'lru-cache': [
     {
       label: 'Capacity 2 — classic example',
